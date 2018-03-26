@@ -16,7 +16,7 @@ We need to define the format of the payload of that internal JWT token.
 
 ## Decision
 
-We will adopt standard Keycloak's JWT format.
+We will adopt standard Keycloak's OpenID Connect JWT format.
 
 The user claim payload may contain the standard information as per the link below.
 https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims
@@ -78,6 +78,14 @@ PAYLOAD:
   "email": "hr@test.com"
 }
 ```
+
+### Unique User ID
+
+For common identity across the Alfresco platform, the combination of the issuer (`iss`) and subject (`sub`) should generally be considered the unchanging unique identifier for a user (as stated by [section 2 of the OpenID Connect Core 1.0 specification](http://openid.net/specs/openid-connect-core-1_0.html#IDToken)).
+
+Note that the issuer is a URL, which may change after an initial deployment in an organization, so our common identity work should include the ability for an organization to change their issuer URL.  Alternatively, we could at that time choose to loosen adherence to the specification and declare that only the subject is required for a unique user ID within the platform.
+
+Until components are updated to handle common identity they may chose to rely on the `preferred_username` or `email` claims.
 
 ## Consequences
 
