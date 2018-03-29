@@ -1,0 +1,11 @@
+keycloak:
+  keycloak:
+    enabled: true
+    username: admin
+    password: admin
+    service:
+        type: NodePort
+    ingress:
+        enabled: false
+  rbac:
+    create: false

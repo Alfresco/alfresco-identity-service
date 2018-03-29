@@ -1,0 +1,15 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "alfresco-identity.fullname" . }}-ingress
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    ingress.kubernetes.io/ssl-redirect: "false"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: "/auth"
+        backend:
+          serviceName: {{ template "keycloak.fullname" . }}-http
+          servicePort: 80
