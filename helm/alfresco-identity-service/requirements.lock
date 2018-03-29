@@ -1,0 +1,6 @@
+dependencies:
+- name: keycloak
+  repository: http://storage.googleapis.com/kubernetes-charts-incubator
+  version: 0.2.2
+digest: sha256:5147e1f6a129ca57074265b9708b71f40bff08223d5e1e103485a6d67d535017
+generated: 2018-03-29T09:39:24.668714+01:00
