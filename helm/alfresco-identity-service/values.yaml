@@ -1,11 +1,13 @@
-keycloak:
+alfresco-identity-service:
   keycloak:
     enabled: true
-    username: admin
-    password: admin
-    service:
-        type: NodePort
-    ingress:
-        enabled: false
+keycloak:
   rbac:
     create: false
+  keycloak:
+    username: admin
+    password: admin
+    ingress:
+      enabled: true
+      hosts:
+        - "minikube"
