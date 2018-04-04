@@ -1,0 +1,40 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: realm-job-{{ template "alfresco-identity.fullname" . }}
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-install
+    "helm.sh/hook-weight": "-5"
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    metadata:
+      name: realm-job-pod-{{ template "alfresco-identity.fullname" . }}
+      labels:
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: post-install-job
+        image: "alpine:3.3"
+        command: ["/bin/cat","/scripts/alfresco-realm22.json"]
+        volumeMounts:
+            - name: scripts-{{ template "alfresco-identity.fullname" . }}
+              mountPath: /scripts
+      volumes:
+        - name: scripts-{{ template "alfresco-identity.fullname" . }}
+          configMap:
+             name: realm-config-{{ template "alfresco-identity.fullname" . }}
+             items:
+              - key: config
+                path: alfresco-realm.json
+              - key: realm_install.sh
+                path: realm_install.sh
