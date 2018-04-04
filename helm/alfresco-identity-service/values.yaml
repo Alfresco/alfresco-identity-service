@@ -13,4 +13,12 @@ keycloak:
     ingress:
       enabled: true
       hosts:
-        - "minikube"
+        - "a01dfda39371d11e8ab7e061c0f17982-926388743.eu-west-1.elb.amazonaws.com"
+
+
+## Used to run 'kubectl' in an init container in order to wait for keycloak to start up.
+hyperkube:
+  image:
+    repository: quay.io/coreos/hyperkube
+    tag: v1.8.1_coreos.0
+    pullPolicy: IfNotPresent

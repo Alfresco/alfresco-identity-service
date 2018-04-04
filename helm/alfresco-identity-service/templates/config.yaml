@@ -629,24 +629,24 @@ data:
      },
      "keycloakVersion": "3.4.3.Final"
    }
-   
+
   realm_install.sh: |
     #!/usr/bin/env bash
     set -eu
     pod_labels="${1?Please specify keycloak labels}"
-    max_retries=30
+    max_retries=60
     retry_count=0
     sleep_secs=2
     ready_pods=
-    echo 'Polling for keycloak readiness...'
+    echo "Polling for keycloak pod $pod_labels readiness..."
     while [ -z "$ready_pods" ] && [ "$retry_count" -lt "$max_retries" ]; do
         ready_pods=$(kubectl get pods -l "$pod_labels" -o jsonpath="{.items[*].status.containerStatuses[?(@.ready==true)].name}")
         retry_count=$((retry_count + 1))
         sleep "$sleep_secs"
     done
     if [ -z "$ready_pods" ]; then
-        echo "ERROR: Timeout waiting for keycloak to start up." >&2
+        echo "ERROR: Timeout waiting for keycloak pod $pod_labels to start up." >&2
         exit 1
     fi
-    echo "keycloak ready!"
+    echo "Keycloak ready!"
     echo "Deploying the alfresco realm"

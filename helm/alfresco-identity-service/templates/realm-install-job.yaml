@@ -11,7 +11,7 @@ metadata:
     # job is considered part of the release.
     "helm.sh/hook": post-install
     "helm.sh/hook-weight": "-5"
-    "helm.sh/hook-delete-policy": hook-succeeded
+    #"helm.sh/hook-delete-policy": hook-succeeded
 spec:
   template:
     metadata:
@@ -24,8 +24,9 @@ spec:
       restartPolicy: Never
       containers:
       - name: post-install-job
-        image: "alpine:3.3"
-        command: ["/bin/cat","/scripts/alfresco-realm22.json"]
+        image: "{{ .Values.hyperkube.image.repository }}:{{ .Values.hyperkube.image.tag }}"
+        imagePullPolicy: "{{ .Values.hyperkube.image.pullPolicy }}"
+        command: ["bash","-c","/scripts/realm_install.sh app=keycloak,release={{ .Release.Name }}"]
         volumeMounts:
             - name: scripts-{{ template "alfresco-identity.fullname" . }}
               mountPath: /scripts
@@ -36,5 +37,7 @@ spec:
              items:
               - key: config
                 path: alfresco-realm.json
+                mode: 0755
               - key: realm_install.sh
                 path: realm_install.sh
+                mode: 0755
