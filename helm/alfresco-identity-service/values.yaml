@@ -8,17 +8,19 @@ keycloak:
     image:
       tag: 3.4.3.Final
       pullPolicy: IfNotPresent
-    username: admin
-    password: admin
     ingress:
       enabled: true
+      tls:
+        enabled: true
+        existingSecret: yourTlsSecret
+      annotations: {kubernetes.io/ingress.class: "nginx"}
       hosts:
-        - "a01dfda39371d11e8ab7e061c0f17982-926388743.eu-west-1.elb.amazonaws.com"
+        - "YourDnsHost"
 
-
-## Used to run 'kubectl' in an init container in order to wait for keycloak to start up.
+## Used to run 'kubectl' in an init container in order to wait for keycloak to start up and install the alfresco realm.
 hyperkube:
   image:
     repository: quay.io/coreos/hyperkube
     tag: v1.8.1_coreos.0
     pullPolicy: IfNotPresent
+

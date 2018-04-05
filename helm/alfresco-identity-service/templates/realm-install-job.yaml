@@ -9,9 +9,9 @@ metadata:
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
-    "helm.sh/hook": post-install
-    "helm.sh/hook-weight": "-5"
-    #"helm.sh/hook-delete-policy": hook-succeeded
+    "helm.sh/hook": post-install #Determines time of deploy
+    "helm.sh/hook-weight": "-5" #Determines the order if multiple hooks are deffined
+    "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
 spec:
   template:
     metadata:
@@ -26,18 +26,27 @@ spec:
       - name: post-install-job
         image: "{{ .Values.hyperkube.image.repository }}:{{ .Values.hyperkube.image.tag }}"
         imagePullPolicy: "{{ .Values.hyperkube.image.pullPolicy }}"
-        command: ["bash","-c","/scripts/realm_install.sh app=keycloak,release={{ .Release.Name }}"]
+        command: ["bash","-c","/scripts/realm_install.sh app=keycloak,release={{ .Release.Name }} {{ index .Values.keycloak.keycloak.ingress.hosts 0 }} "]
         volumeMounts:
             - name: scripts-{{ template "alfresco-identity.fullname" . }}
               mountPath: /scripts
+            - name: keycloak-secret-{{ template "alfresco-identity.fullname" . }}
+              mountPath: /keycloaksecret
+              readOnly: true
+            - name: realm-secret-{{ template "alfresco-identity.fullname" . }}
+              mountPath: /realmsecret
+              readOnly: true
       volumes:
+        - name: keycloak-secret-{{ template "alfresco-identity.fullname" . }}
+          secret:
+             secretName: keycloak-{{ .Release.Name | trunc 11 | trimSuffix "-"}}-http
+        - name: realm-secret-{{ template "alfresco-identity.fullname" . }}
+          secret:
+             secretName: realm-secret-{{ template "alfresco-identity.fullname" . }}
         - name: scripts-{{ template "alfresco-identity.fullname" . }}
           configMap:
              name: realm-config-{{ template "alfresco-identity.fullname" . }}
              items:
-              - key: config
-                path: alfresco-realm.json
-                mode: 0755
               - key: realm_install.sh
                 path: realm_install.sh
                 mode: 0755
