@@ -27,3 +27,21 @@ hyperkube:
     repository: quay.io/coreos/hyperkube
     tag: v1.8.1_coreos.0
     pullPolicy: IfNotPresent
+
+
+
+alfresco-identity-service:
+  alfresco-infrastructure:
+    enabled: true
+    
+alfresco-infrastructure:
+  rabbitmq-ha:
+    enabled: false
+  activemq:
+    enabled: false
+  alfresco-keycloak:
+    enabled: false
+  alfresco-activiti-cloud-registry:
+    enabled: false
+  alfresco-api-gateway:
+    enabled: false
