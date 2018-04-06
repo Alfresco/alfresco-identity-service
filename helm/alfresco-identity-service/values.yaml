@@ -13,4 +13,4 @@ keycloak:
     ingress:
       enabled: true
       hosts:
-        - "your elb DNS address"
+        - "<your-elb-dns-address>"
