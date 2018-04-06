@@ -1,5 +1,5 @@
 dependencies:
   - name: keycloak
     version: 0.2.2
-    condition: alfresco-identity-service.keycloak.enabled
+    condition: alfresco-identity-service.enabled
     repository: http://storage.googleapis.com/kubernetes-charts-incubator
