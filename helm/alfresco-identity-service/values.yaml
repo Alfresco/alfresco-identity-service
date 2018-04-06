@@ -13,4 +13,4 @@ keycloak:
     ingress:
       enabled: true
       hosts:
-        - "minikube"
+        - "your elb DNS address"
