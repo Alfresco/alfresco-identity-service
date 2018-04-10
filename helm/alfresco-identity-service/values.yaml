@@ -12,10 +12,10 @@ keycloak:
       enabled: true
       tls:
         enabled: true
-        existingSecret: keycloak-secret
-            annotations: {kubernetes.io/ingress.class: "nginx"}
+        existingSecret: svidrascu
+      annotations: {kubernetes.io/ingress.class: "nginx"}
       hosts:
-        - "YourDnsHost"
+        - "sergiuv.ps.dev.alfresco.me"
 
 ## Used to run 'kubectl' in an init container in order to wait for keycloak to start up and install the alfresco realm.
 hyperkube:
