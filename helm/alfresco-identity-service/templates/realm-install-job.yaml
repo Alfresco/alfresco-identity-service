@@ -27,19 +27,21 @@ spec:
         image: "{{ .Values.hyperkube.image.repository }}:{{ .Values.hyperkube.image.tag }}"
         imagePullPolicy: "{{ .Values.hyperkube.image.pullPolicy }}"
         command: ["bash","-c","/scripts/realm_install.sh app=keycloak,release={{ .Release.Name }} {{ index .Values.keycloak.keycloak.ingress.hosts 0 }} "]
+        env:
+          - name: KEYCLOAKUSERNAME
+            value: {{ .Values.keycloak.keycloak.username }}
+          - name: KEYCLOAKSECRET
+            valueFrom:
+              secretKeyRef:
+                name: keycloak-{{ .Release.Name | trunc 11 | trimSuffix "-"}}-http
+                key: password
         volumeMounts:
             - name: scripts-{{ template "alfresco-identity.fullname" . }}
               mountPath: /scripts
-            - name: keycloak-secret-{{ template "alfresco-identity.fullname" . }}
-              mountPath: /keycloaksecret
-              readOnly: true
             - name: realm-secret-{{ template "alfresco-identity.fullname" . }}
               mountPath: /realmsecret
               readOnly: true
       volumes:
-        - name: keycloak-secret-{{ template "alfresco-identity.fullname" . }}
-          secret:
-             secretName: keycloak-{{ .Release.Name | trunc 11 | trimSuffix "-"}}-http
         - name: realm-secret-{{ template "alfresco-identity.fullname" . }}
           secret:
              secretName: realm-secret-{{ template "alfresco-identity.fullname" . }}
