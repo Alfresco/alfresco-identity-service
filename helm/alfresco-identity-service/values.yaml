@@ -1,0 +1,17 @@
+alfresco-identity-service:
+  enabled: true
+keycloak:
+  rbac:
+    create: false
+  keycloak:
+    image:
+      tag: 3.4.3.Final
+      pullPolicy: IfNotPresent
+    username: admin
+    password: admin
+    ingress:
+      enabled: true
+      # The host name should be dns entry , if we are running in
+      # minikube set the minikube ip address in hostfile and use that entry
+      hosts:
+        - "your-elb-dns-address"
