@@ -1,4 +1,3 @@
-
 keycloak:
   rbac:
     create: false
@@ -10,12 +9,14 @@ keycloak:
     password: admin
     ingress:
       enabled: true
+      # The host name should be dns entry , if we are running in
+      # minikube set the minikube ip address in hostfile and use that entry
+      hosts:
+        - "your-elb-dns-address"
       tls:
         enabled: true
         existingSecret: "YourTlsSecret"
       annotations: {kubernetes.io/ingress.class: "nginx"}
-      hosts:
-        - "YourDnsHost"
 
 ## Used to run 'kubectl' in an init container in order to wait for keycloak to start up and install the alfresco realm.
 hyperkube:
@@ -23,4 +24,3 @@ hyperkube:
     repository: quay.io/coreos/hyperkube
     tag: v1.8.1_coreos.0
     pullPolicy: IfNotPresent
-
