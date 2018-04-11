@@ -8,6 +8,8 @@ data:
     set -eu
     pod_labels="${1?Please specify keycloak labels}"
     dns_endpoint="${2?Please specify the ingress DNS endpoint}"
+    echo "installing curl and jq"
+    echo CACHEBUST>/dev/null && clean-install curl jq
     max_retries=60
     retry_count=0
     sleep_secs=2
@@ -26,8 +28,6 @@ data:
     echo "Deploying the alfresco realm!"
     echo "Obtaining login token"
     REALMCONFIG=$(cat /realmsecret/config)
-    echo "installing curl and jq"
-    echo CACHEBUST>/dev/null && clean-install curl jq
     echo "Getting Auth json"
     CURLOUTPUT=$(curl --insecure -d "client_id=admin-cli" -d "username=$KEYCLOAKUSERNAME" -d "password=$KEYCLOAKSECRET" -d "grant_type=password" "https://$dns_endpoint/auth/realms/master/protocol/openid-connect/token")
     echo "Parsing Access Token"

@@ -5,8 +5,6 @@ keycloak:
     image:
       tag: 3.4.3.Final
       pullPolicy: IfNotPresent
-    username: admin
-    password: admin
     ingress:
       enabled: true
       # The host name should be dns entry , if we are running in

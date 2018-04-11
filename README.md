@@ -8,8 +8,6 @@ The Identity Service is based on [Keycloak](http://www.keycloak.org) and provide
 
 The Alfresco Keycloak Deployment requires:
 
-The Alfresco Infrastructre Deployment requires:
-
 | Component        | Recommended version |
 | ------------- |:-------------:|
 | Docker     | 17.0.9.1 |
