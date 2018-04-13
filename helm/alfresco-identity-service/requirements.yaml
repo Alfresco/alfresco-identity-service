@@ -1,4 +1,4 @@
 dependencies:
   - name: keycloak
     version: 0.2.2
-    repository: http://storage.googleapis.com/kubernetes-charts-incubator
+    repository: https://kubernetes-charts-incubator.storage.googleapis.com
