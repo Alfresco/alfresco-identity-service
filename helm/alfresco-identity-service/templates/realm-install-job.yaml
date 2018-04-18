@@ -44,8 +44,12 @@ spec:
       volumes:
         - name: realm-secret-{{ template "alfresco-identity.fullname" . }}
           secret:
-            secretName: "{{ .Values.keycloak.secretName | default (printf "realm-secret-%s" (include "alfresco-identity.fullname" .)) }}"
-          - name: scripts-{{ template "alfresco-identity.fullname" . }}
+             {{- if eq .Values.keycloak.secretName "none" }}
+             secretName: realm-secret-{{ template "alfresco-identity.fullname" . }}
+             {{- else }}
+             secretName: realm-secret-{{ template "alfresco-identity.fullname" . }}
+             {{- end }}
+        - name: scripts-{{ template "alfresco-identity.fullname" . }}
           configMap:
              name: realm-config-{{ template "alfresco-identity.fullname" . }}
              items:
