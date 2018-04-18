@@ -1,0 +1,14 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "alfresco-identity.fullname" . }}
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+spec:
+  rules:
+  - http:
+      paths:
+      - path: {{ .Values.ingress.path }}
+        backend:
+          serviceName: keycloak-{{ .Release.Name | trunc 11 | trimSuffix "-"}}-http
+          servicePort: {{ .Values.keycloak.keycloak.service.port }}
