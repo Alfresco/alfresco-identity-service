@@ -2,7 +2,7 @@ keycloak:
   rbac:
     create: false
   secretName: none
-  secreteKey: config
+  secretKey: config
   keycloak:
     image:
       tag: 3.4.3.Final

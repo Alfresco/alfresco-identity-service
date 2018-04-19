@@ -27,10 +27,9 @@ data:
     echo "Keycloak ready!"
     echo "Deploying the alfresco realm!"
     echo "Obtaining login token"
-    REALMCONFIG=$(cat /realmsecret/alfresco-realm.json)
     echo "Getting Auth json"
     CURLOUTPUT=$(curl --insecure -d "client_id=admin-cli" -d "username=$KEYCLOAKUSERNAME" -d "password=$KEYCLOAKSECRET" -d "grant_type=password" "https://$dns_endpoint/auth/realms/master/protocol/openid-connect/token")
     echo "Parsing Access Token"
     Accesstoken=$(echo $CURLOUTPUT | jq -r .access_token)
     echo "Deploying Realm"
-    curl --insecure -H "Content-Type: application/json" -H "Authorization:Bearer $Accesstoken" -X POST -d "$REALMCONFIG" "https://$dns_endpoint/auth/admin/realms"
+    curl --insecure -H "Content-Type: application/json" -H "Authorization:Bearer $Accesstoken" -X POST -d "$KEYCLOAKREALM" "https://$dns_endpoint/auth/admin/realms"

@@ -115,6 +115,43 @@ helm install alfresco-incubator/alfresco-identity-service \
 
 Once Keycloak is up and running login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm, you can either do this manually or using the sample realm file.
 
+### On kubernetes deploy time
+
+1. You will need a realm json, similar to alfresco-realm.json
+
+2. Create a secret using your realm json file
+
+```bash
+
+kubectl create secret generic realmsecret \
+--from-file=./realm.json \
+--namespace=$DESIREDNAMESPACE
+
+export secretname=realmsecret
+export secretkey=realm.json
+```
+
+3. Deploy the keycloak chart:
+
+```bash
+
+helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
+
+#ON MINIKUBE
+helm install alfresco-incubator/alfresco-identity-service \
+--set keycloak.keycloak.ingress.hosts={"minikube"}
+--set keycloak.secretName=$secretname \
+--set keycloak.secretKey=$secretkey \
+--namespace $DESIREDNAMESPACE
+
+#ON AWS
+helm install alfresco-incubator/alfresco-identity-service \
+--set keycloak.keycloak.ingress.hosts={"application.yourDNS.zone.com"}
+--set keycloak.secretName=$secretname \
+--set keycloak.secretKey=$secretkey \
+--namespace $DESIREDNAMESPACE
+```
+
 ### Manually
 
 1. [Add a realm](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm) named "Alfresco"
