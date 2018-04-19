@@ -47,7 +47,7 @@ spec:
              {{- if eq .Values.keycloak.secretName "none" }}
              secretName: realm-secret-{{ template "alfresco-identity.fullname" . }}
              {{- else }}
-             secretName: realm-secret-{{ template "alfresco-identity.fullname" . }}
+             secretName: .Values.keycloak.secretName
              {{- end }}
         - name: scripts-{{ template "alfresco-identity.fullname" . }}
           configMap:

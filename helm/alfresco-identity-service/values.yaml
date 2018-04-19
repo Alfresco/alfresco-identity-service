@@ -2,11 +2,12 @@ keycloak:
   rbac:
     create: false
   secretName: none
+  secreteKey: config
   keycloak:
     image:
       tag: 3.4.3.Final
       pullPolicy: IfNotPresent
-    username: admin	
+    username: admin
     password: admin
     ingress:
       enabled: true
