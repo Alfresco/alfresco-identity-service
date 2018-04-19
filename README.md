@@ -24,6 +24,7 @@ Please check the Anaxes Shipyard documentation on [running a cluster](https://gi
 
 Note the resource requirements:
 * Minikube: At least 2 gigs of memory, i.e.:
+
 ```bash
 minikube start --memory 2000
 ```
@@ -32,6 +33,7 @@ minikube start --memory 2000
 ### Helm Tiller
 
 Initialize the Helm Tiller:
+
 ```bash
 helm init
 ```
@@ -39,6 +41,7 @@ helm init
 ### K8s Cluster Namespace
 
 As mentioned as part of the Anaxes Shipyard guidelines, you should deploy into a separate namespace in the cluster to avoid conflicts (create the namespace only if it does not already exist):
+
 ```bash
 export DESIREDNAMESPACE=example
 kubectl create namespace $DESIREDNAMESPACE
@@ -51,63 +54,34 @@ This environment variable will be used in the deployment steps.
 1. Install the nginx-ingress-controller
 Install the nginx-ingress-controller into your cluster
 
+```bash
 helm repo update
-helm install stable/nginx-ingress \
---version=0.12.3 \
---set controller.scope.enabled=true \
---set controller.scope.namespace=$DESIREDNAMESPACE \
---set controller.publishService.enabled=true \
---namespace $DESIREDNAMESPACE
+cat <<EOF > ingressvalues.yaml
+controller:
+  config:
+    ssl-redirect: "false"
+  scope:
+    enabled: true
+    namespace: $DESIREDNAMESPACE
+EOF
 
-### 2. Create a DNS entry your deployment:
+cat ingressvalues.yaml
 
-
-```bash
-#ON MINIKUBE
-export ELBADDRESS=$(minikube ip)
-echo "$ELBADDRESS minikube" >> /etc/hosts
-```
-
-```bash
-#ON AWS (Optional if do not have one deployed already)
-# Deploy an instance of external-dns stable chart with your hosted zone as a domain filter
-helm install stable/external-dns \
---set domainFilters={"yourDNS.zone.com"} \
---set policy=sync \
---set sources={"ingress"} \
+helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
 --namespace $DESIREDNAMESPACE
 ```
 
-### 3. Generate a tls certificate for your dns entry:
-
-```bash
-#ON minikube
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=minikube"
-
-#ON AWS
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=application.yourDNS.zone.com"
-```
-
-### 4. Create a kubernetes secret with the generated keys:
-
-```bash
-kubectl create secret tls keycloak-secret --key /tmp/tls.key --cert /tmp/tls.crt 
---namespace=$DESIREDNAMESPACE
-```
-
-### 5. Deploy the keycloak charts:
+### 2. Deploy the keycloak charts:
 ```bash
 
 helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
 
 #ON MINIKUBE
 helm install alfresco-incubator/alfresco-identity-service \
---set keycloak.keycloak.ingress.hosts={"minikube"}
 --namespace $DESIREDNAMESPACE
 
 #ON AWS
 helm install alfresco-incubator/alfresco-identity-service \
---set keycloak.keycloak.ingress.hosts={"application.yourDNS.zone.com"}
 --namespace $DESIREDNAMESPACE
 ```
 
