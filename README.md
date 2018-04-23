@@ -10,6 +10,22 @@ There are several ways to install Keycloak, via [distribution files](http://www.
 
 When installing use the appropriate configuration option to create an "admin" user, this will be used as the administrator login for Alfresco Content Services (ACS) and Alfresco Process Services (APS).
 
+### Setup Keycloak with a SAML IdP provider
+
+In order to create a SAML provider in Keycloak you will have to go to the Identity Providers left menu item and select SAML v2.0 from the Add provider drop down list. To configure it, you will have two options:
+
+* You can manually fill the necesary fields in concordance with the settings of your SAML IdP
+
+* The other way to configure it would be to import the configuration from your external Idp by providing the URL or import them as a file.
+
+Once you have finished creating the Identity Provider in Keycloak you can export the SAML SP entity descriptor in order to import it into your external Service Provider. Depending on your configuration, the same metadata can be found here:
+
+```bash
+http[s]://{host:port}/auth/realms/{realm-name}/broker/{broker-alias}/endpoint/descriptor
+```
+
+More details in Keycloak's [documentation](https://www.keycloak.org/docs/3.2/server_admin/topics/identity-broker/saml.html)
+
 ## Configure Alfresco Realm
 
 Once Keycloak is up and running login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm, you can either do this manually or using the sample realm file.
