@@ -24,7 +24,6 @@ Please check the Anaxes Shipyard documentation on [running a cluster](https://gi
 
 Note the resource requirements:
 * Minikube: At least 2 gigs of memory, i.e.:
-
 ```bash
 minikube start --memory 2000
 ```
@@ -33,7 +32,6 @@ minikube start --memory 2000
 ### Helm Tiller
 
 Initialize the Helm Tiller:
-
 ```bash
 helm init
 ```
@@ -41,7 +39,6 @@ helm init
 ### K8s Cluster Namespace
 
 As mentioned as part of the Anaxes Shipyard guidelines, you should deploy into a separate namespace in the cluster to avoid conflicts (create the namespace only if it does not already exist):
-
 ```bash
 export DESIREDNAMESPACE=example
 kubectl create namespace $DESIREDNAMESPACE
@@ -50,12 +47,14 @@ kubectl create namespace $DESIREDNAMESPACE
 This environment variable will be used in the deployment steps.
 
 ## Deploying the Keycloak Chart
+## Deploying the Keycloak Chart
 
 1. Install the nginx-ingress-controller
 Install the nginx-ingress-controller into your cluster
 
 ```bash
 helm repo update
+
 cat <<EOF > ingressvalues.yaml
 controller:
   config:
@@ -64,8 +63,6 @@ controller:
     enabled: true
     namespace: $DESIREDNAMESPACE
 EOF
-
-cat ingressvalues.yaml
 
 helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
 --namespace $DESIREDNAMESPACE
@@ -85,7 +82,46 @@ helm install alfresco-incubator/alfresco-identity-service \
 --namespace $DESIREDNAMESPACE
 ```
 
+## Customizing the keycloak Realm
+
+### On kubernetes deploy time
+
+1. You will need a realm json, similar to alfresco-realm.json
+
+2. Create a secret using your realm json file
+
+```bash
+
+kubectl create secret generic realmsecret \
+--from-file=./realm.json \
+--namespace=$DESIREDNAMESPACE
+
+export secretname=realmsecret
+export secretkey=realm.json
+```
+
+3. Deploy the keycloak chart:
+
+```bash
+
+helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
+
+#ON MINIKUBE
+helm install alfresco-incubator/alfresco-identity-service \
+--set keycloak.secretName=$secretname \
+--set keycloak.secretKey=$secretkey \
+--namespace $DESIREDNAMESPACE
+
+#ON AWS
+helm install alfresco-incubator/alfresco-identity-service \
+--set keycloak.secretName=$secretname \
+--set keycloak.secretKey=$secretkey \
+--namespace $DESIREDNAMESPACE
+```
+
 ### Manually
+
+Once Keycloak is up and running login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm, you can either do this manually or using the sample realm file.
 
 1. [Add a realm](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm) named "Alfresco"
 
