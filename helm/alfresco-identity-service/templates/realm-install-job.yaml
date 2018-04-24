@@ -35,16 +35,19 @@ spec:
               secretKeyRef:
                 name: keycloak-{{ .Release.Name | trunc 11 | trimSuffix "-"}}-http
                 key: password
+          - name: KEYCLOAKREALM
+            valueFrom:
+              secretKeyRef:
+                {{- if eq .Values.keycloak.secretName "none" }}
+                name: realm-secret-{{ template "alfresco-identity.fullname" . }}
+                {{- else }}
+                name: {{ .Values.keycloak.secretName }}
+                {{- end }}
+                key: {{ .Values.keycloak.secretKey }}
         volumeMounts:
             - name: scripts-{{ template "alfresco-identity.fullname" . }}
               mountPath: /scripts
-            - name: realm-secret-{{ template "alfresco-identity.fullname" . }}
-              mountPath: /realmsecret
-              readOnly: true
       volumes:
-        - name: realm-secret-{{ template "alfresco-identity.fullname" . }}
-          secret:
-             secretName: realm-secret-{{ template "alfresco-identity.fullname" . }}
         - name: scripts-{{ template "alfresco-identity.fullname" . }}
           configMap:
              name: realm-config-{{ template "alfresco-identity.fullname" . }}
