@@ -14,9 +14,9 @@ When installing use the appropriate configuration option to create an "admin" us
 
 In order to create a SAML provider in Keycloak you will have to go to the Identity Providers left menu item and select SAML v2.0 from the Add provider drop down list. To configure it, you will have two options:
 
-* You can manually fill the necesary fields in concordance with the settings of your SAML IdP
+* You can manually fill the necessary fields in concordance with the settings of your SAML IdP
 
-* The other way to configure it would be to import the configuration from your external Idp by providing the URL or import them as a file.
+* Or the preferred way to configure it, would be to import your IdP metadata by providing the URL or import them as a file.
 
 Once you have finished creating the Identity Provider in Keycloak you can export the SAML SP entity descriptor in order to import it into your external Service Provider. Depending on your configuration, the same metadata can be found here:
 
