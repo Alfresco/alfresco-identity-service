@@ -24,7 +24,7 @@ Once you have finished creating the Identity Provider in Keycloak you can export
 http[s]://{host:port}/auth/realms/{realm-name}/broker/{broker-alias}/endpoint/descriptor
 ```
 
-More details in Keycloak's [documentation](https://www.keycloak.org/docs/3.2/server_admin/topics/identity-broker/saml.html)
+More details in Keycloak's [documentation](https://www.keycloak.org/docs/3.4/server_admin/index.html#saml-v2-0-identity-providers)
 
 ## Configure Alfresco Realm
 
