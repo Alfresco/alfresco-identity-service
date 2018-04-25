@@ -68,6 +68,26 @@ helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
 --namespace $DESIREDNAMESPACE
 ```
 
+2. Get the nginx-ingress-controller release name from the previous command and set it as a varible:
+
+export INGRESSRELEASE=knobby-wolf
+
+3. Wait for the nginx-ingress-controller release to get deployed (When checking status your pod should be READY 1/1):
+
+helm status $INGRESSRELEASE
+
+4. Get the nginx-ingress-controller port for the infrastructure (NOTE! ONLY FOR MINIKUBE):
+
+export INFRAPORT=$(kubectl get service $INGRESSRELEASE-nginx-ingress-controller --namespace $DESIREDNAMESPACE -o jsonpath={.spec.ports[0].nodePort})
+
+5. Get Minikube or ELB IP and set it as a variable for future use:
+
+#ON MINIKUBE
+export ELBADDRESS=$(minikube ip)
+
+#ON AWS
+export ELBADDRESS=$(kubectl get services $INGRESSRELEASE-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath={.status.loadBalancer.ingress[0].hostname})
+
 ### 2. Deploy the keycloak charts:
 ```bash
 
@@ -75,10 +95,12 @@ helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
 
 #ON MINIKUBE
 helm install alfresco-incubator/alfresco-identity-service \
+--set dnshost=$ELBADDRESS \
 --namespace $DESIREDNAMESPACE
 
 #ON AWS
 helm install alfresco-incubator/alfresco-identity-service \
+--set dnshost=$ELBADDRESS \
 --namespace $DESIREDNAMESPACE
 ```
 
@@ -108,12 +130,14 @@ helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
 
 #ON MINIKUBE
 helm install alfresco-incubator/alfresco-identity-service \
+--set dnshost=$ELBADDRESS \
 --set keycloak.secretName=$secretname \
 --set keycloak.secretKey=$secretkey \
 --namespace $DESIREDNAMESPACE
 
 #ON AWS
 helm install alfresco-incubator/alfresco-identity-service \
+--set dnshost=$ELBADDRESS \
 --set keycloak.secretName=$secretname \
 --set keycloak.secretKey=$secretkey \
 --namespace $DESIREDNAMESPACE
