@@ -100,7 +100,7 @@ export secretname=realmsecret
 export secretkey=realm.json
 ```
 
-3. Deploy the keycloak chart:
+3. Deploy the identity chart with the new settings:
 
 ```bash
 
