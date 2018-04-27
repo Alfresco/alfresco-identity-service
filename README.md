@@ -47,10 +47,11 @@ kubectl create namespace $DESIREDNAMESPACE
 This environment variable will be used in the deployment steps.
 
 ## Deploying the Keycloak Chart
-## Deploying the Keycloak Chart
 
 1. Install the nginx-ingress-controller
 Install the nginx-ingress-controller into your cluster
+
+This will create a ELB when using AWS and will set a dummy certificate on it.
 
 ```bash
 helm repo update
@@ -66,6 +67,34 @@ EOF
 
 helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
 --namespace $DESIREDNAMESPACE
+```
+
+*!Optional*
+
+If you want your own certificate set here you should create a secret from your cert files:
+```bash
+kubectl create secret tls certsecret --key /tmp/tls.key --cert /tmp/tls.crt --namespace $DESIREDNAMESPACE
+
+#Then deploy the ingress with following settings
+
+cat <<EOF > ingressvalues.yaml
+controller:
+  config:
+    ssl-redirect: "false"
+  scope:
+    enabled: true
+    namespace: $DESIREDNAMESPACE
+  publishService:
+    enabled: true
+  extraArgs:
+    default-ssl-certificate: $DESIREDNAMESPACE/certsecret
+EOF
+
+helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
+--namespace $DESIREDNAMESPACE
+
+#After this you can map the automatically created ELB to route53 if you're on AWS
+
 ```
 
 2. Get the nginx-ingress-controller release name from the previous command and set it as a varible:

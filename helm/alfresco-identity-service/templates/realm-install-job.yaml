@@ -26,7 +26,7 @@ spec:
       - name: post-install-job
         image: "{{ .Values.hyperkube.image.repository }}:{{ .Values.hyperkube.image.tag }}"
         imagePullPolicy: "{{ .Values.hyperkube.image.pullPolicy }}"
-        command: ["bash","-c","/scripts/realm_install.sh app=keycloak,release={{ .Release.Name }} {{ .Values.dnshost }} "]
+        command: ["bash","-c","/scripts/realm_install.sh app=keycloak,release={{ .Release.Name }} {{ .Values.ingressHostName }} "]
         env:
           - name: KEYCLOAKUSERNAME
             value: {{ .Values.keycloak.keycloak.username }}

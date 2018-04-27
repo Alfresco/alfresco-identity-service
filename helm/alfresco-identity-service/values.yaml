@@ -2,7 +2,7 @@ ingress:
   enabled: true
   path: /auth
 
-dnshost: "your ingress dns name"
+ingressHostName: "your ingress dns name"
 
 keycloak:
   rbac:
