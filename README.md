@@ -48,8 +48,8 @@ This environment variable will be used in the deployment steps.
 
 ## Deploying the Keycloak Chart
 
-1. Install the nginx-ingress-controller
-Install the nginx-ingress-controller into your cluster
+1. Install the nginx-ingress-controller into your cluster
+
 
 This will create a ELB when using AWS and will set a dummy certificate on it.
 
