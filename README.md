@@ -72,6 +72,7 @@ helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
 *!Optional*
 
 If you want your own certificate set here you should create a secret from your cert files:
+
 ```bash
 kubectl create secret tls certsecret --key /tmp/tls.key --cert /tmp/tls.crt --namespace $DESIREDNAMESPACE
 
@@ -92,8 +93,11 @@ EOF
 
 helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
 --namespace $DESIREDNAMESPACE
+```
 
-#Or you can add an AWS generated certificate if you want and autogenerate a route53 entry
+Or you can add an AWS generated certificate if you want and autogenerate a route53 entry
+
+```bash
 cat <<EOF > ingressvalues.yaml
 controller:
   config:
@@ -120,23 +124,31 @@ helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
 
 2. Get the nginx-ingress-controller release name from the previous command and set it as a varible:
 
+```bash
 export INGRESSRELEASE=knobby-wolf
+```
 
 3. Wait for the nginx-ingress-controller release to get deployed (When checking status your pod should be READY 1/1):
 
+```bash
 helm status $INGRESSRELEASE
+```
 
 4. Get the nginx-ingress-controller port for the infrastructure (NOTE! ONLY FOR MINIKUBE):
 
+```bash
 export INFRAPORT=$(kubectl get service $INGRESSRELEASE-nginx-ingress-controller --namespace $DESIREDNAMESPACE -o jsonpath={.spec.ports[0].nodePort})
+```
 
 5. Get Minikube or ELB IP and set it as a variable for future use:
 
+```bash
 #ON MINIKUBE
 export ELBADDRESS=$(minikube ip)
 
 #ON AWS
 export ELBADDRESS=$(kubectl get services $INGRESSRELEASE-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath={.status.loadBalancer.ingress[0].hostname})
+```
 
 ### 2. Deploy the keycloak charts:
 ```bash
