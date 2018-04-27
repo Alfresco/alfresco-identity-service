@@ -48,9 +48,9 @@ This environment variable will be used in the deployment steps.
 
 ## Deploying the Keycloak Chart
 
-1. Install the nginx-ingress-controller
-Install the nginx-ingress-controller into your cluster
+1. Install the nginx-ingress-controller into your cluster
 
+```
 helm repo update
 helm install stable/nginx-ingress \
 --version=0.12.3 \
@@ -58,6 +58,7 @@ helm install stable/nginx-ingress \
 --set controller.scope.namespace=$DESIREDNAMESPACE \
 --set controller.publishService.enabled=true \
 --namespace $DESIREDNAMESPACE
+```
 
 ### 2. Create a DNS entry your deployment:
 
