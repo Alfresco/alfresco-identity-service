@@ -93,7 +93,28 @@ EOF
 helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
 --namespace $DESIREDNAMESPACE
 
-#After this you can map the automatically created ELB to route53 if you're on AWS
+#Or you can add an AWS generated certificate if you want and autogenerate a route53 entry
+cat <<EOF > ingressvalues.yaml
+controller:
+  config:
+    ssl-redirect: "false"
+  scope:
+    enabled: true
+    namespace: $DESIREDNAMESPACE
+  publishService:
+    enabled: true
+  service:
+    targetPorts:
+      https: 80
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: #sslcert ARN -> https://github.com/kubernetes/kubernetes/blob/master/pkg/cloudprovider/providers/aws/aws.go
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+      # External dns will help you autogenerate an entry in route53 for your cluster. More info here -> https://github.com/kubernetes-incubator/external-dns
+      external-dns.alpha.kubernetes.io/hostname: $DESIREDNAMESPACE.YourDNSZone
+EOF
+
+helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
+--namespace $DESIREDNAMESPACE
 
 ```
 
@@ -124,12 +145,12 @@ helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
 
 #ON MINIKUBE
 helm install alfresco-incubator/alfresco-identity-service \
---set dnshost=$ELBADDRESS \
+--set ingressHostName=$ELBADDRESS \
 --namespace $DESIREDNAMESPACE
 
 #ON AWS
 helm install alfresco-incubator/alfresco-identity-service \
---set dnshost=$ELBADDRESS \
+--set ingressHostName=$ELBADDRESS \
 --namespace $DESIREDNAMESPACE
 ```
 
@@ -159,14 +180,14 @@ helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
 
 #ON MINIKUBE
 helm install alfresco-incubator/alfresco-identity-service \
---set dnshost=$ELBADDRESS \
+--set ingressHostName=$ELBADDRESS \
 --set keycloak.secretName=$secretname \
 --set keycloak.secretKey=$secretkey \
 --namespace $DESIREDNAMESPACE
 
 #ON AWS
 helm install alfresco-incubator/alfresco-identity-service \
---set dnshost=$ELBADDRESS \
+--set ingressHostName=$ELBADDRESS \
 --set keycloak.secretName=$secretname \
 --set keycloak.secretKey=$secretkey \
 --namespace $DESIREDNAMESPACE
