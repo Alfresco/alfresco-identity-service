@@ -50,87 +50,123 @@ This environment variable will be used in the deployment steps.
 
 1. Install the nginx-ingress-controller into your cluster
 
-```
+
+This will create a ELB when using AWS and will set a dummy certificate on it.
+
+```bash
 helm repo update
-helm install stable/nginx-ingress \
---version=0.12.3 \
---set controller.scope.enabled=true \
---set controller.scope.namespace=$DESIREDNAMESPACE \
---set controller.publishService.enabled=true \
+
+cat <<EOF > ingressvalues.yaml
+controller:
+  config:
+    ssl-redirect: "false"
+  scope:
+    enabled: true
+    namespace: $DESIREDNAMESPACE
+EOF
+
+helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
 --namespace $DESIREDNAMESPACE
 ```
 
-### 2. Create a DNS entry your deployment:
+*!Optional*
 
+If you want your own certificate set here you should create a secret from your cert files:
+
+```bash
+kubectl create secret tls certsecret --key /tmp/tls.key --cert /tmp/tls.crt --namespace $DESIREDNAMESPACE
+
+#Then deploy the ingress with following settings
+
+cat <<EOF > ingressvalues.yaml
+controller:
+  config:
+    ssl-redirect: "false"
+  scope:
+    enabled: true
+    namespace: $DESIREDNAMESPACE
+  publishService:
+    enabled: true
+  extraArgs:
+    default-ssl-certificate: $DESIREDNAMESPACE/certsecret
+EOF
+
+helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
+--namespace $DESIREDNAMESPACE
+```
+
+Or you can add an AWS generated certificate if you want and autogenerate a route53 entry
+
+```bash
+cat <<EOF > ingressvalues.yaml
+controller:
+  config:
+    ssl-redirect: "false"
+  scope:
+    enabled: true
+    namespace: $DESIREDNAMESPACE
+  publishService:
+    enabled: true
+  service:
+    targetPorts:
+      https: 80
+    annotations:
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: #sslcert ARN -> https://github.com/kubernetes/kubernetes/blob/master/pkg/cloudprovider/providers/aws/aws.go
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+      # External dns will help you autogenerate an entry in route53 for your cluster. More info here -> https://github.com/kubernetes-incubator/external-dns
+      external-dns.alpha.kubernetes.io/hostname: $DESIREDNAMESPACE.YourDNSZone
+EOF
+
+helm install stable/nginx-ingress --version=0.12.3 -f ingressvalues.yaml \
+--namespace $DESIREDNAMESPACE
+
+```
+
+2. Get the nginx-ingress-controller release name from the previous command and set it as a varible:
+
+```bash
+export INGRESSRELEASE=knobby-wolf
+```
+
+3. Wait for the nginx-ingress-controller release to get deployed (When checking status your pod should be READY 1/1):
+
+```bash
+helm status $INGRESSRELEASE
+```
+
+4. Get the nginx-ingress-controller port for the infrastructure (NOTE! ONLY FOR MINIKUBE):
+
+```bash
+export INFRAPORT=$(kubectl get service $INGRESSRELEASE-nginx-ingress-controller --namespace $DESIREDNAMESPACE -o jsonpath={.spec.ports[0].nodePort})
+```
+
+5. Get Minikube or ELB IP and set it as a variable for future use:
 
 ```bash
 #ON MINIKUBE
 export ELBADDRESS=$(minikube ip)
-echo "$ELBADDRESS minikube" >> /etc/hosts
-```
-
-```bash
-#ON AWS (Optional if do not have one deployed already)
-# Deploy an instance of external-dns stable chart with your hosted zone as a domain filter
-helm install stable/external-dns \
---set domainFilters={"yourDNS.zone.com"} \
---set policy=sync \
---set sources={"ingress"} \
---namespace $DESIREDNAMESPACE
-```
-
-### 3. Generate a tls certificate for your dns entry:
-
-```bash
-#ON minikube
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=minikube"
 
 #ON AWS
-openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /tmp/tls.key -out /tmp/tls.crt -subj "/CN=application.yourDNS.zone.com"
+export ELBADDRESS=$(kubectl get services $INGRESSRELEASE-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath={.status.loadBalancer.ingress[0].hostname})
 ```
 
-### 4. Create a kubernetes secret with the generated keys:
-
-```bash
-kubectl create secret tls keycloak-secret --key /tmp/tls.key --cert /tmp/tls.crt 
---namespace=$DESIREDNAMESPACE
-```
-
-### 5. Deploy the keycloak charts:
+### 2. Deploy the keycloak charts:
 ```bash
 
 helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
 
 #ON MINIKUBE
 helm install alfresco-incubator/alfresco-identity-service \
---set keycloak.keycloak.ingress.hosts={"minikube"}
+--set ingressHostName=$ELBADDRESS \
 --namespace $DESIREDNAMESPACE
 
 #ON AWS
 helm install alfresco-incubator/alfresco-identity-service \
---set keycloak.keycloak.ingress.hosts={"application.yourDNS.zone.com"}
+--set ingressHostName=$ELBADDRESS \
 --namespace $DESIREDNAMESPACE
 ```
 
-### Setup Keycloak with a SAML IdP provider
-
-In order to create a SAML provider in Keycloak you will have to go to the Identity Providers left menu item and select SAML v2.0 from the Add provider drop down list. To configure it, you will have two options:
-
-* You can manually fill the necessary fields in concordance with the settings of your SAML IdP
-
-* Or the preferred way to configure it, would be to import your IdP metadata by providing the URL or import them as a file.
-
-Once you have finished creating the Identity Provider in Keycloak you can export the SAML SP entity descriptor in order to import it into your external Service Provider. Depending on your configuration, the same metadata can be found here:
-
-```bash
-http[s]://{host:port}/auth/realms/{realm-name}/broker/{broker-alias}/endpoint/descriptor
-```
-
-More details in Keycloak's [documentation](https://www.keycloak.org/docs/3.4/server_admin/index.html#saml-v2-0-identity-providers)
-
-## Configure Alfresco Realm
-
-Once Keycloak is up and running login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm, you can either do this manually or using the sample realm file.
+## Customizing the keycloak Realm
 
 ### On kubernetes deploy time
 
@@ -148,7 +184,7 @@ export secretname=realmsecret
 export secretkey=realm.json
 ```
 
-3. Deploy the keycloak chart:
+3. Deploy the identity chart with the new settings:
 
 ```bash
 
@@ -156,20 +192,22 @@ helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
 
 #ON MINIKUBE
 helm install alfresco-incubator/alfresco-identity-service \
---set keycloak.keycloak.ingress.hosts={"minikube"}
+--set ingressHostName=$ELBADDRESS \
 --set keycloak.secretName=$secretname \
 --set keycloak.secretKey=$secretkey \
 --namespace $DESIREDNAMESPACE
 
 #ON AWS
 helm install alfresco-incubator/alfresco-identity-service \
---set keycloak.keycloak.ingress.hosts={"application.yourDNS.zone.com"}
+--set ingressHostName=$ELBADDRESS \
 --set keycloak.secretName=$secretname \
 --set keycloak.secretKey=$secretkey \
 --namespace $DESIREDNAMESPACE
 ```
 
 ### Manually
+
+Once Keycloak is up and running login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm, you can either do this manually or using the sample realm file.
 
 1. [Add a realm](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm) named "Alfresco"
 
