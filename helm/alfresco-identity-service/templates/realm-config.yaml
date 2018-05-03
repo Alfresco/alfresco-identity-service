@@ -25,7 +25,7 @@ data:
         exit 1
     fi
     echo "Keycloak ready!"
-    echo "Deploying the alfresco realm!"
+    echo "Deploying the keycloak realm!"
     echo "Obtaining login token"
     echo "Getting Auth json"
     CURLOUTPUT=$(curl --insecure -d "client_id=admin-cli" -d "username=$KEYCLOAKUSERNAME" -d "password=$KEYCLOAKSECRET" -d "grant_type=password" "https://$dns_endpoint/auth/realms/master/protocol/openid-connect/token")
