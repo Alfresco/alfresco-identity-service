@@ -15,6 +15,17 @@ keycloak:
       pullPolicy: IfNotPresent
     username: admin
     password: admin
+  postgresql:
+    nameOverride: postgresql-id
+    imageTag: "10.1"
+    persistence:
+      existingClaim: "alfresco-volume-claim"
+      subPath: "alfresco-identity-service/database-data"
+    resources:
+      requests:
+        memory: "250Mi"
+      limits:
+        memory: "500Mi"
 
 ## Used to run 'kubectl' in an init container in order to wait for keycloak to start up and install the alfresco realm.
 hyperkube:
