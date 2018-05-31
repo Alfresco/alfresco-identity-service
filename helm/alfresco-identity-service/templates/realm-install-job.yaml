@@ -13,6 +13,7 @@ metadata:
     "helm.sh/hook-weight": "-5" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
 spec:
+  backoffLimit: 10
   template:
     metadata:
       name: realm-job-pod-{{ template "alfresco-identity.fullname" . }}
