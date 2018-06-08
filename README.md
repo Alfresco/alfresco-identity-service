@@ -222,3 +222,7 @@ Once Keycloak is up and running login to the [Management Console](http://www.key
 Go to the [Add Realm](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm) page and click the "Select File" button next to the **Import** label.
 
 Choose the [alfresco-realm.json](./alfresco-realm.json) file and click the "Create" button.
+
+# Contributing to Identity Service
+
+We encourage and welcome contributions to this project. For further details please check the [contributing](./CONTRIBUTING.md) file.
