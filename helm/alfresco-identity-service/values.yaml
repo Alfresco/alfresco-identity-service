@@ -7,14 +7,23 @@ ingressHostName: "your ingress dns name"
 keycloak:
   rbac:
     create: false
-  secretName: none
-  secretKey: config
+#  secretName: none
+#  secretKey: config
   keycloak:
     image:
       tag: 3.4.3.Final
       pullPolicy: IfNotPresent
     username: admin
     password: admin
+    extraVolumes:
+      - name: realm-secret
+        secret:
+          secretName: realm-secret    
+    extraVolumeMounts:
+      - name: realm-secret
+        mountPath: "/realm/"
+        readOnly: true
+    extraArgs: -Dkeycloak.import=/realm/alfresco-realm.json
   postgresql:
     nameOverride: postgresql-id
     imageTag: "10.1"
@@ -27,9 +36,12 @@ keycloak:
       limits:
         memory: "500Mi"
 
+
+  
+
 ## Used to run 'kubectl' in an init container in order to wait for keycloak to start up and install the alfresco realm.
-hyperkube:
-  image:
-    repository: quay.io/coreos/hyperkube
-    tag: v1.8.1_coreos.0
-    pullPolicy: IfNotPresent
+#hyperkube:
+#  image:
+#    repository: quay.io/coreos/hyperkube
+#    tag: v1.8.1_coreos.0
+#    pullPolicy: IfNotPresent
