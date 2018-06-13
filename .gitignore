@@ -22,3 +22,9 @@
 hs_err_pid*
 
 requirements.lock
+
+#IntelliJ project files
+.idea/
+*.iml
+*.iws
+
