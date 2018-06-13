@@ -15,15 +15,15 @@ keycloak:
       pullPolicy: IfNotPresent
     username: admin
     password: admin
-    extraVolumes:
+    extraVolumes: |
       - name: realm-secret
         secret:
           secretName: realm-secret    
-    extraVolumeMounts:
+    extraVolumeMounts: |
       - name: realm-secret
         mountPath: "/realm/"
         readOnly: true
-    extraArgs: -Dkeycloak.import=/realm/alfresco-realm.json
+    extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
   postgresql:
     nameOverride: postgresql-id
     imageTag: "10.1"
