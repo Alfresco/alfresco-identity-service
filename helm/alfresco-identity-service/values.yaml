@@ -22,6 +22,8 @@ keycloak:
         mountPath: "/realm/"
         readOnly: true
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
+    persistence:
+      dbPassword: keycloak
   postgresql:
     nameOverride: postgresql-id
     imageTag: "10.1"
