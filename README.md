@@ -22,16 +22,7 @@ These instructions illustrate deployment to a Kubernetes cluster on AWS.
 
 Please check the Anaxes Shipyard documentation on [running a cluster](https://github.com/Alfresco/alfresco-anaxes-shipyard/blob/master/SECRETS.md).
 
-Note the resource requirements:
-
-* Minikube: At least 2 gigs of memory, i.e.:
-
-```bash
-minikube start --memory 2000
-```
-
-* AWS: If you are deploying the Identity Service into a cluster with other Alfresco components such as Content Services and Process Services, a VPC and cluster with 5 nodes is recommended. Each node should be a m4.xlarge EC2 instance.
-
+If you are deploying the Identity Service into a cluster with other Alfresco components such as Content Services and Process Services, a VPC and cluster with 5 nodes is recommended. Each node should be a m4.xlarge EC2 instance.
 
 ### Helm Tiller
 
@@ -160,22 +151,10 @@ helm status $INGRESSRELEASE
 ```
 
 <!-- markdownlint-disable MD029 -->
-4. Get the nginx-ingress-controller port for the infrastructure (NOTE! ONLY FOR MINIKUBE):
-<!-- markdownlint-enable MD029 -->
-
-```bash
-export INFRAPORT=$(kubectl get service $INGRESSRELEASE-nginx-ingress-controller --namespace $DESIREDNAMESPACE -o jsonpath='{.spec.ports[0].nodePort}')
-```
-
-<!-- markdownlint-disable MD029 -->
-5. Get Minikube or ELB IP and set it as a variable for future use:
+4. Get Minikube or ELB IP and set it as a variable for future use:
 <!-- markdownlint-disable MD029 -->
 
 ```bash
-#ON MINIKUBE
-export ELBADDRESS=$(minikube ip)
-
-#ON AWS
 export ELBADDRESS=$(kubectl get services $INGRESSRELEASE-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 ```
 
@@ -183,13 +162,6 @@ export ELBADDRESS=$(kubectl get services $INGRESSRELEASE-nginx-ingress-controlle
 
 ```bash
 helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
-
-#ON MINIKUBE
-helm install alfresco-incubator/alfresco-identity-service \
-  --set ingressHostName=$ELBADDRESS \
-  --namespace $DESIREDNAMESPACE
-
-#ON AWS
 
 helm install alfresco-incubator/alfresco-identity-service \
   --set ingressHostName=$ELBADDRESS \
@@ -220,18 +192,12 @@ kubectl create secret generic realmsecret \
 
 helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
 
-#ON MINIKUBE
-helm install alfresco-incubator/alfresco-identity-service \
---set ingressHostName=$ELBADDRESS \
---namespace $DESIREDNAMESPACE
-
-#ON AWS
 helm install alfresco-incubator/alfresco-identity-service \
 --set ingressHostName=$ELBADDRESS \
 --namespace $DESIREDNAMESPACE
 ```
 
-Once Keycloak is up and running, login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm. 
+Once Keycloak is up and running, login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm.
 
 #### Manually
 
