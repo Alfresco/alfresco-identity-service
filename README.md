@@ -142,25 +142,33 @@ helm install stable/nginx-ingress --version=0.14.0 -f ingressvalues.yaml \
 
 ```
 
-1. Get the nginx-ingress-controller release name from the previous command and set it as a varible:
+<!-- markdownlint-disable MD029 -->
+2. Get the nginx-ingress-controller release name from the previous command and set it as a varible:
+<!-- markdownlint-disable MD029 -->
 
 ```bash
 export INGRESSRELEASE=knobby-wolf
 ```
 
-1. Wait for the nginx-ingress-controller release to get deployed (When checking status your pod should be READY 1/1):
+<!-- markdownlint-disable MD029 -->
+3. Wait for the nginx-ingress-controller release to get deployed (When checking status your pod should be READY 1/1):
+<!-- markdownlint-enable MD029 -->
 
 ```bash
 helm status $INGRESSRELEASE
 ```
 
-1. Get the nginx-ingress-controller port for the infrastructure (NOTE! ONLY FOR MINIKUBE):
+<!-- markdownlint-disable MD029 -->
+4. Get the nginx-ingress-controller port for the infrastructure (NOTE! ONLY FOR MINIKUBE):
+<!-- markdownlint-enable MD029 -->
 
 ```bash
 export INFRAPORT=$(kubectl get service $INGRESSRELEASE-nginx-ingress-controller --namespace $DESIREDNAMESPACE -o jsonpath='{.spec.ports[0].nodePort}')
 ```
 
-1. Get Minikube or ELB IP and set it as a variable for future use:
+<!-- markdownlint-disable MD029 -->
+5. Get Minikube or ELB IP and set it as a variable for future use:
+<!-- markdownlint-disable MD029 -->
 
 ```bash
 #ON MINIKUBE
@@ -202,7 +210,9 @@ kubectl create secret generic realmsecret \
 
 ```
 
-1. Deploy the identity chart with the new settings:
+<!-- markdownlint-disable MD029 -->
+3. Deploy the identity chart with the new settings:
+<!-- markdownlint-enable MD029 -->
 
 ```bash
 
