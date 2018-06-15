@@ -66,7 +66,6 @@ controller:
     ssl-redirect: "false"
   scope:
     enabled: true
-    namespace: $DESIREDNAMESPACE
 EOF
 
 helm install stable/nginx-ingress --version=0.14.0 -f ingressvalues.yaml \
@@ -78,7 +77,8 @@ helm install stable/nginx-ingress --version=0.14.0 -f ingressvalues.yaml \
 If you want your own certificate set here you should create a secret from your cert files:
 
 ```bash
-kubectl create secret tls certsecret --key /tmp/tls.key --cert /tmp/tls.crt --namespace $DESIREDNAMESPACE
+kubectl create secret tls certsecret --key /tmp/tls.key --cert /tmp/tls.crt \
+  --namespace $DESIREDNAMESPACE
 
 #Then deploy the ingress with following settings
 
@@ -88,7 +88,6 @@ controller:
     ssl-redirect: "false"
   scope:
     enabled: true
-    namespace: $DESIREDNAMESPACE
   publishService:
     enabled: true
   extraArgs:
@@ -131,11 +130,11 @@ controller:
       http: http
       https: http
     annotations:
-      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: ${ELB_CERTIFICATE_ARN}
-      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
       external-dns.alpha.kubernetes.io/hostname: ${ELB_CNAME}
       service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
       service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
+      service.beta.kubernetes.io/aws-load-balancer-ssl-cert: ${ELB_CERTIFICATE_ARN}
+      service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
 EOF
 
 helm install stable/nginx-ingress --version=0.14.0 -f ingressvalues.yaml \
