@@ -172,7 +172,7 @@ helm install alfresco-incubator/alfresco-identity-service \
 
 ### Customizing the Realm During Deployment
 
-1. You will need a realm json, similar to `alfresco-realm.json`
+1. You will need a realm file. A [sample realm](./alfresco-realm.json) file is provided.
 
 1. Create a secret using your realm json file
 
@@ -181,7 +181,6 @@ helm install alfresco-incubator/alfresco-identity-service \
 kubectl create secret generic realmsecret \
   --from-file=./realm.json \
   --namespace=$DESIREDNAMESPACE
-
 ```
 
 <!-- markdownlint-disable MD029 -->
