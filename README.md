@@ -1,8 +1,6 @@
 # Alfresco Identity Service
 
-The Alfresco Identity Service provides a Single Sign On experience for the Alfresco Digital Business Platform (DBP).
-
-The Identity Service is based on [Keycloak](http://www.keycloak.org) and provides a [sample realm](./alfresco-realm.json) file for use with the DBP.
+The *Alfresco Identity Service* will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication. This project contains the open-source core of this service.
 
 ## Prerequisites
 
@@ -11,15 +9,17 @@ The Alfresco Identity Service deployment requires:
 | Component        | Recommended version |
 | ------------- |:-------------:|
 | Docker     | 17.0.9.1 |
-| Kubernetes | 1.8.0    |
+| Kubernetes | 1.8.4    |
+| Kubectl    | 1.8.4    |
 | Helm       | 2.8.2    |
-| Minikube   | 0.25.0   |
+| Kops       | 1.8.1    |
 
 Any variation from these technologies and versions may affect the end result. If you do experience any issues please let us know through our [Gitter channel](https://gitter.im/Alfresco/platform-services?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
 
 ### Kubernetes Cluster
 
-You can choose to deploy the infrastructure to a local kubernetes cluster (illustrated using minikube) or you can choose to deploy to the cloud (illustrated using AWS).
+These instructions illustrate deployment to a Kubernetes cluster on AWS.
+
 Please check the Anaxes Shipyard documentation on [running a cluster](https://github.com/Alfresco/alfresco-anaxes-shipyard/blob/master/SECRETS.md).
 
 Note the resource requirements:
@@ -30,7 +30,8 @@ Note the resource requirements:
 minikube start --memory 2000
 ```
 
-* AWS: A VPC and cluster with 5 nodes. Each node should be a m4.xlarge EC2 instance.
+* AWS: If you are deploying the Identity Service into a cluster with other Alfresco components such as Content Services and Process Services, a VPC and cluster with 5 nodes is recommended. Each node should be a m4.xlarge EC2 instance.
+
 
 ### Helm Tiller
 
@@ -51,7 +52,7 @@ kubectl create namespace $DESIREDNAMESPACE
 
 This environment variable will be used in the deployment steps.
 
-## Deploying the Keycloak Chart
+## Deploying the Identity Services Chart
 
 1. Install the nginx-ingress-controller into your cluster
 
@@ -189,14 +190,15 @@ helm install alfresco-incubator/alfresco-identity-service \
   --namespace $DESIREDNAMESPACE
 
 #ON AWS
+
 helm install alfresco-incubator/alfresco-identity-service \
   --set ingressHostName=$ELBADDRESS \
   --namespace $DESIREDNAMESPACE
 ```
 
-## Customizing the keycloak Realm
+## Customizing the Realm
 
-### On kubernetes deploy time
+### Customizing the Realm During Deployment
 
 1. You will need a realm json, similar to `alfresco-realm.json`
 
@@ -229,9 +231,9 @@ helm install alfresco-incubator/alfresco-identity-service \
 --namespace $DESIREDNAMESPACE
 ```
 
-### Manually
+Once Keycloak is up and running, login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm. 
 
-Once Keycloak is up and running login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm, you can either do this manually or using the sample realm file.
+#### Manually
 
 1. [Add a realm](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm) named "Alfresco"
 
@@ -241,11 +243,11 @@ Once Keycloak is up and running login to the [Management Console](http://www.key
 
 4. [Add a new user](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-new-user) with a username of "testuser", email of "test@test.com" and first and last name of "test"
 
-### Sample Realm
+#### Using the Sample Realm File
 
-Go to the [Add Realm](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm) page and click the "Select File" button next to the **Import** label.
+1. Go to the [Add Realm](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm) page and click the "Select File" button next to the **Import** label.
 
-Choose the [alfresco-realm.json](./alfresco-realm.json) file and click the "Create" button.
+2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
 
 ## Contributing to Identity Service
 
