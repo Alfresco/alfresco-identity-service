@@ -10,5 +10,5 @@ spec:
       paths:
       - path: {{ .Values.ingress.path }}
         backend:
-          serviceName: keycloak-{{ .Release.Name | trunc 11 | trimSuffix "-"}}-http
+          serviceName: {{ .Release.Name | trunc 11 | trimSuffix "-"}}-keycloak-http
           servicePort: {{ .Values.keycloak.keycloak.service.port }}
