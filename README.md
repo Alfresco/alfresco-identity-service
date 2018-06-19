@@ -178,7 +178,7 @@ helm install alfresco-incubator/alfresco-identity-service \
 
 ```bash
 
-kubectl create secret generic realmsecret \
+kubectl create secret generic realm-secret \
   --from-file=./realm.json \
   --namespace=$DESIREDNAMESPACE
 ```
@@ -192,6 +192,7 @@ kubectl create secret generic realmsecret \
 helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
 
 helm install alfresco-incubator/alfresco-identity-service \
+--set keycloak.keycloak.extraArgs: "-Dkeycloak.import=/realm/realm.json"
 --set ingressHostName=$ELBADDRESS \
 --namespace $DESIREDNAMESPACE
 ```
