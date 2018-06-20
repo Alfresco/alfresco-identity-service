@@ -160,9 +160,15 @@ export ELBADDRESS=$(kubectl get services $INGRESSRELEASE-nginx-ingress-controlle
 
 ### 2. Deploy the keycloak charts
 
-```bash
-helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
 
+```bash
+#Add the helm repo containing the chart
+helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
+```
+
+**_!!NOTE_** The current chart has a default realm set. If you want to have a different realm to apply go directly to step *Customizing the Realm*
+
+```bash
 helm install alfresco-incubator/alfresco-identity-service \
   --set ingressHostName=$ELBADDRESS \
   --namespace $DESIREDNAMESPACE
@@ -176,12 +182,15 @@ helm install alfresco-incubator/alfresco-identity-service \
 
 1. Create a secret using your realm json file
 
+**_!!NOTE_** The secret name must be realm-secret, and the realm file name must not be alfresco-realm.json.
+
 ```bash
 
 kubectl create secret generic realm-secret \
   --from-file=./realm.json \
   --namespace=$DESIREDNAMESPACE
 ```
+
 
 <!-- markdownlint-disable MD029 -->
 3. Deploy the identity chart with the new settings:
