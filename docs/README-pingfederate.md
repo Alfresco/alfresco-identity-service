@@ -3,7 +3,7 @@
 Alfresco Identity Service can be configured to use PingFederate as a SAML 2.0 identity provider
 by following these steps:
 
-### Obtaining PingFederate Parameters
+### Obtain PingFederate Parameters
 1. Log in to your PingFederate instance as a user with administrative privileges
 2. Under "System Settings" heading click "Server Settings"
 3. Under "Federation Info" heading note the value of "My Base URL"
@@ -20,54 +20,59 @@ Example:
   SLO endpoint "/idp/SLO.saml2", the POST SLO service URL is 
   "https://pingfederate.test.com:9031/idp/SLO.saml2"
 
-### Configuring KeyCloak Identity Provider
+### Configure KeyCloak
 1. Login to Alfresco Identity Service: https://$ELBADDRESS/auth/admin  
-   (please refer to the main [README](./README.md) document for details about the `$ELBADDRESS` parameter)
-2. Click "Identity Providers"
-3. In "Add provider..." menu select "SAML v2.0"
-4. In "Single Sign-On Service URL" and "Single Logout Service URL" enter 
+   (please refer to the main [README](../README.md) document for details about the `$ELBADDRESS` parameter)
+2. Under "Configure" heading click "Clients"
+3. For each client configured by Alfresco DBP (`alfresco` and `activiti`):
+   - Click on the client link
+   - Toggle "Implicit Flow Enabled" switch on
+   - In "Valid Redirect URIs" add "https://$ELBADDRESS*" and click "+"
+   - In "Valid Redirect URIs" add your application frontend URI
+   - Click "Save"
+4. Under "Configure" heading click "Identity Providers"
+5. In "Add provider..." menu select "SAML v2.0"
+6. In "Single Sign-On Service URL" and "Single Logout Service URL" enter 
    previously noted values
-5. In "NameID Policy Format" dropdown select "Unspecified"
-6. Enable "HTTP-POST Binding Response"
-7. Enable "HTTP-POST Binding for AuthnRequest"
-8. Enable "HTTP-POST Binding Logout"
-9. Enable "Want AuthnRequests Signed"
-10. In "Signature Algorithm" chose signature algorithm appropriate for
+7. In "NameID Policy Format" dropdown select "Unspecified"
+8. Enable "HTTP-POST Binding Response"
+9. Enable "HTTP-POST Binding for AuthnRequest"
+10. Enable "HTTP-POST Binding Logout"
+11. Enable "Want AuthnRequests Signed"
+12. In "Signature Algorithm" chose signature algorithm appropriate for
    for your setup (e.g. "RSA_SHA_256")
-11. In "SAML Signature Key Name" dropdown menu select "NONE"
-12. Click "Save"
-13. Click "Mappers" tab
-14. Click "Create"
-15. In "Mapper Type" dropdown select "Attribute Importer"
-16. In "Name" textbox type "email"
-17. In "Attribute Name" textbox type "EMAIL"
-18. In "Friendly Name" textbox type "email"
-19. In "User Attribute Name" textbox type "email"
-20. Click "Save"
-21. Click "Export" tab
-22. Click "Download" button and take note of the downloaded file 
+13. In "SAML Signature Key Name" dropdown menu select "NONE"
+14. Click "Save"
+15. Click "Mappers" tab
+16. Click "Create"
+17. In "Mapper Type" dropdown select "Attribute Importer"
+18. In "Name" textbox type "email"
+19. In "Attribute Name" textbox type "EMAIL"
+20. In "Friendly Name" textbox type "email"
+21. In "User Attribute Name" textbox type "email"
+22. Click "Save"
+23. Click "Export" tab
+24. Click "Download" button and take note of the downloaded file 
     name and location
-23. Create a file with extension ".cert" (pick an arbitrary name) with the following content:
+25. Create a file with extension ".cert" (pick an arbitrary name) with the following content:
     ```
     -----BEGIN CERTIFICATE-----
     -----END CERTIFICATE-----
     ```
-24. Open the file created in step 22 using a text editor
-25. Find a line beginning with `<dsig:X509Certificate>` and ending with `</dsig:X509Certificate>` XML tag
-26. Copy the string in between `<dsig:X509Certificate>` and `</dsig:X509Certificate>` and paste
+26. Using a text editor, open the file created in step 24 
+27. Find a line beginning with `<dsig:X509Certificate>` and ending with `</dsig:X509Certificate>` XML tag
+28. Copy the string in between `<dsig:X509Certificate>` and `</dsig:X509Certificate>` and paste
     it into the file created in step 23 in-between `-----BEGIN CERTIFICATE-----` and
     `-----END CERTIFICATE-----`.
     
-    When completed, your `.cert` file should look similar to:
+    When done, your `.cert` file should look similar to:
     ```
     -----BEGIN CERTIFICATE-----
     MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
     -----END CERTIFICATE-----
     ```
 
-TODO: "Valid Redirect URIs" in clients!
-
-### Configuring PingFederate Connection
+### Configure PingFederate Connection
 1. Log in to your PingFederate Instance
 2. Under "SP Connections" heading click "Create New"
 3. Verify the "Browser SSO Profiles" connection template with value 
