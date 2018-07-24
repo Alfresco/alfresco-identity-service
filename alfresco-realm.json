@@ -1664,7 +1664,7 @@
     "emailVerified" : false,
     "firstName" : "test",
     "lastName" : "test",
-    "email" : "test@test.com",
+    "email" : "admin@app.activiti.com",
     "credentials" : [ {
       "type" : "password",
       "hashedSaltedValue" : "+A2UrlK6T33IHVutjQj9k8S8kMco1IMnmCTngEg+PE+2vO4jJScux6wcltsRIYILv5ggcS3PI7tbsynq5u39sQ==",
