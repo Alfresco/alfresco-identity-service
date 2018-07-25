@@ -4,6 +4,8 @@ ingress:
 
 ingressHostName: "your ingress dns name"
 
+redirectUrl: "http://localhost:*"
+
 keycloak:
   rbac:
     create: false
