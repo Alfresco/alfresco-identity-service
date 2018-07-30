@@ -4,7 +4,7 @@ ingress:
 
 ingressHostName: "your ingress dns name"
 
-redirectUrl: "http://localhost:*"
+redirectUrl: "http://alfrescoClientRedirectUris*"
 
 keycloak:
   rbac:
@@ -18,7 +18,7 @@ keycloak:
     extraVolumes: |
       - name: realm-secret
         secret:
-          secretName: realm-secret    
+          secretName: realm-secret
     extraVolumeMounts: |
       - name: realm-secret
         mountPath: "/realm/"
