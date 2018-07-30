@@ -494,7 +494,7 @@
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
-      "redirectUris": [ "http://localhost:*" ],
+      "redirectUris": [ "http://alfrescoClientRedirectUris*" ],
       "webOrigins": [],
       "notBefore": 0,
       "bearerOnly": false,
