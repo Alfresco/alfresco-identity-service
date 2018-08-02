@@ -1685,8 +1685,8 @@
     },
     "groups" : [ "/admin" ]
   },{
-    "id" : "418b64ff-2ddd-46d5-820d-5979a37cc54b",
-    "createdTimestamp" : 1528478600816,
+    "id" : "60a9b6c5-64ef-405f-8c6f-66bd8cd3878a",
+    "createdTimestamp" : 1533234734911,
     "username" : "admin",
     "enabled" : true,
     "totp" : false,
@@ -1696,11 +1696,11 @@
     "email" : "admin@app.activiti.com",
     "credentials" : [ {
       "type" : "password",
-      "hashedSaltedValue" : "+A2UrlK6T33IHVutjQj9k8S8kMco1IMnmCTngEg+PE+2vO4jJScux6wcltsRIYILv5ggcS3PI7tbsynq5u39sQ==",
-      "salt" : "IyVlItIo27bmACSLi4yQkA==",
-      "hashIterations" : 20000,
+      "hashedSaltedValue" : "gAkpVxgn2kV/PltEMn5bQKZckZ0T7sM2pcl8KYoeudzcEU5FtJp6Gahp4p2w9RjtTvuQQUeC/RTyEq3/MC97gQ==",
+      "salt" : "tCyusFbZ5At7hDbfg1O60w==",
+      "hashIterations" : 27500,
       "counter" : 0,
-      "algorithm" : "pbkdf2",
+      "algorithm" : "pbkdf2-sha256",
       "digits" : 0,
       "period" : 0,
       "createdDate" : 1528478610540,
