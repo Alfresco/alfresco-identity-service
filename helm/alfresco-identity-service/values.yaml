@@ -4,7 +4,7 @@ ingress:
 
 ingressHostName: "your ingress dns name"
 
-redirectUrl: "http://alfrescoClientRedirectUris*"
+ALFRESCO_CLIENT_REDIRECT_URIS: "http://localhost*"
 
 keycloak:
   rbac:
