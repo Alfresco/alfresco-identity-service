@@ -1684,6 +1684,35 @@
       "account" : [ "manage-account", "view-profile" ]
     },
     "groups" : [ "/admin" ]
+  },{
+    "id" : "418b64ff-2ddd-46d5-820d-5979a37cc54b",
+    "createdTimestamp" : 1528478600816,
+    "username" : "admin",
+    "enabled" : true,
+    "totp" : false,
+    "emailVerified" : true,
+    "firstName" : "admin",
+    "lastName" : "admin",
+    "email" : "admin@app.activiti.com",
+    "credentials" : [ {
+      "type" : "password",
+      "hashedSaltedValue" : "+A2UrlK6T33IHVutjQj9k8S8kMco1IMnmCTngEg+PE+2vO4jJScux6wcltsRIYILv5ggcS3PI7tbsynq5u39sQ==",
+      "salt" : "IyVlItIo27bmACSLi4yQkA==",
+      "hashIterations" : 20000,
+      "counter" : 0,
+      "algorithm" : "pbkdf2",
+      "digits" : 0,
+      "period" : 0,
+      "createdDate" : 1528478610540,
+      "config" : { }
+    } ],
+    "disableableCredentialTypes" : [ "password" ],
+    "requiredActions" : [ ],
+    "realmRoles" : [ "uma_authorization", "user", "offline_access" ],
+    "clientRoles" : {
+      "account" : [ "manage-account", "view-profile" ]
+    },
+    "groups" : [ "/admin" ]
   }],
   "keycloakVersion": "3.4.3.Final"
 }
