@@ -174,6 +174,7 @@ helm install alfresco-incubator/alfresco-identity-service \
 ```
 
 which results in default values of:
+
 | Admin Username                | `admin`                  |
 | Admin Password                | `admin`                  |
 | Admin Email                   | `admin@app.activiti.com` |
