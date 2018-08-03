@@ -158,21 +158,50 @@ helm status $INGRESSRELEASE
 export ELBADDRESS=$(kubectl get services $INGRESSRELEASE-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 ```
 
-### 2. Deploy the keycloak charts
+### 2. Deploy the Identity Service Charts
 
+To deploy with the **default example realm applied**:
 
 ```bash
 #Add the helm repo containing the chart
 helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
 ```
 
-**_!!NOTE_** The current chart has a default realm set. If you want to have a different realm to apply go directly to step *Customizing the Realm*
-
 ```bash
 helm install alfresco-incubator/alfresco-identity-service \
   --set ingressHostName=$ELBADDRESS \
   --namespace $DESIREDNAMESPACE
 ```
+
+which results in default values of:
+|Admin Username|`admin`|
+|Admin Password|`admin`|
+|Admin Email|`admin@app.activiti.com`|
+|Alfresco Client Redirect URIs|`http://localhost*`|
+
+(Note that APS expects the email as the user name)
+
+#### Changing Alfresco Client redirectUris
+
+You can override the default redirectUri of `http://localhost*` for your environment with the `client.alfresco.redirectUris` property:
+
+```bash
+helm install alfresco-incubator/alfresco-identity-service \
+--set ingressHostName=$ELBADDRESS \
+--namespace $DESIREDNAMESPACE \ 
+--set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\']
+```
+
+including multiple redirecUris:
+
+```bash
+helm install alfresco-incubator/alfresco-identity-service \
+--set ingressHostName=$ELBADDRESS \
+--namespace $DESIREDNAMESPACE \ 
+--set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\'',''\"'http://$DNSNAME1*'"\'',''\"'http://$DNSNAME2*'"\']`
+```
+
+If you want to deploy your own realm with further customizations, see *Customizing the Realm* below.
 
 ## Customizing the Realm
 
@@ -223,32 +252,6 @@ Once Keycloak is up and running, login to the [Management Console](http://www.ke
 1. Go to the [Add Realm](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm) page and click the "Select File" button next to the **Import** label.
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
-
-#### Adding Alfresco client redirectUris and Common User for APS and ACS
-
-No need to create relam secret if your realm json file is in repo home directory. It will pick automatically.
-
-```bash
-
-helm install alfresco-incubator/alfresco-identity-service \
---set ingressHostName=$ELBADDRESS \
---namespace $DESIREDNAMESPACE \ 
---set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\']
-```
-
-If you want to add multiple redirecuris Example: ` --set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\'',''\"'http://$DNSNAME1*'"\'',''\"'http://$DNSNAME2*'"\']`
-
-Default http://localhost* will be added if no value set for redirectUris
-
-Common User for APS & ACS: 
-
-```
-User name: admin
-
-Email : admin@app.activiti.com
-```
-
-Note: APS can be login using email
 
 ## Contributing to Identity Service
 
