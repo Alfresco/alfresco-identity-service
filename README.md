@@ -174,10 +174,10 @@ helm install alfresco-incubator/alfresco-identity-service \
 ```
 
 which results in default values of:
-|Admin Username|`admin`|
-|Admin Password|`admin`|
-|Admin Email|`admin@app.activiti.com`|
-|Alfresco Client Redirect URIs|`http://localhost*`|
+| Admin Username                | `admin`                  |
+| Admin Password                | `admin`                  |
+| Admin Email                   | `admin@app.activiti.com` |
+| Alfresco Client Redirect URIs | `http://localhost*`      |
 
 (Note that APS expects the email as the user name)
 
