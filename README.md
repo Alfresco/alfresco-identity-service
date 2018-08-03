@@ -224,6 +224,27 @@ Once Keycloak is up and running, login to the [Management Console](http://www.ke
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
 
+#### Adding Alfresco client redirectUris and Common User for APS and ACS
+
+No need to create relam secret if your realm json file is in repo home directory. It will pick automatically.
+
+helm install alfresco-incubator/alfresco-identity-service \
+--set ingressHostName=$ELBADDRESS \
+--namespace $DESIREDNAMESPACE \ 
+--set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\']
+
+If you want to add multiple redirecuris Example: ['\"'http://$DNSNAME*'"\'',''\"'http://$DNSNAME1*'"\'',''\"'http://$DNSNAME2*'"\']
+
+Default http://localhost* will be added if no value set for redirectUris
+
+Common User for APS & ACS: 
+
+User name: admin
+
+Email : admin@app.activiti.com
+
+Note: APS can be login using email
+
 ## Contributing to Identity Service
 
 We encourage and welcome contributions to this project. For further details please check the [contributing](./CONTRIBUTING.md) file.
