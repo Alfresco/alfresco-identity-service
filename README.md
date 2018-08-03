@@ -236,7 +236,7 @@ helm install alfresco-incubator/alfresco-identity-service \
 --set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\']
 ```
 
-If you want to add multiple redirecuris Example: ['\"'http://$DNSNAME*'"\'',''\"'http://$DNSNAME1*'"\'',''\"'http://$DNSNAME2*'"\']
+If you want to add multiple redirecuris Example: ` --set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\'',''\"'http://$DNSNAME1*'"\'',''\"'http://$DNSNAME2*'"\']`
 
 Default http://localhost* will be added if no value set for redirectUris
 
