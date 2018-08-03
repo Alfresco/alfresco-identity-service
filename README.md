@@ -228,10 +228,13 @@ Once Keycloak is up and running, login to the [Management Console](http://www.ke
 
 No need to create relam secret if your realm json file is in repo home directory. It will pick automatically.
 
+```bash
+
 helm install alfresco-incubator/alfresco-identity-service \
 --set ingressHostName=$ELBADDRESS \
 --namespace $DESIREDNAMESPACE \ 
 --set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\']
+```
 
 If you want to add multiple redirecuris Example: ['\"'http://$DNSNAME*'"\'',''\"'http://$DNSNAME1*'"\'',''\"'http://$DNSNAME2*'"\']
 
@@ -239,9 +242,11 @@ Default http://localhost* will be added if no value set for redirectUris
 
 Common User for APS & ACS: 
 
+```
 User name: admin
 
 Email : admin@app.activiti.com
+```
 
 Note: APS can be login using email
 
