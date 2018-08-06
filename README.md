@@ -158,21 +158,53 @@ helm status $INGRESSRELEASE
 export ELBADDRESS=$(kubectl get services $INGRESSRELEASE-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 ```
 
-### 2. Deploy the keycloak charts
+### 2. Deploy the Identity Service Charts
 
+To deploy with the **default example realm applied**:
 
 ```bash
 #Add the helm repo containing the chart
 helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
 ```
 
-**_!!NOTE_** The current chart has a default realm set. If you want to have a different realm to apply go directly to step *Customizing the Realm*
-
 ```bash
 helm install alfresco-incubator/alfresco-identity-service \
   --set ingressHostName=$ELBADDRESS \
   --namespace $DESIREDNAMESPACE
 ```
+
+which results in default values of:
+
+| Property                      | Value                    |
+| ----------------------------- | ------------------------ |
+| Admin User Username           | `admin`                  |
+| Admin User Password           | `admin`                  |
+| Admin User Email              | `admin@app.activiti.com` |
+| Alfresco Client Redirect URIs | `http://localhost*`      |
+
+(Note that APS expects the email as the user name)
+
+#### Changing Alfresco Client redirectUris
+
+You can override the default redirectUri of `http://localhost*` for your environment with the `client.alfresco.redirectUris` property:
+
+```bash
+helm install alfresco-incubator/alfresco-identity-service \
+--set ingressHostName=$ELBADDRESS \
+--namespace $DESIREDNAMESPACE \ 
+--set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\']
+```
+
+including multiple redirecUris:
+
+```bash
+helm install alfresco-incubator/alfresco-identity-service \
+--set ingressHostName=$ELBADDRESS \
+--namespace $DESIREDNAMESPACE \ 
+--set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\'',''\"'http://$DNSNAME1*'"\'',''\"'http://$DNSNAME2*'"\']`
+```
+
+If you want to deploy your own realm with further customizations, see *Customizing the Realm* below.
 
 ## Customizing the Realm
 
