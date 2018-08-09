@@ -1,6 +1,7 @@
 ingress:
   enabled: true
   path: /auth
+  proxyBufferSize: "16k"
 
 ingressHostName: "your ingress dns name"
 
