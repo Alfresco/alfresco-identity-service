@@ -11,7 +11,7 @@
             "description": null,
             "item": [
                 {
-                    "name": "Generate Keycloak testuer access token",
+                    "name": "Generate Keycloak testuser access token",
                     "event": [
                         {
                             "listen": "test",
@@ -256,6 +256,6 @@
             "value": "admin@app.activiti.com",
             "type": "string",
             "description": ""
-        },
+        }
     ]
 }
