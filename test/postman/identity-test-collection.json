@@ -1,0 +1,261 @@
+{
+    "info": {
+        "_postman_id": "32a7cb31-18a3-4810-90ce-50b4d2a700df",
+        "name": "Identity Service Test",
+        "description": "A Suite of cases to test the Identity Service\n",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Token-generation",
+            "description": null,
+            "item": [
+                {
+                    "name": "Generate Keycloak testuser access token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "b74db1aa-4c4a-4e30-bd1e-6e1501c57216",
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "var jsonData = pm.response.json();",
+                                    "",
+                                    "pm.test(\"Token is bearer token\", function () {",
+                                    "    pm.expect(jsonData.token_type).to.eql(\"bearer\");",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response contains access token\", function () {",
+                                    "    pm.expect(\"access_token\" in jsonData).to.be.true;",
+                                    "});",
+                                    "",
+                                    "var tokens = JSON.parse(responseBody); ",
+                                    "pm.environment.set(\"kcAccessToken\", tokens.access_token);",
+                                    ""
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/x-www-form-urlencoded"
+                            }
+                        ],
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "client_id",
+                                    "value": "{{identityServiceClientId}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "grant_type",
+                                    "value": "password",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "username",
+                                    "value": "{{testUserUsername}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "password",
+                                    "value": "{{testUserPassword}}",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+                            "host": [
+                                "{{identityServiceUrl}}"
+                            ],
+                            "path": [
+                                "realms",
+                                "{{identityServiceRealm}}",
+                                "protocol",
+                                "openid-connect",
+                                "token"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Generate Keycloak admin access token",
+                    "event": [
+                        {
+                            "listen": "test",
+                            "script": {
+                                "id": "bcedf8cbe-1d10-4dce-991c-678762ee8103",
+                                "type": "text/javascript",
+                                "exec": [
+                                    "pm.test(\"Status code is 200\", function () {",
+                                    "    pm.response.to.have.status(200);",
+                                    "});",
+                                    "",
+                                    "var jsonData = pm.response.json();",
+                                    "",
+                                    "pm.test(\"Token is bearer token\", function () {",
+                                    "    pm.expect(jsonData.token_type).to.eql(\"bearer\");",
+                                    "});",
+                                    "",
+                                    "pm.test(\"Response contains access token\", function () {",
+                                    "    pm.expect(\"access_token\" in jsonData).to.be.true;",
+                                    "});",
+                                    "",
+                                    "var tokens = JSON.parse(responseBody); ",
+                                    "pm.environment.set(\"kcAdminAccessToken\", tokens.access_token);",
+                                    ""
+                                ]
+                            }
+                        }
+                    ],
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/x-www-form-urlencoded"
+                            }
+                        ],
+                        "body": {
+                            "mode": "urlencoded",
+                            "urlencoded": [
+                                {
+                                    "key": "client_id",
+                                    "value": "{{identityServiceClientId}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "grant_type",
+                                    "value": "password",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "username",
+                                    "value": "{{adminUserUsername}}",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "password",
+                                    "value": "{{adminUserPassword}}",
+                                    "type": "text"
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+                            "host": [
+                                "{{identityServiceUrl}}"
+                            ],
+                            "path": [
+                                "realms",
+                                "{{identityServiceRealm}}",
+                                "protocol",
+                                "openid-connect",
+                                "token"
+                            ]
+                        }
+                    },
+                    "response": []
+                }
+            ]
+        }
+    ],
+    "event": [
+        {
+            "listen": "prerequest",
+            "script": {
+                "id": "d3d29c75-6249-47a2-a5a4-6c565d86521b",
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        },
+        {
+            "listen": "test",
+            "script": {
+                "id": "c685c9b9-3ef9-47df-9308-e1001365c38c",
+                "type": "text/javascript",
+                "exec": [
+                    ""
+                ]
+            }
+        }
+    ],
+    "variable": [
+        {
+            "id": "8529fd2c-39ae-4a3b-bb9b-c8219d786e4b",
+            "key": "identityServiceUrl",
+            "value": "{{dbpurl}}/auth",
+            "type": "string",
+            "description": ""
+        },
+        {
+            "id": "4feda1b4-bb21-4dec-a6fa-1e85af98bdbf",
+            "key": "identityServiceRealm",
+            "value": "alfresco",
+            "type": "string",
+            "description": ""
+        },
+        {
+            "id": "48fa0c8e-316a-4582-be52-94be6ae2f246",
+            "key": "identityServiceClientId",
+            "value": "alfresco",
+            "type": "string",
+            "description": ""
+        },
+        {
+            "id": "820f0748-424c-48c3-9703-28e8eff930ff",
+            "key": "testUserUsername",
+            "value": "testuser",
+            "type": "string",
+            "description": ""
+        },
+        {
+            "id": "4c5cda71-947b-4e36-9efa-e7a003d2a234",
+            "key": "testUserPassword",
+            "value": "password",
+            "type": "string",
+            "description": ""
+        },
+        {
+            "id": "67d6926b-a9d2-4dca-bda1-d084e9528721",
+            "key": "testUserEmail",
+            "value": "test@test.com",
+            "type": "string",
+            "description": ""
+        },
+        {
+            "id": "3268c847-b165-41d9-b951-3384597f2e30",
+            "key": "adminUserUsername",
+            "value": "admin",
+            "type": "string",
+            "description": ""
+        },
+        {
+            "id": "0df16d8e-23dc-400f-8cb2-aea01a7ab028",
+            "key": "adminUserPassword",
+            "value": "admin",
+            "type": "string",
+            "description": ""
+        },
+        {
+            "id": "2032ee66-f3e1-4834-b313-6bbb47959ca0",
+            "key": "adminUserEmail",
+            "value": "admin@app.activiti.com",
+            "type": "string",
+            "description": ""
+        }
+    ]
+}
