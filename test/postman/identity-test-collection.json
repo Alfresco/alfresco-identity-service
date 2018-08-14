@@ -156,20 +156,6 @@
 			"value": "test@test.com",
 			"type": "string",
 			"description": ""
-		},
-		{
-			"id": "e5e6840a-31c1-4a5d-ac90-7076e7c5dc0b",
-			"key": "apsLocalAdminUser",
-			"value": "admin@app.activiti.com",
-			"type": "string",
-			"description": ""
-		},
-		{
-			"id": "108856b2-c0ca-48dd-ac13-bf607f3afb02",
-			"key": "apsLocalAdminPassword",
-			"value": "admin",
-			"type": "string",
-			"description": ""
 		}
 	]
 }
