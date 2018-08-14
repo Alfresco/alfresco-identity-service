@@ -90,47 +90,6 @@
 					"response": []
 				}
 			]
-		},
-		{
-			"name": "Auth Gateway routes",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"id": "db57447f-44f7-4e84-bbc2-7ed8ebf53c4b",
-						"type": "text/javascript",
-						"exec": [
-							"pm.test(\"Status code is 200\", function () {",
-							"    pm.response.to.have.status(200);",
-							"});"
-						]
-					}
-				}
-			],
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "Authorization",
-						"value": "Bearer {{kcAccessToken}}"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{dbpurl}}/actuator/routes",
-					"host": [
-						"{{dbpurl}}"
-					],
-					"path": [
-						"actuator",
-						"routes"
-					]
-				}
-			},
-			"response": []
 		}
 	],
 	"event": [
