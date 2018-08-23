@@ -233,7 +233,7 @@ kubectl create secret generic realm-secret \
 helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
 
 helm install alfresco-incubator/alfresco-identity-service \
---set keycloak.keycloak.extraArgs: "-Dkeycloak.import=/realm/realm.json"
+--set keycloak.keycloak.extraArgs="-Dkeycloak.import=/realm/realm.json"
 --set ingressHostName=$ELBADDRESS \
 --namespace $DESIREDNAMESPACE
 ```
