@@ -164,7 +164,7 @@ To deploy with the **default example realm applied**:
 
 ```bash
 #Add the helm repo containing the chart
-helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
+helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
 ```
 
 ```bash
