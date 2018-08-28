@@ -158,15 +158,53 @@ helm status $INGRESSRELEASE
 export ELBADDRESS=$(kubectl get services $INGRESSRELEASE-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 ```
 
-### 2. Deploy the keycloak charts
+### 2. Deploy the Identity Service Charts
+
+To deploy with the **default example realm applied**:
 
 ```bash
+#Add the helm repo containing the chart
 helm repo add alfresco-incubator http://kubernetes-charts.alfresco.com/incubator
+```
 
+```bash
 helm install alfresco-incubator/alfresco-identity-service \
   --set ingressHostName=$ELBADDRESS \
   --namespace $DESIREDNAMESPACE
 ```
+
+which results in default values of:
+
+| Property                      | Value                    |
+| ----------------------------- | ------------------------ |
+| Admin User Username           | `admin`                  |
+| Admin User Password           | `admin`                  |
+| Admin User Email              | `admin@app.activiti.com` |
+| Alfresco Client Redirect URIs | `http://localhost*`      |
+
+(Note that APS expects the email as the user name)
+
+#### Changing Alfresco Client redirectUris
+
+You can override the default redirectUri of `http://localhost*` for your environment with the `client.alfresco.redirectUris` property:
+
+```bash
+helm install alfresco-incubator/alfresco-identity-service \
+--set ingressHostName=$ELBADDRESS \
+--namespace $DESIREDNAMESPACE \ 
+--set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\']
+```
+
+including multiple redirecUris:
+
+```bash
+helm install alfresco-incubator/alfresco-identity-service \
+--set ingressHostName=$ELBADDRESS \
+--namespace $DESIREDNAMESPACE \ 
+--set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\'',''\"'http://$DNSNAME1*'"\'',''\"'http://$DNSNAME2*'"\']`
+```
+
+If you want to deploy your own realm with further customizations, see *Customizing the Realm* below.
 
 ## Customizing the Realm
 
@@ -176,12 +214,15 @@ helm install alfresco-incubator/alfresco-identity-service \
 
 1. Create a secret using your realm json file
 
+**_!!NOTE_** The secret name must be realm-secret, and the realm file name must not be alfresco-realm.json.
+
 ```bash
 
-kubectl create secret generic realmsecret \
+kubectl create secret generic realm-secret \
   --from-file=./realm.json \
   --namespace=$DESIREDNAMESPACE
 ```
+
 
 <!-- markdownlint-disable MD029 -->
 3. Deploy the identity chart with the new settings:
@@ -192,6 +233,7 @@ kubectl create secret generic realmsecret \
 helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
 
 helm install alfresco-incubator/alfresco-identity-service \
+--set keycloak.keycloak.extraArgs: "-Dkeycloak.import=/realm/realm.json"
 --set ingressHostName=$ELBADDRESS \
 --namespace $DESIREDNAMESPACE
 ```

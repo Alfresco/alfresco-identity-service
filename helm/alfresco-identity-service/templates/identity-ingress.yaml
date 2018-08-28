@@ -4,11 +4,12 @@ metadata:
   name: {{ template "alfresco-identity.fullname" . }}
   annotations:
     kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: {{ .Values.ingress.proxyBufferSize }}
 spec:
   rules:
   - http:
       paths:
       - path: {{ .Values.ingress.path }}
-        backend:
-          serviceName: {{ .Release.Name | trunc 11 | trimSuffix "-"}}-keycloak-http
+        backend: 
+          serviceName: {{ template "keycloak.fullname" . }}-http
           servicePort: {{ .Values.keycloak.keycloak.service.port }}
