@@ -1,8 +1,13 @@
 ingress:
   enabled: true
   path: /auth
+  proxyBufferSize: "16k"
 
 ingressHostName: "your ingress dns name"
+
+client:
+  alfresco:
+    redirectUris: "[\"http://localhost*\"]"
 
 keycloak:
   rbac:
@@ -16,7 +21,7 @@ keycloak:
     extraVolumes: |
       - name: realm-secret
         secret:
-          secretName: realm-secret    
+          secretName: realm-secret
     extraVolumeMounts: |
       - name: realm-secret
         mountPath: "/realm/"
