@@ -22,7 +22,7 @@ Example:
 
 ### Configure KeyCloak
 1. Login to Alfresco Identity Service: https://$ELBADDRESS/auth/admin  
-   (please refer to the main [README](../README.md) document for details about the `$ELBADDRESS` parameter)
+   (please refer to the main [README](../../README.md) document for details about the `$ELBADDRESS` parameter)
 2. Under "Configure" heading click "Clients"
 3. For each client configured by Alfresco DBP (`alfresco` and `activiti`):
    - Click on the client link
