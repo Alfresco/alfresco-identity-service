@@ -22,7 +22,7 @@ The following properties can be set
 | enable.browser | Run Headless or in Browser  |  | false |
 
 ### Using a browser
-By default, the test is run in a headless browser.  There are times that you may want to see the test run in a browser.  You can accomplish this by setting `enable.browser` to true in `application.properties`.  Change the property to truw makes a couple of assumptions
+By default, the test is run in a headless browser.  There are times that you may want to see the test run in a browser.  You can accomplish this by setting `enable.browser` to true in `application.properties`.  Change the property to true makes a couple of assumptions
 1. You have the Chrome Browser installed.
 2. You have the selenium chromedriver installed. You can find instructions on how to install the chromedriver [here](https://github.com/SeleniumHQ/selenium/wiki/ChromeDriver).
 
