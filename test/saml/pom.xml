@@ -28,8 +28,8 @@
     </properties>
 
     <scm>
-        <connection>scm:git:https://www.github.com/alfresco/alfresco-identiry-service.git</connection>
-        <developerConnection>scm:git:https://www.github.com/alfresco/alfresco-identiry-service.git</developerConnection>
+        <connection>scm:git:https://www.github.com/alfresco/alfresco-identity-service.git</connection>
+        <developerConnection>scm:git:https://www.github.com/alfresco/alfresco-identity-service.git</developerConnection>
         <url>https://www.github.com/alfresco/alfresco-event-gateway/test/saml</url>
         <tag>HEAD</tag>
     </scm>
