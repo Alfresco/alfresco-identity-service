@@ -125,9 +125,9 @@ import org.slf4j.LoggerFactory;
         //Select User, Enter password, and submit form on SAML page
         Select select = new Select(driver.findElement(ByName.name(TokenTestConstants.ELEMENT_USERID)));
         select.selectByVisibleText(getUser());
-        WebElement passwordfield = driver.findElement(ByName.name(TokenTestConstants.ELEMENT_PASWORD));
-        passwordfield.sendKeys(getPassword());
-        passwordfield.submit();
+        WebElement passwordField = driver.findElement(ByName.name(TokenTestConstants.ELEMENT_PASWORD));
+        passwordField.sendKeys(getPassword());
+        passwordField.submit();
 
         //Get the redirect URL for validation -- If you check the status of the
         //redirct URL call it will be 404.  The page does not exist. All we are
