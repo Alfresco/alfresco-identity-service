@@ -1,5 +1,6 @@
 # Compiled class file
 *.class
+target/
 
 # Log file
 *.log
@@ -27,4 +28,13 @@ requirements.lock
 .idea/
 *.iml
 *.iws
+
+#VS Code project files
+.vscode/
+.settings/
+.classpath
+.project
+
+#Helm project files
+charts/
 
