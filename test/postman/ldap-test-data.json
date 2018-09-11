@@ -1,0 +1,53 @@
+[
+  {
+    "username": "ldapuser1",
+    "firstName": "user1",
+    "lastName": "user1",
+    "email": "ldapUser1@example.com",
+    "attributes": {
+      "LDAP_ENTRY_DN": "cn=user1,ou=users,dc=example,dc=org",
+      "LDAP_ID": "ldapUser1"
+    },
+    "access": {
+      "manageGroupMembership": true,
+      "view": true,
+      "mapRoles": true,
+      "impersonate": false,
+      "manage": true
+    }
+  },
+  {
+    "username": "ldapuser2",
+    "firstName": "user2",
+    "lastName": "user2",
+    "email": "ldapUser2@example.com",
+    "attributes": {
+      "LDAP_ENTRY_DN": "cn=user2,ou=users,dc=example,dc=org",
+      "LDAP_ID": "ldapUser2"
+    },
+    "access": {
+      "manageGroupMembership": true,
+      "view": true,
+      "mapRoles": true,
+      "impersonate": false,
+      "manage": true
+    }
+  },
+  {
+    "username": "ldapuser3",
+    "firstName": "user3",
+    "lastName": "user3",
+    "email": "ldapUser3@example.com",
+    "attributes": {
+      "LDAP_ENTRY_DN": "cn=user3,ou=users,dc=example,dc=org",
+      "LDAP_ID": "ldapUser3"
+    },
+    "access": {
+      "manageGroupMembership": true,
+      "view": true,
+      "mapRoles": true,
+      "impersonate": false,
+      "manage": true
+    }
+  }
+]
