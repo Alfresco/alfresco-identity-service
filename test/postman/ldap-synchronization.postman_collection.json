@@ -1,12 +1,12 @@
 {
 	"info": {
 		"_postman_id": "e9be4c83-1c25-4299-a800-265264ec9d4e",
-		"name": "Ldap-synchronization",
+		"name": "ldap-synchronization",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Users-synchronization",
+			"name": "Users-syncronization",
 			"item": [
 				{
 					"name": "Generate Keycloak admin access token",
@@ -88,153 +88,12 @@
 					"response": []
 				},
 				{
-					"name": "Generate Keycloak ldapUser access token",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "b74db1aa-4c4a-4e30-bd1e-6e1501c57216",
-								"type": "text/javascript",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"var jsonData = pm.response.json();",
-									"",
-									"pm.test(\"Token is bearer token\", function () {",
-									"    pm.expect(jsonData.token_type).to.eql(\"bearer\");",
-									"});",
-									"",
-									"pm.test(\"Response contains access token\", function () {",
-									"    pm.expect(\"access_token\" in jsonData).to.be.true;",
-									"});",
-									"",
-									"var tokens = JSON.parse(responseBody); ",
-									"pm.environment.set(\"kcAccessToken\", tokens.access_token);",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
-							}
-						],
-						"body": {
-							"mode": "urlencoded",
-							"urlencoded": [
-								{
-									"key": "client_id",
-									"value": "{{identityServiceClientId}}",
-									"type": "text"
-								},
-								{
-									"key": "grant_type",
-									"value": "password",
-									"type": "text"
-								},
-								{
-									"key": "username",
-									"value": "{{testLdapUserUsername}}",
-									"type": "text"
-								},
-								{
-									"key": "password",
-									"value": "{{testLdapUserPassword}}",
-									"type": "text"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
-							"host": [
-								"{{identityServiceUrl}}"
-							],
-							"path": [
-								"realms",
-								"{{identityServiceRealm}}",
-								"protocol",
-								"openid-connect",
-								"token"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Check Ldap users Sync",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "6a5e8cac-b7b2-4c75-9bf2-806396028022",
-								"type": "text/javascript",
-								"exec": [
-									"pm.test(\"Status code is 200\", function () {",
-									"    pm.response.to.have.status(200);",
-									"});",
-									"",
-									"var jsonData = pm.response.json();",
-									"var users = [];",
-									"",
-									"",
-									"jsonData.forEach(function (user) {",
-									"        users.push(user.username);",
-									"    });",
-									"",
-									"pm.test(\"Response contains all ldap users\", function () {",
-									"    pm.expect(users.length).to.eql(3);",
-									"});",
-									"",
-									"",
-									"tests['Ldap user has required username'] = jsonData.username === data.value",
-									"tests['Ldap user has required firstName'] = jsonData.firstName === data.value",
-									"tests['Ldap user has required lastName'] = jsonData.lastName === data.value",
-									"tests['Ldap user has required email'] = jsonData.email === data.value",
-									"tests['Ldap user has required attributes'] = jsonData.attributes === data.value",
-									"tests['Ldap user has required access'] = jsonData.access === data.value",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {},
-						"url": {
-							"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}/users?search=ldap",
-							"host": [
-								"{{identityServiceUrl}}"
-							],
-							"path": [
-								"admin",
-								"realms",
-								"{{identityServiceRealm}}",
-								"users"
-							],
-							"query": [
-								{
-									"key": "search",
-									"value": "ldap"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Sync users from ldap",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "bd2719f3-7bf5-44e1-86e2-a29cc4496482",
+								"id": "1ab36644-2407-4408-955a-97a475fe3a73",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
@@ -244,9 +103,10 @@
 									"var jsonData = pm.response.json();",
 									"var addedUsers = jsonData.added;",
 									"var failedUsers = jsonData.failed;",
+									"var updatedUsers = jsonData.updated;",
 									"",
-									"pm.test(\"Three users have been imported\", function () {",
-									"    pm.expect(addedUsers).to.eql(3);",
+									"pm.test(\"Three users have been imported or updated\", function () {",
+									"    pm.expect(addedUsers + updatedUsers).to.eql(3);",
 									"});",
 									"",
 									"pm.test(\"No failed imported users\", function () {",
@@ -318,6 +178,68 @@
 								{
 									"key": "action",
 									"value": "triggerFullSync"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Ldap users Sync",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6a5e8cac-b7b2-4c75-9bf2-806396028022",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"var users = [];",
+									"",
+									"",
+									"jsonData.forEach(function (user) {",
+									"        users.push(user.username);",
+									"    });",
+									"",
+									"pm.test(\"Response contains all ldap users\", function () {",
+									"    pm.expect(users.length).to.eql(3);",
+									"});",
+									"",
+									"",
+									"tests['Ldap user has required username'] = jsonData.username === data.value",
+									"tests['Ldap user has required firstName'] = jsonData.firstName === data.value",
+									"tests['Ldap user has required lastName'] = jsonData.lastName === data.value",
+									"tests['Ldap user has required email'] = jsonData.email === data.value",
+									"tests['Ldap user has required attributes'] = jsonData.attributes === data.value",
+									"tests['Ldap user has required access'] = jsonData.access === data.value",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}/users?search=ldap",
+							"host": [
+								"{{identityServiceUrl}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{identityServiceRealm}}",
+								"users"
+							],
+							"query": [
+								{
+									"key": "search",
+									"value": "ldap"
 								}
 							]
 						}
