@@ -210,7 +210,7 @@ If you want to deploy your own realm with further customizations, see *Customizi
 
 ### Customizing the Realm During Deployment
 
-1. You will need a realm file. A [sample realm](./alfresco-realm.json) file is provided.
+1. You will need a realm file. A [sample realm](./helm/alfresco-identity-service/alfresco-realm.json) file is provided.
 
 1. Create a secret using your realm json file
 
