@@ -1,12 +1,12 @@
 {
 	"info": {
-		"_postman_id": "e9be4c83-1c25-4299-a800-265264ec9d4e",
+		"_postman_id": "bb03faee-26fa-4298-bec3-910acb6de437",
 		"name": "ldap-synchronization",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "Users-syncronization",
+			"name": "01 Users Synchronization",
 			"item": [
 				{
 					"name": "Generate Keycloak admin access token",
@@ -190,33 +190,54 @@
 						{
 							"listen": "test",
 							"script": {
-								"id": "6a5e8cac-b7b2-4c75-9bf2-806396028022",
+								"id": "260dfb01-e063-48b5-ac06-284b93d97524",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"var jsonData = pm.response.json();",
-									"var users = [];",
+									"var jsonData = pm.response.json()[0];",
 									"",
-									"",
-									"jsonData.forEach(function (user) {",
-									"        users.push(user.username);",
-									"    });",
-									"",
-									"pm.test(\"Response contains all ldap users\", function () {",
-									"    pm.expect(users.length).to.eql(3);",
+									"pm.test(\"LDAP user has correct username\", function() {",
+									"   pm.expect(jsonData.username).to.equal(pm.iterationData.get(\"username\"));",
 									"});",
 									"",
+									"pm.test(\"LDAP user has correct firstName\", function() {",
+									"   pm.expect(jsonData.firstName).to.equal(pm.iterationData.get(\"firstName\"));",
+									"});",
 									"",
-									"tests['Ldap user has required username'] = jsonData.username === data.value",
-									"tests['Ldap user has required firstName'] = jsonData.firstName === data.value",
-									"tests['Ldap user has required lastName'] = jsonData.lastName === data.value",
-									"tests['Ldap user has required email'] = jsonData.email === data.value",
-									"tests['Ldap user has required attributes'] = jsonData.attributes === data.value",
-									"tests['Ldap user has required access'] = jsonData.access === data.value",
+									"pm.test(\"LDAP user has correct lastName\", function() {",
+									"   pm.expect(jsonData.lastName).to.equal(pm.iterationData.get(\"lastName\"));",
+									"});",
+									"",
+									"pm.test(\"LDAP user has correct email\", function() {",
+									"   pm.expect(jsonData.email).to.equal(pm.iterationData.get(\"email\"));",
+									"});",
+									"",
+									"pm.test(\"LDAP user has correct attributes\", function() {",
+									"   // jsonData also contains \"createTimestamp\" and \"modifyTimestamp\", hence validate only LDAP_ID and LDAP_ENTRY_DN",
+									"   // note LDAP_ID and LDAP_ENTRY_DN are arrays",
+									"   pm.expect(jsonData.attributes.LDAP_ENTRY_DN[0]).to.equal(pm.iterationData.get(\"attributes\").LDAP_ENTRY_DN);",
+									"   pm.expect(jsonData.attributes.LDAP_ID[0]).to.equal(pm.iterationData.get(\"attributes\").LDAP_ID);",
+									"});",
+									"",
+									"pm.test(\"LDAP user has correct access\", function() {",
+									"   pm.expect(JSON.stringify(jsonData.access)).to.equal(JSON.stringify(pm.iterationData.get(\"access\")));",
+									"});",
+									"",
 									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "48412015-1d7b-49a2-820b-da430d4d212f",
+								"type": "text/javascript",
+								"exec": [
+									"// store current username, as returned from data file, as an env. variable so that it can be used for request",
+									"pm.environment.set(\"currentLdapUser\", pm.iterationData.get(\"username\"));"
 								]
 							}
 						}
@@ -224,9 +245,12 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {},
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
 						"url": {
-							"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}/users?search=ldap",
+							"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}/users?search={{currentLdapUser}}",
 							"host": [
 								"{{identityServiceUrl}}"
 							],
@@ -239,7 +263,7 @@
 							"query": [
 								{
 									"key": "search",
-									"value": "ldap"
+									"value": "{{currentLdapUser}}"
 								}
 							]
 						}
@@ -311,6 +335,56 @@
 					""
 				]
 			}
+		}
+	],
+	"variable": [
+		{
+			"id": "cdc81ba0-dd2a-477c-b83c-ed260c68c2cf",
+			"key": "identityServiceUrl",
+			"value": "{{dbpurl}}/auth",
+			"type": "string"
+		},
+		{
+			"id": "5309b46e-d0da-4f36-bd55-19c2aa045ca7",
+			"key": "identityServiceRealm",
+			"value": "alfresco",
+			"type": "string"
+		},
+		{
+			"id": "09fadc80-2eae-4b29-a771-795ebd184f26",
+			"key": "identityServiceClientId",
+			"value": "alfresco",
+			"type": "string"
+		},
+		{
+			"id": "f1f497d5-1f49-4c74-a5ee-3c0d833b9452",
+			"key": "adminUserUsername",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"id": "aa05651a-82e1-463d-8b58-9db10f43747d",
+			"key": "adminUserPassword",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"id": "159bc6a2-32f4-4005-a4dd-601b25aea308",
+			"key": "testLdapUserUsername",
+			"value": "ldapUser1",
+			"type": "string"
+		},
+		{
+			"id": "c9cd9b1f-002e-49ad-ab2f-b208b358691a",
+			"key": "testLdapUserPassword",
+			"value": "user1",
+			"type": "string"
+		},
+		{
+			"id": "12951b93-b112-46f4-8b2b-8b383d2fc176",
+			"key": "usersProviderId",
+			"value": "12428c8b-dd48-45c7-ad39-d99c745f0002",
+			"type": "string"
 		}
 	]
 }
