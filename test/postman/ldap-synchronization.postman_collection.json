@@ -269,6 +269,125 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Validate user's JWT token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "53d7a82c-ae7c-4f14-8449-6516c87178ca",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Token is bearer token\", function () {",
+									"    pm.expect(jsonData.token_type).to.eql(\"bearer\");",
+									"});",
+									"",
+									"pm.test(\"Response contains access token\", function () {",
+									"    pm.expect(\"access_token\" in jsonData).to.be.true;",
+									"});",
+									"",
+									"// decode JWT token from response, see https://jwt.io/ for further information",
+									"var rawToken = jsonData.access_token.split(\".\");",
+									"var header = CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(rawToken[0]));",
+									"var payload = CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(rawToken[1]));",
+									"var signature = rawToken[2];",
+									"",
+									"pm.test(\"Validate header\", function() {",
+									"    var headerJson = JSON.parse(header);",
+									"    pm.expect(headerJson.typ).to.equal(\"JWT\");",
+									"    pm.expect(headerJson.alg).to.equal(\"RS256\");",
+									"    pm.expect(headerJson.kid).to.not.be.null;",
+									"});",
+									"",
+									"pm.test(\"Validate payload\", function() {",
+									"    var payloadJson = JSON.parse(payload);",
+									"    pm.expect(payloadJson.typ).to.equal(\"Bearer\");",
+									"    pm.expect(payloadJson.iss).to.equal(",
+									"         // instead of concatenating pm.variables.get(\"dbpurl\") and \"auth\" this should be simply \"idenityServiceUrl\" but ",
+									"         // {{dbpurl}} doesn't expand when called from pm.variables.get(). Is this a Postman bug?",
+									"        [pm.variables.get(\"dbpurl\"), \"auth/realms\", pm.variables.get(\"identityServiceRealm\")].join(\"/\")",
+									"    );",
+									"    pm.expect(payloadJson.name).to.equal(pm.iterationData.get(\"firstName\") + \" \" + pm.iterationData.get(\"lastName\"));",
+									"    pm.expect(payloadJson.given_name).to.equal(pm.iterationData.get(\"firstName\"));",
+									"    pm.expect(payloadJson.family_name).to.equal(pm.iterationData.get(\"lastName\"));",
+									"    pm.expect(payloadJson.email).to.equal(pm.iterationData.get(\"email\"));",
+									"    pm.expect(payloadJson.preferred_username).to.equal(pm.iterationData.get(\"username\"));",
+									"});",
+									"",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a6e515a8-c08d-413c-a644-c730241c2033",
+								"type": "text/javascript",
+								"exec": [
+									"pm.environment.set(\"currentLdapUser\", pm.iterationData.get(\"username\"));",
+									"// test data passwords are identical to users' \"firstName\"",
+									"pm.environment.set(\"currentLdapUserPassword\", pm.iterationData.get(\"firstName\"));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{identityServiceClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{currentLdapUser}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{currentLdapUserPassword}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"host": [
+								"{{identityServiceUrl}}"
+							],
+							"path": [
+								"realms",
+								"{{identityServiceRealm}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"auth": {
