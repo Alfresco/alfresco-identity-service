@@ -1,7 +1,7 @@
 {
 	"info": {
 		"_postman_id": "bb03faee-26fa-4298-bec3-910acb6de437",
-		"name": "ldap-synchronization",
+		"name": "LDAP User Provider Tests",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -243,6 +243,16 @@
 						}
 					],
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{kcAdminAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"body": {
@@ -269,19 +279,59 @@
 						}
 					},
 					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9b73addc-6ccd-4b89-b76a-7dbd8c1208c6",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
 				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "85623d3b-4a84-4abc-9317-75c33ec6849b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "02 JWT Validation",
+			"item": [
 				{
 					"name": "Validate user's JWT token",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
-								"id": "53d7a82c-ae7c-4f14-8449-6516c87178ca",
+								"id": "da7d1f09-e7e1-487f-941c-2ff67361ac63",
 								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
 									"});",
+									"",
+									"// please refer to AUTH-188 for details about \"skipTokenHeaderChecks\" parameters",
+									"if (pm.variables.get(\"skipTokenHeaderChecks\") == \"true\") {",
+									"    console.log(\"Skipping token header checks\");",
+									"} else {",
+									"    pm.test(\"Headers are valid\", function () {",
+									"        pm.response.to.have.header(\"Cache-Control\");",
+									"        pm.response.to.be.header(\"Cache-Control\", \"no-store\");",
+									"        ",
+									"        pm.response.to.have.header(\"Pragma\");",
+									"        pm.response.to.be.header(\"Pragma\", \"no-cache\");",
+									"    });",
+									"}",
 									"",
 									"var jsonData = pm.response.json();",
 									"",
@@ -291,7 +341,9 @@
 									"",
 									"pm.test(\"Response contains access token\", function () {",
 									"    pm.expect(\"access_token\" in jsonData).to.be.true;",
+									"    pm.expect(jsonData.access_token).to.not.be.null;",
 									"});",
+									"",
 									"",
 									"// decode JWT token from response, see https://jwt.io/ for further information",
 									"var rawToken = jsonData.access_token.split(\".\");",
@@ -390,21 +442,12 @@
 					"response": []
 				}
 			],
-			"auth": {
-				"type": "bearer",
-				"bearer": [
-					{
-						"key": "token",
-						"value": "{{kcAdminAccessToken}}",
-						"type": "string"
-					}
-				]
-			},
+			"description": "Validation of issued JWT tokens. For more details refer to https://openid.net/specs/openid-connect-core-1_0.html.",
 			"event": [
 				{
 					"listen": "prerequest",
 					"script": {
-						"id": "9b73addc-6ccd-4b89-b76a-7dbd8c1208c6",
+						"id": "7b768191-e72b-43ad-b104-afa74627ff35",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -414,7 +457,7 @@
 				{
 					"listen": "test",
 					"script": {
-						"id": "85623d3b-4a84-4abc-9317-75c33ec6849b",
+						"id": "962ec448-d550-4b5e-903a-16717f889703",
 						"type": "text/javascript",
 						"exec": [
 							""
@@ -424,16 +467,6 @@
 			]
 		}
 	],
-	"auth": {
-		"type": "bearer",
-		"bearer": [
-			{
-				"key": "token",
-				"value": "{{kcAdminAccessToken}}",
-				"type": "string"
-			}
-		]
-	},
 	"event": [
 		{
 			"listen": "prerequest",
@@ -458,51 +491,57 @@
 	],
 	"variable": [
 		{
-			"id": "cdc81ba0-dd2a-477c-b83c-ed260c68c2cf",
+			"id": "a985958c-5310-4dec-b4c4-cd572060247c",
 			"key": "identityServiceUrl",
 			"value": "{{dbpurl}}/auth",
 			"type": "string"
 		},
 		{
-			"id": "5309b46e-d0da-4f36-bd55-19c2aa045ca7",
+			"id": "4a9b0d0a-3508-4155-a0cc-2dc7ec4e3107",
 			"key": "identityServiceRealm",
 			"value": "alfresco",
 			"type": "string"
 		},
 		{
-			"id": "09fadc80-2eae-4b29-a771-795ebd184f26",
+			"id": "2b8a12fe-ddad-4e7a-91b7-2937910fc846",
 			"key": "identityServiceClientId",
 			"value": "alfresco",
 			"type": "string"
 		},
 		{
-			"id": "f1f497d5-1f49-4c74-a5ee-3c0d833b9452",
+			"id": "e48a2b59-b297-4d54-a777-3a73a078e815",
 			"key": "adminUserUsername",
 			"value": "admin",
 			"type": "string"
 		},
 		{
-			"id": "aa05651a-82e1-463d-8b58-9db10f43747d",
+			"id": "4377dd89-b049-4579-a000-4b123883ba71",
 			"key": "adminUserPassword",
 			"value": "admin",
 			"type": "string"
 		},
 		{
-			"id": "159bc6a2-32f4-4005-a4dd-601b25aea308",
+			"id": "9b27bea7-09ef-4436-a634-6ce8ffa3c173",
 			"key": "testLdapUserUsername",
 			"value": "ldapUser1",
 			"type": "string"
 		},
 		{
-			"id": "c9cd9b1f-002e-49ad-ab2f-b208b358691a",
+			"id": "6648779f-ce4d-4744-b921-306e41af95b2",
 			"key": "testLdapUserPassword",
 			"value": "user1",
 			"type": "string"
 		},
 		{
-			"id": "12951b93-b112-46f4-8b2b-8b383d2fc176",
+			"id": "932d7def-8aa9-4b0e-aa49-0082035bb78c",
 			"key": "usersProviderId",
 			"value": "12428c8b-dd48-45c7-ad39-d99c745f0002",
+			"type": "string"
+		},
+		{
+			"id": "a3a641d5-1b10-43e6-8d75-8ff0b91f79da",
+			"key": "skipTokenHeaderChecks",
+			"value": "true",
 			"type": "string"
 		}
 	]
