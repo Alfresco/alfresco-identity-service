@@ -1,0 +1,858 @@
+{
+	"info": {
+		"_postman_id": "bb03faee-26fa-4298-bec3-910acb6de437",
+		"name": "LDAP User Provider Tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "01 Setup",
+			"item": [
+				{
+					"name": "Generate Keycloak admin access token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "22a0bee1-6698-4663-9d81-2d4e2a2d8a89",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Token is bearer token\", function () {",
+									"    pm.expect(jsonData.token_type).to.eql(\"bearer\");",
+									"});",
+									"",
+									"pm.test(\"Response contains access token\", function () {",
+									"    pm.expect(\"access_token\" in jsonData).to.be.true;",
+									"});",
+									"",
+									"var tokens = JSON.parse(responseBody); ",
+									"pm.globals.set(\"kcAdminAccessToken\", tokens.access_token);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{identityServiceClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUserUsername}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{adminUserPassword}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"host": [
+								"{{identityServiceUrl}}"
+							],
+							"path": [
+								"realms",
+								"{{identityServiceRealm}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f3bf0b0b-d90c-4f68-b833-775c284b7a05",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "3ed3e4fd-8724-4c18-8347-e40278012aad",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "02 Users Synchronization",
+			"item": [
+				{
+					"name": "Sync users from ldap",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1ab36644-2407-4408-955a-97a475fe3a73",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"var addedUsers = jsonData.added;",
+									"var failedUsers = jsonData.failed;",
+									"var updatedUsers = jsonData.updated;",
+									"",
+									"pm.test(\"Three users have been imported or updated\", function () {",
+									"    pm.expect(addedUsers + updatedUsers).to.eql(3);",
+									"});",
+									"",
+									"pm.test(\"No failed imported users\", function () {",
+									"    pm.expect(failedUsers).to.eql(0);",
+									"});",
+									"",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{kcAdminAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{identityServiceClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{adminUserName}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{adminUserPassword}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}/user-storage/{{usersProviderId}}/sync?action=triggerFullSync",
+							"host": [
+								"{{identityServiceUrl}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{identityServiceRealm}}",
+								"user-storage",
+								"{{usersProviderId}}",
+								"sync"
+							],
+							"query": [
+								{
+									"key": "action",
+									"value": "triggerFullSync"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Check Ldap users Sync",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "260dfb01-e063-48b5-ac06-284b93d97524",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"var jsonData = pm.response.json()[0];",
+									"",
+									"pm.test(\"LDAP user has correct username\", function() {",
+									"   pm.expect(jsonData.username).to.equal(pm.iterationData.get(\"username\"));",
+									"});",
+									"",
+									"pm.test(\"LDAP user has correct firstName\", function() {",
+									"   pm.expect(jsonData.firstName).to.equal(pm.iterationData.get(\"firstName\"));",
+									"});",
+									"",
+									"pm.test(\"LDAP user has correct lastName\", function() {",
+									"   pm.expect(jsonData.lastName).to.equal(pm.iterationData.get(\"lastName\"));",
+									"});",
+									"",
+									"pm.test(\"LDAP user has correct email\", function() {",
+									"   pm.expect(jsonData.email).to.equal(pm.iterationData.get(\"email\"));",
+									"});",
+									"",
+									"pm.test(\"LDAP user has correct attributes\", function() {",
+									"   // jsonData also contains \"createTimestamp\" and \"modifyTimestamp\", hence validate only LDAP_ID and LDAP_ENTRY_DN",
+									"   // note LDAP_ID and LDAP_ENTRY_DN are arrays",
+									"   pm.expect(jsonData.attributes.LDAP_ENTRY_DN[0]).to.equal(pm.iterationData.get(\"attributes\").LDAP_ENTRY_DN);",
+									"   pm.expect(jsonData.attributes.LDAP_ID[0]).to.equal(pm.iterationData.get(\"attributes\").LDAP_ID);",
+									"});",
+									"",
+									"pm.test(\"LDAP user has correct access\", function() {",
+									"   pm.expect(JSON.stringify(jsonData.access)).to.equal(JSON.stringify(pm.iterationData.get(\"access\")));",
+									"});",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "48412015-1d7b-49a2-820b-da430d4d212f",
+								"type": "text/javascript",
+								"exec": [
+									"// store current username, as returned from data file, as an env. variable so that it can be used for request",
+									"pm.environment.set(\"currentLdapUser\", pm.iterationData.get(\"username\"));"
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{kcAdminAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}/users?username={{currentLdapUser}}",
+							"host": [
+								"{{identityServiceUrl}}"
+							],
+							"path": [
+								"admin",
+								"realms",
+								"{{identityServiceRealm}}",
+								"users"
+							],
+							"query": [
+								{
+									"key": "username",
+									"value": "{{currentLdapUser}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Validation that LDAP users synchronised to KeyCloak can authenticate against it.",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "9b73addc-6ccd-4b89-b76a-7dbd8c1208c6",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "85623d3b-4a84-4abc-9317-75c33ec6849b",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "03 JWT Validation",
+			"item": [
+				{
+					"name": "Password grant request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "a88012eb-57c4-44f8-807b-b4459cd706ae",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// refer to AUTH-188 for details about \"skipTokenHeaderChecks\" parameters",
+									"if (pm.variables.get(\"skipTokenHeaderChecks\") == \"true\") {",
+									"    console.log(\"Skipping token header checks\");",
+									"} else {",
+									"    pm.test(\"Response headers are valid\", function () {",
+									"        pm.response.to.have.header(\"Cache-Control\");",
+									"        pm.response.to.be.header(\"Cache-Control\", \"no-store\");",
+									"        ",
+									"        pm.response.to.have.header(\"Pragma\");",
+									"        pm.response.to.be.header(\"Pragma\", \"no-cache\");",
+									"    });",
+									"}",
+									"",
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Token is bearer token\", function () {",
+									"    pm.expect(jsonData.token_type).to.eql(\"bearer\");",
+									"});",
+									"",
+									"pm.test(\"Response contains access token\", function () {",
+									"    pm.expect(\"access_token\" in jsonData).to.be.true;",
+									"    pm.expect(jsonData.access_token).to.not.be.null;",
+									"});",
+									"",
+									"pm.test(\"Response contains refresh token\", function () {",
+									"    pm.expect(\"refresh_token\" in jsonData).to.be.true;",
+									"    pm.expect(jsonData.refresh_token).to.not.be.null;",
+									"});",
+									"",
+									"// decode JWT token from response, see https://jwt.io/ for further information",
+									"var rawToken = jsonData.access_token.split(\".\");",
+									"var header = CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(rawToken[0]));",
+									"var payload = CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(rawToken[1]));",
+									"var signature = rawToken[2];",
+									"",
+									"pm.test(\"Validate access token header\", function() {",
+									"    var headerJson = JSON.parse(header);",
+									"    pm.expect(headerJson.typ).to.equal(\"JWT\");",
+									"    pm.expect(headerJson.alg).to.equal(\"RS256\");",
+									"    pm.expect(headerJson.kid).to.not.be.null;",
+									"});",
+									"",
+									"pm.test(\"Validate access token payload\", function() {",
+									"    var payloadJson = JSON.parse(payload);",
+									"    pm.expect(payloadJson.typ).to.equal(\"Bearer\");",
+									"    pm.expect(payloadJson.iss).to.equal(",
+									"         // instead of concatenating pm.variables.get(\"dbpurl\") and \"auth\" this should be simply \"idenityServiceUrl\" but ",
+									"         // {{dbpurl}} doesn't expand when called from pm.variables.get(). Is this a Postman bug?",
+									"        [pm.variables.get(\"dbpurl\"), \"auth/realms\", pm.variables.get(\"identityServiceRealm\")].join(\"/\")",
+									"    );",
+									"    pm.expect(payloadJson.name).to.equal(pm.iterationData.get(\"firstName\") + \" \" + pm.iterationData.get(\"lastName\"));",
+									"    pm.expect(payloadJson.given_name).to.equal(pm.iterationData.get(\"firstName\"));",
+									"    pm.expect(payloadJson.family_name).to.equal(pm.iterationData.get(\"lastName\"));",
+									"    pm.expect(payloadJson.email).to.equal(pm.iterationData.get(\"email\"));",
+									"    pm.expect(payloadJson.preferred_username).to.equal(pm.iterationData.get(\"username\"));",
+									"});",
+									"pm.environment.set(\"currentLdapUserAccessToken\", jsonData.access_token);",
+									"pm.environment.set(\"currentLdapUserRefreshToken\", jsonData.refresh_token);",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a6e515a8-c08d-413c-a644-c730241c2033",
+								"type": "text/javascript",
+								"exec": [
+									"pm.environment.set(\"currentLdapUser\", pm.iterationData.get(\"username\"));",
+									"// test data passwords are identical to users' \"firstName\"",
+									"pm.environment.set(\"currentLdapUserPassword\", pm.iterationData.get(\"firstName\"));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{identityServiceClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{currentLdapUser}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "{{currentLdapUserPassword}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"host": [
+								"{{identityServiceUrl}}"
+							],
+							"path": [
+								"realms",
+								"{{identityServiceRealm}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh token request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f271ba7c-1ded-4329-95c0-8f0d5f06a86a",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"// refer to AUTH-188 for details about \"skipTokenHeaderChecks\" parameters",
+									"if (pm.variables.get(\"skipTokenHeaderChecks\") == \"true\") {",
+									"    console.log(\"Skipping token header checks\");",
+									"} else {",
+									"    pm.test(\"Response headers are valid\", function () {",
+									"        pm.response.to.have.header(\"Cache-Control\");",
+									"        pm.response.to.be.header(\"Cache-Control\", \"no-store\");",
+									"        ",
+									"        pm.response.to.have.header(\"Pragma\");",
+									"        pm.response.to.be.header(\"Pragma\", \"no-cache\");",
+									"    });",
+									"}",
+									"",
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Token is bearer token\", function () {",
+									"    pm.expect(jsonData.token_type).to.eql(\"bearer\");",
+									"});",
+									"",
+									"pm.test(\"Response contains access token\", function () {",
+									"    pm.expect(\"access_token\" in jsonData).to.be.true;",
+									"    pm.expect(jsonData.access_token).to.not.be.null;",
+									"});",
+									"",
+									"",
+									"// decode JWT token from response, see https://jwt.io/ for further information",
+									"var rawToken = jsonData.access_token.split(\".\");",
+									"var header = CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(rawToken[0]));",
+									"var payload = CryptoJS.enc.Utf8.stringify(CryptoJS.enc.Base64.parse(rawToken[1]));",
+									"var signature = rawToken[2];",
+									"",
+									"pm.test(\"Validate access token header\", function() {",
+									"    var headerJson = JSON.parse(header);",
+									"    pm.expect(headerJson.typ).to.equal(\"JWT\");",
+									"    pm.expect(headerJson.alg).to.equal(\"RS256\");",
+									"    pm.expect(headerJson.kid).to.not.be.null;",
+									"});",
+									"",
+									"pm.test(\"Validate access token payload\", function() {",
+									"    var payloadJson = JSON.parse(payload);",
+									"    pm.expect(payloadJson.typ).to.equal(\"Bearer\");",
+									"    pm.expect(payloadJson.iss).to.equal(",
+									"         // instead of concatenating pm.variables.get(\"dbpurl\") and \"auth\" this should be simply \"idenityServiceUrl\" but ",
+									"         // {{dbpurl}} doesn't expand when called from pm.variables.get(). Is this a Postman bug?",
+									"        [pm.variables.get(\"dbpurl\"), \"auth/realms\", pm.variables.get(\"identityServiceRealm\")].join(\"/\")",
+									"    );",
+									"    pm.expect(payloadJson.name).to.equal(pm.iterationData.get(\"firstName\") + \" \" + pm.iterationData.get(\"lastName\"));",
+									"    pm.expect(payloadJson.given_name).to.equal(pm.iterationData.get(\"firstName\"));",
+									"    pm.expect(payloadJson.family_name).to.equal(pm.iterationData.get(\"lastName\"));",
+									"    pm.expect(payloadJson.email).to.equal(pm.iterationData.get(\"email\"));",
+									"    pm.expect(payloadJson.preferred_username).to.equal(pm.iterationData.get(\"username\"));",
+									"});",
+									"",
+									"",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7c95b618-1017-4548-b0f1-57a517205a78",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{identityServiceClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{currentLdapUserRefreshToken}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"host": [
+								"{{identityServiceUrl}}"
+							],
+							"path": [
+								"realms",
+								"{{identityServiceRealm}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request with invalid password grant credentials",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "6a988102-580d-4c60-8b4c-4dc22d920e15",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "a6e515a8-c08d-413c-a644-c730241c2033",
+								"type": "text/javascript",
+								"exec": [
+									"pm.environment.set(\"currentLdapUser\", pm.iterationData.get(\"username\"));",
+									"// test data passwords are identical to users' \"firstName\"",
+									"pm.environment.set(\"currentLdapUserPassword\", pm.iterationData.get(\"firstName\"));",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{identityServiceClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "password",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "{{currentLdapUser}}",
+									"type": "text"
+								},
+								{
+									"key": "password",
+									"value": "22a0bee1-6698-4663-9d81-2d4e2a2d8a89",
+									"description": "Dummy password",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"host": [
+								"{{identityServiceUrl}}"
+							],
+							"path": [
+								"realms",
+								"{{identityServiceRealm}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Request with invalid refresh token request",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c33d721e-261c-44ae-8d28-020c507ff768",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									""
+								]
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7c95b618-1017-4548-b0f1-57a517205a78",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "client_id",
+									"value": "{{identityServiceClientId}}",
+									"type": "text"
+								},
+								{
+									"key": "grant_type",
+									"value": "refresh_token",
+									"type": "text"
+								},
+								{
+									"key": "refresh_token",
+									"value": "{{currentLdapUserAccessToken}}",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"host": [
+								"{{identityServiceUrl}}"
+							],
+							"path": [
+								"realms",
+								"{{identityServiceRealm}}",
+								"protocol",
+								"openid-connect",
+								"token"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"description": "Validation of issued JWT tokens. For more details refer to https://openid.net/specs/openid-connect-core-1_0.html.\n\nRefresh tokens are described in https://tools.ietf.org/html/rfc6749#section-1.5",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "7b768191-e72b-43ad-b104-afa74627ff35",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "962ec448-d550-4b5e-903a-16717f889703",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "dca9be5f-23d3-4264-acad-f85e37ca1860",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "9b3498ca-7c2a-4ac4-afb6-bf9307765861",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "a4cb39a3-77a5-4826-9f53-ec3591f86517",
+			"key": "identityServiceUrl",
+			"value": "{{dbpurl}}/auth",
+			"type": "string"
+		},
+		{
+			"id": "747c7079-b2ee-4dca-9483-4c6414eae152",
+			"key": "identityServiceRealm",
+			"value": "alfresco",
+			"type": "string"
+		},
+		{
+			"id": "99d4d527-6c5f-4bc8-ad8c-8c7a5300262d",
+			"key": "identityServiceClientId",
+			"value": "alfresco",
+			"type": "string"
+		},
+		{
+			"id": "88291a87-1b78-4d5e-9dd7-9871ccb74420",
+			"key": "adminUserUsername",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"id": "1365a7d3-a0d9-4557-9822-29d5ac272fb1",
+			"key": "adminUserPassword",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"id": "59ec9a4a-2a7f-41c5-bfc0-f8954e7bfbc9",
+			"key": "testLdapUserUsername",
+			"value": "ldapUser1",
+			"type": "string"
+		},
+		{
+			"id": "4ef26fb7-ffd4-4d34-a892-576dc27645c0",
+			"key": "testLdapUserPassword",
+			"value": "user1",
+			"type": "string"
+		},
+		{
+			"id": "c4581926-7b65-4075-bd73-868da03ba5ad",
+			"key": "usersProviderId",
+			"value": "12428c8b-dd48-45c7-ad39-d99c745f0002",
+			"type": "string"
+		},
+		{
+			"id": "c9cfb905-c7e6-4cda-b02a-19c9973a8ed2",
+			"key": "skipTokenHeaderChecks",
+			"value": "true",
+			"type": "string"
+		}
+	]
+}
