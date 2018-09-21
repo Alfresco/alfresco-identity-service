@@ -45,6 +45,8 @@ for OpenLDAP).
     
     ![LDAP settings middle](ldap-config02.png "LDAP settings 2")
     
+    ![LDAP settings bottom](ldap-config03.png "LDAP settings 3")
+    
     Click **Test connection**. Provided your LDAP connection was configured correctly, you should
     get the message "Success! LDAP connection successful".
     
