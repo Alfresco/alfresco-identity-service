@@ -345,11 +345,14 @@
     "password"
   ],
   "otpPolicyType": "totp",
-  "otpPolicyAlgorithm": "HmacSHA1",
+  "otpPolicyAlgorithm": "HmacSHA256",
   "otpPolicyInitialCounter": 0,
   "otpPolicyDigits": 6,
   "otpPolicyLookAheadWindow": 1,
   "otpPolicyPeriod": 30,
+  "otpSupportedApplications": [
+    "FreeOTP"
+  ],
   "clients": [
     {
       "id": "fca5da6d-fd90-4596-a754-346d872b779f",
