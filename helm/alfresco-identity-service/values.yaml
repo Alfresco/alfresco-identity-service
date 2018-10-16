@@ -13,9 +13,6 @@ keycloak:
   rbac:
     create: false
   keycloak:
-    image:
-      tag: 4.2.1.Final
-      pullPolicy: IfNotPresent
     username: admin
     password: admin
     extraVolumes: |
