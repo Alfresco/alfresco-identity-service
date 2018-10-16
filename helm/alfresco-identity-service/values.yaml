@@ -14,7 +14,7 @@ keycloak:
     create: false
   keycloak:
     image:
-      tag: 3.4.3.Final
+      tag: 4.2.1.Final
       pullPolicy: IfNotPresent
     username: admin
     password: admin
