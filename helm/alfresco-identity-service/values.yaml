@@ -17,7 +17,7 @@ keycloak:
     password: admin
     extraInitContainers: |
       - name: theme-provider
-        image: alfresco-keycloak-theme:0.1
+        image: alfresco/alfresco-keycloak-theme:0.1
         imagePullPolicy: IfNotPresent
         command:
           - sh
