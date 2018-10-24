@@ -195,7 +195,7 @@ helm install alfresco-incubator/alfresco-identity-service \
 --set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\']
 ```
 
-including multiple redirecUris:
+including multiple redirectUris:
 
 ```bash
 helm install alfresco-incubator/alfresco-identity-service \
