@@ -43,8 +43,8 @@ keycloak:
         mountPath: /opt/jboss/keycloak/themes/alfresco  
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
     persistence:
-      deployPostgres:true
-      dbVendor:postgres
+      deployPostgres: true
+      dbVendor: postgres
       dbPassword: keycloak
   postgresql:
     nameOverride: postgresql-id
