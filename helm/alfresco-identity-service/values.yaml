@@ -44,7 +44,6 @@ keycloak:
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
     persistence:
       deployPostgres: true
-      dbVendor: postgres
       dbPassword: keycloak
   postgresql:
     nameOverride: postgresql-id
