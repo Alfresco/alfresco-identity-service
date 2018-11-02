@@ -11,3 +11,8 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- define "keycloak.fullname" -}}
 {{- printf "%s-keycloak" .Release.Name | trunc 20 | trimSuffix "-" -}}
 {{- end -}}
+
+{{- define "postgresql.fullname" -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- printf "%s-%s" $name "postgresql" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}

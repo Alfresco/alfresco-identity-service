@@ -48,7 +48,6 @@ keycloak:
       dbPassword: keycloak
   postgresql:
     nameOverride: postgresql-id
-    fullname: postgresql
     imageTag: "10.1"
     persistence:
       existingClaim: "alfresco-volume-claim"
