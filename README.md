@@ -53,6 +53,8 @@ This will create a ELB when using AWS and will set a dummy certificate on it.
 helm repo update
 
 cat <<EOF > ingressvalues.yaml
+rbac:
+  create: true
 controller:
   config:
     ssl-redirect: "false"
@@ -64,7 +66,9 @@ helm install stable/nginx-ingress --version=0.14.0 -f ingressvalues.yaml \
   --namespace $DESIREDNAMESPACE
 ```
 
-### Optional
+<details>
+<summary>Optional</summary>
+<p>
 
 If you want your own certificate set here you should create a secret from your cert files:
 
@@ -75,6 +79,8 @@ kubectl create secret tls certsecret --key /tmp/tls.key --cert /tmp/tls.crt \
 #Then deploy the ingress with following settings
 
 cat <<EOF > ingressvalues.yaml
+rbac:
+  create: true
 controller:
   config:
     ssl-redirect: "false"
@@ -110,6 +116,8 @@ ELB_CERTIFICATE_ARN=$(aws acm list-certificates | \
   jq '.CertificateSummaryList[] | select (.DomainName == "'${DOMAIN}'") | .CertificateArn')
 
 cat <<EOF > ingressvalues.yaml
+rbac:
+  create: true
 controller:
   config:
     ssl-redirect: "false"
@@ -133,6 +141,10 @@ helm install stable/nginx-ingress --version=0.14.0 -f ingressvalues.yaml \
   --namespace $DESIREDNAMESPACE
 
 ```
+
+</p>
+</details>
+<br/>
 
 <!-- markdownlint-disable MD029 -->
 2. Get the nginx-ingress-controller release name from the previous command and set it as a varible:
