@@ -2,11 +2,11 @@
 
 The Identity Service can be configured to use an OpenLDAP instance for user federation. The following steps detail this configuration.
 
-##Prerequisites
+## Prerequisites
 
 Ensure you have installed the Identity Service before starting. You will also need to have access to, or the details of, your OpenLDAP instance.
 
-##Configuration
+## Configuration
 
 1. Sign in to the administrator panel of the Identity Service using the following URL: `https://$ELBADDRESS/auth/admin`
  
@@ -39,7 +39,7 @@ Ensure you have installed the Identity Service before starting. You will also ne
    
 [Detailed descriptions of the configuration options](https://www.keycloak.org/docs/4.2/server_admin/index.html#_ldap) are available as part of the Keycloak documentation if required.
    
-##Post-configuration user synchronization
+## Post-configuration user synchronization
 Users from your OpenLDAP instance can either be periodically synchronized using a background job or you can choose to have users imported into the Identity Service database the first time they authenticate against the Identity Service.
 
 The [advantages to each approach](https://www.keycloak.org/docs/4.2/server_admin/index.html#storage-mode) are detailed as part of the Keycloak documentation.
