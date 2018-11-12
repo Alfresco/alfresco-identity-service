@@ -8,7 +8,7 @@ by following these steps:
 2. Under "System Settings" heading click "Server Settings"
 3. Under "Federation Info" heading note the value of "My Base URL"
 4. Click "Main"
-5. Under "Federation Settings" heading click "Protocol Endpoints"
+5. Under "IdP Configuration" / "Federation Settings" heading click "Protocol Endpoints"
 6. In "SAML v2.0 Endpoints" section, take note of POST endpoints for 
    "Single Logout (SLO) Service" and "Single Sign-on (SSO) Service" respectively
 
@@ -24,8 +24,7 @@ Example:
 1. Login to Alfresco Identity Service: https://$ELBADDRESS/auth/admin  
    (please refer to the main [README](../../README.md) document for details about the `$ELBADDRESS` parameter)
 2. Under "Configure" heading click "Clients"
-3. For each client configured by Alfresco DBP (`alfresco` and `activiti`):
-   - Click on the client link
+3. Click on `alfresco` client link:
    - Toggle "Implicit Flow Enabled" switch on
    - In "Valid Redirect URIs" add "https://$ELBADDRESS*" and click "+"
    - In "Valid Redirect URIs" add your application frontend URI
@@ -33,7 +32,7 @@ Example:
 4. Under "Configure" heading click "Identity Providers"
 5. In "Add provider..." menu select "SAML v2.0"
 6. In "Single Sign-On Service URL" and "Single Logout Service URL" enter 
-   previously noted values
+   values noted in [Obtain PingFederate Parameters](#obtain-pingfederate-parameters)
 7. In "NameID Policy Format" dropdown select "Unspecified"
 8. Enable "HTTP-POST Binding Response"
 9. Enable "HTTP-POST Binding for AuthnRequest"
@@ -51,17 +50,19 @@ Example:
 20. In "Friendly Name" textbox type "email"
 21. In "User Attribute Name" textbox type "email"
 22. Click "Save"
-23. Click "Export" tab
-24. Click "Download" button and take note of the downloaded file 
+23. In the breadcrumb click "Identity Provider Mappers" link
+24. Click "Export" tab
+25. Click "Download" button and take note of the downloaded file 
     name and location
-25. Create a file with extension ".cert" (pick an arbitrary name) with the following content:
+26. Create a file with extension ".cert" (pick an arbitrary name) with the following content:
     ```
     -----BEGIN CERTIFICATE-----
     -----END CERTIFICATE-----
     ```
-26. Using a text editor, open the file created in step 24 
-27. Find a line beginning with `<dsig:X509Certificate>` and ending with `</dsig:X509Certificate>` XML tag
-28. Copy the string in between `<dsig:X509Certificate>` and `</dsig:X509Certificate>` and paste
+27. Using a text editor, open the file created in step 25 
+28. Find a line that begins with `<dsig:X509Certificate>` and ends with `</dsig:X509Certificate>` XML tag
+![X509 Certificate in KeyCloak Export](./keycloak-export-cert.png)
+29. Copy the string in between `<dsig:X509Certificate>` and `</dsig:X509Certificate>` and paste
     it into the file created in step 23 in-between `-----BEGIN CERTIFICATE-----` and
     `-----END CERTIFICATE-----`.
     
@@ -89,10 +90,12 @@ Example:
    Click "Next".
 10. Under "Assertion Lifetime" heading click "Next"
 11. Under "Assertion Creation" heading click "Configure Assertion Creation" button.
-12. Under "Identity Mapping" heading click "Next"
+12. Under "Identity Mapping" heading ensure "Standard" checkbox is selected and click "Next"
 13. Under "Attribute Contract" heading in "Extend the contract" textbox type "Email".
 14. In "Attribute name format" dropdown menu ensure the value "urn:oasis:names:tc:SAML:2.0:attrname-format:basic" is 
-    selected. Click "Add". Click "Next".
+    selected. 
+    ![Attribute Extend Contract with EMAIL](./attribute-extend-contract.png)    
+    Click "Add". Click "Next".
 15. Under "Authentication Source Mapping" heading click "Map New Adapter Instance..." button.
 16. In "Adapter Instance" dropdown menu select "IdP Adapter". Click "Next".
 17. Under "Assertion Mapping" heading click "Next"
@@ -103,17 +106,26 @@ Example:
     - In "SAML_SUBJECT" row:
         - In "Source" dropdown menu select "Adapter"
         - In "Value" dropdown menu select "subject"
+        
+    ![Attribute Contract values](./attribute-contract-values.png)    
     
     Click "Next".
 19. Under "Issuance Criteria" heading click "Next"
 20. Under "Summary" heading click "Done"
 21. Under "Authentication Source Mapping" heading click "Next"
-22. Under "Summary" heading click "Done"
+22. Under "Summary" heading verify the values are as below:
+    ![Assertion Creation Summary](./assertion-creation-summary.png)
+    
+    Click "Done".
 23. Under "Assertion Creation" heading click "Next"
 24. Under "Protocol Settings" heading click "Configure Protocol Settings"
-25. In "default" row verify binding "POST" points to your Keycloak endpoint.
+25. In "default" row verify binding "POST" points to your Keycloak endpoint:
+    ![Assertion Comsumer Service Default URL](./assertion-consumer-service-default-url.png)
+    
     Click "Next".
 26. Under "SLO Service URLs" heading verify binding "POST" points to your Keycloak endpoint.
+    ![SLO Default URL](./slo-default-url.png)
+    
     Click "Next".
 27. Under "Allowable SAML Bindings" heading untick all checkboxes except for "POST".
     Click "Next".
@@ -123,7 +135,10 @@ Example:
     Click "Next".
 30. Click "Done".
 31. Under "Protocol Settings" heading click "Next"
-32. Under "Summary" heading click "Done"
+32. Under "Summary" heading verify the settings are as below:
+    ![Protocol Settings Summary](./protocol-settings-summary.png)
+    
+    Click "Done".
 33. Under "Browser SSO" heading click "Next"
 34. Under "Credentials" heading click "Configure Credentials" button.
 35. In "Signing Certificate" dropdown menu select your organization's certificate. 
@@ -133,7 +148,10 @@ Example:
 38. Under "Signature Verification Certificate" click "Manage Certificate" button.
 39. Click "Import"
 40. In "Filename" row Click "Browse" button and selected the exported Keycloak certificate. Click "Next".
-41. Take note of the imported certificate's Serial Number. Click "Done".
+41. Take note of the imported certificate's Serial Number:
+    ![Import Certificate Summary](./import-cert-summary.png)
+    
+    Click "Done".
 42. Under "Signature Verification Certificate" heading in "Primary" dropdown
     menu select the certificate with ID from previous step. Click "Next".
 43. Click "Done"
