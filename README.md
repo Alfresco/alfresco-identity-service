@@ -45,23 +45,38 @@ This environment variable will be used in the deployment steps.
 
 ## Deploying the Identity Services Chart
 
-1. Install the nginx-ingress-controller into your cluster based on the instruction provided [here](https://github.com/Alfresco/alfresco-infrastructure-deployment/tree/DEPLOY-632#nginx-ingress-custom-configuration).
+1.In order to deploy this chart you have to deploy the [Alfresco Infrastructure chart](https://github.com/Alfresco/alfresco-infrastructure-deployment#1-deploy-the-infrastructure-charts) which will deploy the identity service too.
 
+Using the following command only the identity service and the [nginx-ingress](https://github.com/Alfresco/alfresco-infrastructure-deployment#nginx-ingress-custom-configuration) will be deployed:
 
-<!-- markdownlint-disable MD029 -->
-2. Get the nginx-ingress-controller release name from the previous command and set it as a varible:
-<!-- markdownlint-disable MD029 -->
-
+<!--TODO Change to stable alfresco-infrastructure that inculdes alfresco-identity-service AUTH-193-->
 ```bash
-export INGRESSRELEASE=knobby-wolf
+
+helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
+helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
+
+
+helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
+  --namespace $DESIREDNAMESPACE
 ```
 
 <!-- markdownlint-disable MD029 -->
-3. Wait for the nginx-ingress-controller release to get deployed (When checking status your pod should be READY 1/1):
+2. Get the release name from the previous command and set it as a varible:
+<!-- markdownlint-disable MD029 -->
+
+```bash
+export RELEASENAME=knobby-wolf
+```
+
+<!-- markdownlint-disable MD029 -->
+3. Wait for the release to get deployed (When checking status your pods should be READY 1/1):
 <!-- markdownlint-enable MD029 -->
 
 ```bash
-helm status $INGRESSRELEASE
+helm status $RELEASENAME
 ```
 
 <!-- markdownlint-disable MD029 -->
@@ -69,25 +84,12 @@ helm status $INGRESSRELEASE
 <!-- markdownlint-disable MD029 -->
 
 ```bash
-export ELBADDRESS=$(kubectl get services $INGRESSRELEASE-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+export ELBADDRESS=$(kubectl get services $RELEASENAME-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 ```
 
-### 2. Deploy the Identity Service Charts
+The deployment 
 
-To deploy with the **default example realm applied**:
-
-```bash
-#Add the helm repo containing the chart
-helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
-```
-
-```bash
-helm install alfresco-incubator/alfresco-identity-service \
-  --set ingressHostName=$ELBADDRESS \
-  --namespace $DESIREDNAMESPACE
-```
-
-which results in default values of:
+This is deployed with the **default example realm applied** which results in default values of:
 
 | Property                      | Value                    |
 | ----------------------------- | ------------------------ |
@@ -100,22 +102,26 @@ which results in default values of:
 
 #### Changing Alfresco Client redirectUris
 
-You can override the default redirectUri of `http://localhost*` for your environment with the `client.alfresco.redirectUris` property:
+You can override the default redirectUri of `http://localhost*` for your environment with the `alfresco-identity-service.client.alfresco.redirectUris` property:
 
 ```bash
-helm install alfresco-incubator/alfresco-identity-service \
---set ingressHostName=$ELBADDRESS \
---namespace $DESIREDNAMESPACE \ 
---set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\']
+helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
+  --set alfresco-identity-service.client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\'] \
+  --namespace $DESIREDNAMESPACE
 ```
 
 including multiple redirectUris:
 
 ```bash
-helm install alfresco-incubator/alfresco-identity-service \
---set ingressHostName=$ELBADDRESS \
---namespace $DESIREDNAMESPACE \ 
---set client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\'',''\"'http://$DNSNAME1*'"\'',''\"'http://$DNSNAME2*'"\']`
+helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
+  --set alfresco-identity-service.redirectUris=['\"'http://$DNSNAME*'"\'',''\"'http://$DNSNAME1*'"\'',''\"'http://$DNSNAME2*'"\']` \
+  --namespace $DESIREDNAMESPACE
 ```
 
 If you want to deploy your own realm with further customizations, see *Customizing the Realm* below.
@@ -126,7 +132,7 @@ If you want to deploy your own realm with further customizations, see *Customizi
 
 1. You will need a realm file. A [sample realm](./helm/alfresco-identity-service/alfresco-realm.json) file is provided.
 
-1. Create a secret using your realm json file
+2. Create a secret using your realm json file
 
 **_!!NOTE_** The secret name must be realm-secret, and the realm file name must not be alfresco-realm.json.
 
@@ -146,10 +152,12 @@ kubectl create secret generic realm-secret \
 
 helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
 
-helm install alfresco-incubator/alfresco-identity-service \
---set keycloak.keycloak.extraArgs="-Dkeycloak.import=/realm/realm.json"
---set ingressHostName=$ELBADDRESS \
---namespace $DESIREDNAMESPACE
+helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.keycloak.keycloak.extraArgs="-Dkeycloak.import=/realm/realm.json" \
+  --namespace $DESIREDNAMESPACE
 ```
 
 Once Keycloak is up and running, login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm.
