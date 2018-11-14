@@ -45,11 +45,11 @@ This environment variable will be used in the deployment steps.
 
 ## Deploying the Identity Services Chart
 
-1.In order to deploy this chart you have to deploy the [Alfresco Infrastructure chart](https://github.com/Alfresco/alfresco-infrastructure-deployment#1-deploy-the-infrastructure-charts) which will deploy the identity service too.
+1. In order to deploy this chart you have to deploy the [Alfresco Infrastructure chart](https://github.com/Alfresco/alfresco-infrastructure-deployment#1-deploy-the-infrastructure-charts) which will deploy the identity service too.
 
 Using the following command only the identity service and the [nginx-ingress](https://github.com/Alfresco/alfresco-infrastructure-deployment#nginx-ingress-custom-configuration) will be deployed:
 
-<!--TODO Change to stable alfresco-infrastructure that inculdes alfresco-identity-service AUTH-193-->
+<!--TODO Change to stable alfresco-infrastructure that includes alfresco-identity-service AUTH-193-->
 ```bash
 
 helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
