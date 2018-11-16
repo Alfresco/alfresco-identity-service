@@ -13,22 +13,39 @@ keycloak:
   rbac:
     create: false
   keycloak:
-    image:
-      tag: 3.4.3.Final
-      pullPolicy: IfNotPresent
     username: admin
     password: admin
+    extraInitContainers: |
+      - name: theme-provider
+        image: alfresco/alfresco-keycloak-theme:0.1
+        imagePullPolicy: Always
+        command:
+          - sh
+        args:
+          - -c
+          - |
+            echo "Copying theme..."
+            cp -R /alfresco/* /theme
+        volumeMounts:
+          - name: theme
+            mountPath: /theme    
     extraVolumes: |
       - name: realm-secret
         secret:
           secretName: realm-secret
+      - name: theme
+        emptyDir: {}    
     extraVolumeMounts: |
       - name: realm-secret
         mountPath: "/realm/"
         readOnly: true
+      - name: theme
+        mountPath: /opt/jboss/keycloak/themes/alfresco  
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
-    persistence:
-      dbPassword: keycloak
+  persistence:
+    deployPostgres: true
+    dbVendor: postgres
+    dbPassword: keycloak
   postgresql:
     nameOverride: postgresql-id
     imageTag: "10.1"

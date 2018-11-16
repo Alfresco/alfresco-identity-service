@@ -1091,6 +1091,7 @@
     "contentSecurityPolicy": "frame-src 'self'; frame-ancestors 'self'; object-src 'none';"
   },
   "smtpServer": {},
+  "loginTheme": "alfresco",
   "eventsEnabled": false,
   "eventsListeners": [
     "jboss-logging"
@@ -1240,8 +1241,24 @@
       }
     ]
   },
-  "internationalizationEnabled": false,
-  "supportedLocales": [],
+  "internationalizationEnabled": true,
+  "supportedLocales": [
+    "de",
+    "no",
+    "ru",
+    "sv",
+    "pt-BR",
+    "lt",
+    "en",
+    "it",
+    "fr",
+    "zh-CN",
+    "es",
+    "ja",
+    "ca",
+    "nl"
+  ],
+  "defaultLocale": "en",
   "authenticationFlows": [
     {
       "id": "ac4ffcd4-6547-4e1c-90ac-aa56304011fb",
