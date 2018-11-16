@@ -1718,5 +1718,5 @@
     },
     "groups" : [ "/admin" ]
   }],
-  "keycloakVersion": "3.4.3.Final"
+  "keycloakVersion": "4.5.0.Final"
 }
