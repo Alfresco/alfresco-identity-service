@@ -42,10 +42,12 @@ keycloak:
       - name: theme
         mountPath: /opt/jboss/keycloak/themes/alfresco  
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
+    persistence:
+      deployPostgres: true
+      dbVendor: postgres
+      dbPassword: keycloak
   persistence:
     deployPostgres: true
-    dbVendor: postgres
-    dbPassword: keycloak
   postgresql:
     nameOverride: postgresql-id
     imageTag: "10.1"
