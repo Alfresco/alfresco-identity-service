@@ -520,10 +520,6 @@
 					}
 				}
 			]
-		},
-		{
-			"name": "Implicit Flow",
-			"item": []
 		}
 	],
 	"event": [
