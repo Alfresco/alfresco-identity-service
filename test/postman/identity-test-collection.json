@@ -174,7 +174,7 @@
 			"name": "Logout Tests",
 			"item": [
 				{
-					"name": "Get testuser's id",
+					"name": "Get testuser's user info",
 					"event": [
 						{
 							"listen": "test",
@@ -185,12 +185,12 @@
 									"    pm.response.to.have.status(200);",
 									"});",
 									"",
-									"var jsonData = pm.response.json()[0];",
-									"pm.test(\"Response contains user id\", function() {",
-									"    pm.expect(\"id\" in jsonData).to.be.true;",
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Response contains OpenId subject\", function() {",
+									"    pm.expect(\"sub\" in jsonData).to.be.true;",
 									"});",
 									"",
-									"pm.environment.set(\"testUserKeycloakId\", jsonData['id']);"
+									"pm.environment.set(\"testUserKeycloakId\", jsonData['sub']);"
 								],
 								"type": "text/javascript"
 							}
@@ -200,8 +200,7 @@
 							"script": {
 								"id": "48412015-1d7b-49a2-820b-da430d4d212f",
 								"exec": [
-									"// store current username, as returned from data file, as an env. variable so that it can be used for request",
-									"pm.environment.set(\"currentLdapUser\", pm.iterationData.get(\"username\"));"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -213,7 +212,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "{{kcAdminAccessToken}}",
+									"value": "{{kcAccessToken}}",
 									"type": "string"
 								}
 							]
@@ -225,28 +224,23 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}/users?username={{testUserUsername}}",
+							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/userinfo",
 							"host": [
 								"{{identityServiceUrl}}"
 							],
 							"path": [
-								"admin",
 								"realms",
 								"{{identityServiceRealm}}",
-								"users"
-							],
-							"query": [
-								{
-									"key": "username",
-									"value": "{{testUserUsername}}"
-								}
+								"protocol",
+								"openid-connect",
+								"userinfo"
 							]
 						}
 					},
 					"response": []
 				},
 				{
-					"name": "Get testuser's active sessions",
+					"name": "Get testuser's active sessions as admin",
 					"event": [
 						{
 							"listen": "test",
@@ -380,9 +374,13 @@
 									"});",
 									"",
 									"var jsonData = pm.response.json();",
-									"activeSessions = jsonData.map(s => s.id);",
+									"currentSessions = jsonData.map(s => s.id);",
 									"",
-									"pm.environment.set(\"kcActiveSessionsJson\", JSON.stringify(activeSessions));"
+									"pm.test(\"Session has been deleted\", function() {",
+									"   var previousSessions = JSON.parse(pm.environment.get(\"kcActiveSessionsJson\"));",
+									"   pm.expect(previousSessions.length-1).to.equal(currentSessions.length);",
+									"});",
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -432,6 +430,71 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get testuser's user info after logout",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "260dfb01-e063-48b5-ac06-284b93d97524",
+								"exec": [
+									"pm.test(\"Status code is 401\", function () {",
+									"    pm.response.to.have.status(401);",
+									"});",
+									"",
+									"var jsonData = pm.response.json();",
+									"pm.test(\"Response contains error key\", function() {",
+									"     pm.expect(\"error\" in jsonData).to.be.true;",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "48412015-1d7b-49a2-820b-da430d4d212f",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{kcAccessToken}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/userinfo",
+							"host": [
+								"{{identityServiceUrl}}"
+							],
+							"path": [
+								"realms",
+								"{{identityServiceRealm}}",
+								"protocol",
+								"openid-connect",
+								"userinfo"
+							]
+						}
+					},
+					"response": []
 				}
 			],
 			"description": "Tests to verify that expired access tokens can't be used for authentication.",
@@ -457,6 +520,10 @@
 					}
 				}
 			]
+		},
+		{
+			"name": "Implicit Flow",
+			"item": []
 		}
 	],
 	"event": [
