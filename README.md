@@ -181,9 +181,13 @@ helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT
 ```
 
 For more information on how Standalone High Availability works on keycloak please checkout:
-[Keycloak stable chart Readme](https://github.com/helm/charts/tree/master/stable/keycloak#high-availability-and-clustering)
+[Keycloak Stable chart Readme](https://github.com/helm/charts/tree/master/stable/keycloak#high-availability-and-clustering)
 [Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/4.5/server_installation/#standalone-clustered-configuration)
 [Keycloak Clustering](https://www.keycloak.org/docs/4.5/server_installation/#_clustering)
+
+
+! Note: Be aware that keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/4.5/server_installation/#sticky-sessions) are used so keep that in mind if choosing to use a different ingress type other than nginx.
+
 
 #### Manually
 
