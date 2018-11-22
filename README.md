@@ -162,6 +162,29 @@ helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT
 
 Once Keycloak is up and running, login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm.
 
+## High Availability and Clustering
+
+For high availability we rely on the public implementation of the stable keycloak chart.
+To enable this you will need to deploy the identity chart with the following settings:
+
+```bash
+
+helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
+
+helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.keycloak.keycloak.extraArgs="-Dkeycloak.import=/realm/realm.json" \
+  --set alfresco-infrastructure.alfresco-identity-service.keycloak.keycloak.replicas=3
+  --namespace $DESIREDNAMESPACE
+```
+
+For more information on how Standalone High Availability works on keycloak please checkout:
+[Keycloak stable chart Readme](https://github.com/helm/charts/tree/master/stable/keycloak#high-availability-and-clustering)
+[Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/4.5/server_installation/#standalone-clustered-configuration)
+[Keycloak Clustering](https://www.keycloak.org/docs/4.5/server_installation/#_clustering)
+
 #### Manually
 
 1. [Add a realm](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm) named "Alfresco"
