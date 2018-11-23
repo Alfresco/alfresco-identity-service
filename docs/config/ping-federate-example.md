@@ -1,163 +1,155 @@
-## Configuring PingFederate as SAML2 IDP
+#Configuring a PingFederate instance with the Alfresco Identity Service
 
-Alfresco Identity Service can be configured to use PingFederate as a SAML 2.0 identity provider
-by following these steps:
+The Identity Service can be configured to use PingFederate as an identity provider. The following steps detail this configuration.
 
-### Obtain PingFederate Parameters
-1. Log in to your PingFederate instance as a user with administrative privileges
-2. Under "System Settings" heading click "Server Settings"
-3. Under "Federation Info" heading note the value of "My Base URL"
-4. Click "Main"
-5. Under "IdP Configuration" / "Federation Settings" heading click "Protocol Endpoints"
-6. In "SAML v2.0 Endpoints" section, take note of POST endpoints for 
-   "Single Logout (SLO) Service" and "Single Sign-on (SSO) Service" respectively
+##Prerequisites
 
-The corresponding service URLs are constructed by appending endpoint values from step 6
-to base URL (step 5). You will need these values to configure your KeyCloak instance.
+Ensure you have installed the Identity Service before starting. You will also need to have administrative access to your instance of PingFederate.
 
-Example:
-> If Base Url value is "https://pingfederate.test.com:9031" and POST
-  SLO endpoint "/idp/SLO.saml2", the POST SLO service URL is 
-  "https://pingfederate.test.com:9031/idp/SLO.saml2"
+##Configuration
+There are three main steps involved in configuring a PingFederate instance with the Identity Service:
 
-### Configure KeyCloak
-1. Login to Alfresco Identity Service: https://$ELBADDRESS/auth/admin  
-   (please refer to the main [README](../../README.md) document for details about the `$ELBADDRESS` parameter)
-2. Under "Configure" heading click "Clients"
-3. Click on `alfresco` client link:
-   - Toggle "Implicit Flow Enabled" switch on
-   - In "Valid Redirect URIs" add "https://$ELBADDRESS*" and click "+"
-   - In "Valid Redirect URIs" add your application frontend URI
-   - Click "Save"
-4. Under "Configure" heading click "Identity Providers"
-5. In "Add provider..." menu select "SAML v2.0"
-6. In "Single Sign-On Service URL" and "Single Logout Service URL" enter 
-   values noted in [Obtain PingFederate Parameters](#obtain-pingfederate-parameters)
-7. In "NameID Policy Format" dropdown select "Unspecified"
-8. Enable "HTTP-POST Binding Response"
-9. Enable "HTTP-POST Binding for AuthnRequest"
-10. Enable "HTTP-POST Binding Logout"
-11. Enable "Want AuthnRequests Signed"
-12. In "Signature Algorithm" chose signature algorithm appropriate for
-   for your setup (e.g. "RSA_SHA_256")
-13. In "SAML Signature Key Name" dropdown menu select "NONE"
-14. Click "Save"
-15. Click "Mappers" tab
-16. Click "Create"
-17. In "Mapper Type" dropdown select "Attribute Importer"
-18. In "Name" textbox type "email"
-19. In "Attribute Name" textbox type "EMAIL"
-20. In "Friendly Name" textbox type "email"
-21. In "User Attribute Name" textbox type "email"
-22. Click "Save"
-23. In the breadcrumb click "Identity Provider Mappers" link
-24. Click "Export" tab
-25. Click "Download" button and take note of the downloaded file 
-    name and location
-26. Create a file with extension ".cert" (pick an arbitrary name) with the following content:
+1. Obtain your parameters from PingFederate.
+2. Configure the Identity Service with your PingFederate parameters.
+3. Configure your PingFederate connection.
+
+### 1. Obtain parameters from PingFederate
+1. Sign in to your PingFederate instance as a user with administrative privileges.
+2. Select **Server Settings** from the **System Settings** menu.
+3. Make a note of the value for *My Base URL* under the **Federation Info** heading.
+4. Click **Main** and select **Federation Settings** or **IdP Configuration**, then click **Protocol Endpoints**.
+5. Make a note of the values for *Single Logout (SLO) Service* and *Single Sign-on (SSO) Service* under the **SAML v2.0 Endpoints** heading.
+6. Combine the value of *My Base URL* (from Step 3) with *Single Logout (SLO) Service* and *My Base URL* (from Step 3) with *Single Sign-on (SSO) Service* ready to enter into the Identity Service.
+
+For example:
+> If *My Base URL* is `"https://pingfederate.test.com:9031"` and *Single Sign Logout (SLO) Service* is `"/idp/SLO.saml2"` then the POST SLO service URL is `https://pingfederate.test.com:9031/idp/SLO.saml2`
+
+### 2. Configure the Identity Service
+1. Sign in to the administrator panel of the Identity Service using the following URL: `https://$ELBADDRESS/auth/admin`
+
+   **Note:** The `$ELBADDRESS` will be the one used [during deployment](../../README.md).
+
+2. Select the correct realm to configure PingFederate against.
+
+   **Note:** If using the default deployment options, the realm will be called `Alfresco`.
+
+3. In the **Settings** of each client (`alfresco` and `activiti` if using the default deployment options) save the following configuration:
+
+   * Switch **Implicit Flow Enabled** on.
+   * Enter `https://$ELBADDRESS*` in **Valid Redirect URIs**.
+   * Click **+** and enter your application front end URI into the next line of **Valid Redirect URIs**.
+
+4. Select **Identity Providers** from the left hand navigation menu and choose *SAML v2.0* in the **Add Provider** dropdown.
+5. Enter the values you obtained from PingFederate in the first section into **Single Sign-On Service URL** and **Single Logout Service URL**.
+6. Make the following configurations:
+
+   * Choose *Unspecified* in the **NameID Policy Format** dropdown.
+   * Switch **HTTP-POST Binding Response** on.
+   * Switch **HTTP-POST Binding for AuthnRequest** on.
+   * Switch **HTTP-POST Binding Logout** on.
+   * Switch **Want AuthnRequests Signed** on.
+   * Choose the appropriate algorithm for your setup from the dropdown in **Signature Algorithm**.
+   * Choose *NONE* in the **SAML Signature Key Name** dropdown.
+
+7. After clicking **Save**, navigate to the **Mappers** tab and select **Create**.
+8. Make the following configurations:
+
+   * Choose *Attribute Importer* from the **Mapper Type** dropdown.
+   * Enter *email* into **Name**.
+   * Enter *EMAIL* into **Attribute Name**.
+   * Enter *email* into **User Attribute Name**.
+
+9. After clicking **Save** navigate back to the **Identity Provider Mappers** using the breadcrumb and select the **Export** tab.
+10. **Download** and make a note of the file name and download location.
+11. Create a file with the extension `.cert` (the file name isn't important other than to locate it later on) with the following content:
+
     ```
     -----BEGIN CERTIFICATE-----
     -----END CERTIFICATE-----
     ```
-27. Using a text editor, open the file created in step 25 
-28. Find a line that begins with `<dsig:X509Certificate>` and ends with `</dsig:X509Certificate>` XML tag
-![X509 Certificate in KeyCloak Export](./keycloak-export-cert.png)
-29. Copy the string in between `<dsig:X509Certificate>` and `</dsig:X509Certificate>` and paste
-    it into the file created in step 23 in-between `-----BEGIN CERTIFICATE-----` and
+
+12. Open the file you downloaded in Step 10 with a text editor.
+13. Find the line beginning with the tag `<dsig:X509Certificate>` and ending with `</dsig:X509Certificate>`.
+![X509 Certificate from export](./keycloak-export-cert.png)
+14. Copy the string in-between these tags and paste the content into the file you created in Step 11 in-between `-----BEGIN CERTIFICATE-----` and
     `-----END CERTIFICATE-----`.
     
-    When done, your `.cert` file should look similar to:
-    ```
-    -----BEGIN CERTIFICATE-----
-    MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
-    -----END CERTIFICATE-----
-    ```
+The contents of your `.cert` file should now look similar to the following:
 
-### Configure PingFederate Connection
-1. Log in to your PingFederate Instance
-2. Under "SP Connections" heading click "Create New"
-3. Verify the "Browser SSO Profiles" connection template with value 
-   "Protocol SAML 2.0" is selected. Click "Next"
-4. Under "Connection Options" heading make sure only "Browser SSO" 
-   is selected. Click "Next"
-5. Under "Import Metadata" heading click "Choose file" and select 
-   the file downloaded in the previous section. Click "Next".
-6. Under "Metadata Summary" heading click "Next"
-7. Under "General Info" heading verify the imported values correspond
-   that of your KeyCloak setup. Click "Next".
-8. Under "Browser SSO" heading click "Configure Browser SSO" button.
-9. Tick all 4 checkboxes (IdP and SP Initiated SSo + IdP and SP Initiated SLO). 
-   Click "Next".
-10. Under "Assertion Lifetime" heading click "Next"
-11. Under "Assertion Creation" heading click "Configure Assertion Creation" button.
-12. Under "Identity Mapping" heading ensure "Standard" checkbox is selected and click "Next"
-13. Under "Attribute Contract" heading in "Extend the contract" textbox type "Email".
-14. In "Attribute name format" dropdown menu ensure the value "urn:oasis:names:tc:SAML:2.0:attrname-format:basic" is 
-    selected. 
-    ![Attribute Extend Contract with EMAIL](./attribute-extend-contract.png)    
-    Click "Add". Click "Next".
-15. Under "Authentication Source Mapping" heading click "Map New Adapter Instance..." button.
-16. In "Adapter Instance" dropdown menu select "IdP Adapter". Click "Next".
-17. Under "Assertion Mapping" heading click "Next"
-18. Under "Attribute Contract Fulfillment" heading:
-    - In "Email" row: 
-        - In "Source" dropdown menu select "Adapter"
-        - In "Value" dropdown menu select "email"    
-    - In "SAML_SUBJECT" row:
-        - In "Source" dropdown menu select "Adapter"
-        - In "Value" dropdown menu select "subject"
-        
-    ![Attribute Contract values](./attribute-contract-values.png)    
-    
-    Click "Next".
-19. Under "Issuance Criteria" heading click "Next"
-20. Under "Summary" heading click "Done"
-21. Under "Authentication Source Mapping" heading click "Next"
-22. Under "Summary" heading verify the values are as below:
-    ![Assertion Creation Summary](./assertion-creation-summary.png)
-    
-    Click "Done".
-23. Under "Assertion Creation" heading click "Next"
-24. Under "Protocol Settings" heading click "Configure Protocol Settings"
-25. In "default" row verify binding "POST" points to your Keycloak endpoint:
-    ![Assertion Comsumer Service Default URL](./assertion-consumer-service-default-url.png)
-    
-    Click "Next".
-26. Under "SLO Service URLs" heading verify binding "POST" points to your Keycloak endpoint.
-    ![SLO Default URL](./slo-default-url.png)
-    
-    Click "Next".
-27. Under "Allowable SAML Bindings" heading untick all checkboxes except for "POST".
-    Click "Next".
-28. Under "Signature Policy" heading untick "Require AuthN requests to be signed when received via the POST or Redirect 
-    bindings" checkbox. Click "Next".
-29. Under "Encryption Policy" heading ensure "None" checkbox is ticked.
-    Click "Next".
-30. Click "Done".
-31. Under "Protocol Settings" heading click "Next"
-32. Under "Summary" heading verify the settings are as below:
-    ![Protocol Settings Summary](./protocol-settings-summary.png)
-    
-    Click "Done".
-33. Under "Browser SSO" heading click "Next"
-34. Under "Credentials" heading click "Configure Credentials" button.
-35. In "Signing Certificate" dropdown menu select your organization's certificate. 
-    Click "Next".
-36. Under "Signature Verification Settings" heading click "Manage Signature Verification Settings" button.
-37. Under "Trust Model" heading click "Unanchored". Click "Next".
-38. Under "Signature Verification Certificate" click "Manage Certificate" button.
-39. Click "Import"
-40. In "Filename" row Click "Browse" button and selected the exported Keycloak certificate. Click "Next".
-41. Take note of the imported certificate's Serial Number:
-    ![Import Certificate Summary](./import-cert-summary.png)
-    
-    Click "Done".
-42. Under "Signature Verification Certificate" heading in "Primary" dropdown
-    menu select the certificate with ID from previous step. Click "Next".
-43. Click "Done"
-44. Under "Signature Verification Settings" heading click "Next"
-45. Under "Summary" heading click "Done"
-46. Under "Credentials" heading click "Next"
-47. Under "Activation & Summary" heading in "Connection Status" row tick checkbox "Active". Click "Save".
+```
+-----BEGIN CERTIFICATE-----
+MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
+-----END CERTIFICATE-----
+```
 
-Your new connection should now appear in "SP Connections" list.
+### 3. Configure your PingFederate connection
+
+1. Sign in to your PingFederate instance as a user with administrative privileges.
+2. Navigate to **SP Connections** and select **Create New**.
+3. Ensure the **Browser SSO Profiles** connection template with *Protocol SAML 2.0* is selected and then click **Next**.
+4. On the **Connection Options** tab ensure only **Browser SSO** is selected.
+5. On the **Import Metadata** tab select **Choose file** and find the file downloaded in Step 10 of the previous section. 
+6. On the **General Info** tab verify that the imported values correspond to those from the Identity Service setup.
+7. On the **Browser SSO** tab click **Configure Browser SSO** which will launch a new set of tabs for configuring the browser SSO.
+
+   ####Configuring browser SSO
+   1. On the **SAML Profiles** tab tick all four checkboxes.
+   2. On the **Assertion Creation** tab click **Configure Assertion Creation** which will launch a new set of tabs for configuring the assertion creation.
+
+      ####Configuring assertion creation
+      1. On the **Identity Mapping** tab ensure the **Standard** checkbox is ticked.
+      2. Under the heading **Attribute Contract**:
+         * Enter *Email* into **Extend the contract**.
+         * Choose *urn:oasis:names:tc:SAML:2.0:attrname-format:basic* from the **Attribute name format** dropdown and click **Add**.
+      3. On the **Authentication Source Mapping** tab click **Map New Adapter Instance...** which will launch a new set of tabs for mapping a new adapter instance.
+
+         ####Mapping a new adapter instance
+         1. On the **Adapter Instance** tab select *IdP Adapter* from the dropdown menu.
+         2. On the **Attribute Contract Fulfillment** tab:
+             * In the **email** row select *Adapter* from the **source** dropdown.
+             * In the **email** row select *email* from the **value** dropdown.
+             * In the **SAML_SUBJECT** row select *Adapter* from the **source** dropdown.
+             * In the **SAML_SUBJECT** row select *subject* from the **value** dropdown.
+          3. On the **Summary** tab select **Done** to return to the assertion configuration tabs.
+
+      4. On the **Summary** tab verify the values are as per the following screenshot.
+      ![Assertion Creation Summary](./assertion-creation-summary.png)
+      5. Click **Done** to return to the browser SSO configuration tabs.
+
+   3. On the **Protocol Settings** tab click **Configure Protocol Settings** which will launch a new set of tabs for configuring the protocol settings.
+
+      ####Configuring protocol settings
+      1. On the **Assertion Consumer Service URL** tab verify that the default row binding for *POST* points to the Identity Service endpoint similar to the following screenshot.
+      ![Assertion Consumer Service Default URL](./assertion-consumer-service-default-url.png)
+      2. On the **SLO Service URLs** tab verify that the row for the *POST* binding points to your Identity Service endpoint similar to the following screenshot.
+      ![SLO Default URL](./slo-default-url.png)
+      3. On the **Allowable SAML Bindings** tab untick all of the checkboxes except for **POST**.
+      4. On the **Signature Policy** tab untick **Require AuthN requests to be signed when received via the POST or Redirect bindings**.
+      5. On the **Encryption Policy** tab ensure that the **None** checkbox is ticked.
+      6. On the **Summary** tab verify that the values are as per the following screenshot.
+      ![Protocol Settings Summary](./slo-default-url.png)
+      7. Click **Done** to return to the browser SSO configuration tabs.
+
+   4. On the **Summary** tab click **Done** to return to the main SP connection configuration tabs.
+
+8. On the **Credentials** tab click **Configure Credentials** which will launch a new set of tabs for configuring the credentials. 
+
+   ####Configuring credentials
+   1. On the **Digital Signature Settings** tab select your organization's certificate from the **Signing Certificate** dropdown. 
+   2. On the **Signature Verification Settings** tab click **Manage Signature Verification Settings** which will launch a new set of tabs for the signature verification settings.
+
+      ####Signature verification settings
+      1. On the **Trust Model** tab select *Unanchored*.
+      2. On the **Signature Verification Certificate** tab click **Manage Certificate**.
+      3. Click **Import** and browse for the `.cert` file you created earlier in the **Filename** field.
+      4. Note the imported certificate's **Serial Number** similar to the following screenshot.
+      ![Import Certificate Summary](./import-cert-summary.png)
+      5. Click **Done**.
+      6. Still on the **Signature Verification Certificate** tab select the certificate with the ID (serial number) from the previous step from the **Primary** dropdown.
+      7. Click **Done** to return to the credentials configuration tabs.
+
+   3. On the **Summary** tab click **Done** to return to the main SP connection configuration tabs.
+
+9. On the **Activation & Summary** tab tick the **Active** checkbox in the **Connection Status** row and **Save**. 
+
+Your new connection should now appear in the **SP Connections** list.
