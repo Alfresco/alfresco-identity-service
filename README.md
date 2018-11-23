@@ -126,6 +126,32 @@ helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT
 
 If you want to deploy your own realm with further customizations, see *Customizing the Realm* below.
 
+## High Availability and Clustering
+
+For high availability we rely on the public implementation of the stable Keycloak chart.
+
+To enable this you will need to deploy the identity chart with this additional settings:
+
+```bash
+
+  --set alfresco-infrastructure.alfresco-identity-service.keycloak.keycloak.replicas=3
+
+```
+
+For more information on how Standalone High Availability works on Keycloak please checkout:
+
+
+[Keycloak Stable chart Readme](https://github.com/helm/charts/tree/master/stable/keycloak#high-availability-and-clustering)
+
+
+[Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/4.5/server_installation/#standalone-clustered-configuration)
+
+
+[Keycloak Clustering](https://www.keycloak.org/docs/4.5/server_installation/#_clustering)
+
+
+**_!!NOTE_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/4.5/server_installation/#sticky-sessions) are used so keep that in mind if choosing to use a different ingress type other than nginx.
+
 ## Customizing the Realm
 
 ### Customizing the Realm During Deployment
