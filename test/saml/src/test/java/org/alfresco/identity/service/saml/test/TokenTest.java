@@ -116,8 +116,9 @@ import org.slf4j.LoggerFactory;
         }
         
         //Initiate page
-        driver.get("https://" + getHostname() + "/auth/realms/" + getRealm() +"/protocol/openid-connect/auth?response_type=id_token%20token&client_id=alfresco&state=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs&redirect_uri=http%3A%2F%2Flocalhost%2Fdummy_redirect&scope=openid%20profile%20email&nonce=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs");
-       
+        driver.get("https://" + getHostname() + "/auth/realms/" + getRealm() +"/protocol/openid-connect/auth?response_type=id_token%20token&client_id=alfresco&state=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs&redirect_uri=http%3A%2F%2F" + getHostname() + "%2Fdummy_redirect&scope=openid%20profile%20email&nonce=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs");
+        logger.info("Login page URL: " + driver.getCurrentUrl());
+
         //Click on SAML link on login page
         WebElement element = driver.findElement(ByLinkText.linkText(TokenTestConstants.ELEMENT_SAML));
         element.click();
@@ -127,8 +128,9 @@ import org.slf4j.LoggerFactory;
         select.selectByVisibleText(getUser());
         WebElement passwordField = driver.findElement(ByName.name(TokenTestConstants.ELEMENT_PASWORD));
         passwordField.sendKeys(getPassword());
-        passwordField.submit();
 
+        passwordField.submit();
+        
         //Get the redirect URL for validation -- If you check the status of the
         //redirct URL call it will be 404.  The page does not exist. All we are
         //intersted in is the token parameter in the URL
@@ -154,6 +156,7 @@ import org.slf4j.LoggerFactory;
             X509EncodedKeySpec keySpecX509 = new X509EncodedKeySpec(Base64.decodeBase64(public_key));
             RSAPublicKey pubKey = (RSAPublicKey) kf.generatePublic(keySpecX509);
             Algorithm algorithm = Algorithm.RSA256(pubKey, null);
+            logger.info("issuer: " + getIssuer());
             JWTVerifier verifier = JWT.require(algorithm)
                 .withIssuer(getIssuer())
                 .build(); //Reusable verifier instance
@@ -165,7 +168,7 @@ import org.slf4j.LoggerFactory;
             logger.info("Verfication failed");
         }
 
-        assertNotNull(jwt);
+        assertNotNull(jwt);  
         
         //Quit Driver session
         driver.quit();
@@ -267,6 +270,13 @@ import org.slf4j.LoggerFactory;
         return keycloak_hostname;
     }
 
+    /**
+     * Return who we expect to have created and sigend the token.
+     * 
+     * If not provied in the the environment or properties file we will attempt to build it from the hostname and realm
+     * 
+     * @return
+     */
     private String getIssuer()
     {
         String keycloak_issuer = System.getenv(TokenTestConstants.ENV_KEYCLOAK_ISSUER);
@@ -274,6 +284,11 @@ import org.slf4j.LoggerFactory;
         if (StringUtils.isEmpty(keycloak_issuer))
         {
             keycloak_issuer = appProps.getProperty(TokenTestConstants.PROP_KEYCLOAK_ISSUER);
+
+            if (StringUtils.isEmpty(keycloak_issuer))
+            {
+                keycloak_issuer = buildIssuer(getHostname(), getRealm());
+            }
         }
 
         return keycloak_issuer;
@@ -325,6 +340,16 @@ import org.slf4j.LoggerFactory;
         }
 
         return false;
+    }
+
+    private String buildIssuer(String hostname, String realm)
+    {
+        if (StringUtils.isNotEmpty(hostname) && StringUtils.isNotEmpty(realm))
+        {
+            return "https://" + hostname + "/auth/realms/" + realm;
+        }
+
+        return "";
     }
     
 }
