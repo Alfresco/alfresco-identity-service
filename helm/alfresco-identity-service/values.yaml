@@ -1,8 +1,12 @@
 ingress:
   enabled: true
   path: /auth
-  proxyBufferSize: "16k"
-
+  annotations:
+    kubernetes.io/ingress.class: "nginx"
+    nginx.ingress.kubernetes.io/proxy-buffer-size: "16k"
+    nginx.ingress.kubernetes.io/affinity: "cookie"
+    nginx.ingress.kubernetes.io/session-cookie-name: "identity_affinity_route"
+    nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
 ingressHostName: "your ingress dns name"
 
 client:
@@ -42,10 +46,12 @@ keycloak:
       - name: theme
         mountPath: /opt/jboss/keycloak/themes/alfresco  
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
+    persistence:
+      deployPostgres: true
+      dbVendor: postgres
+      dbPassword: keycloak
   persistence:
     deployPostgres: true
-    dbVendor: postgres
-    dbPassword: keycloak
   postgresql:
     nameOverride: postgresql-id
     imageTag: "10.1"

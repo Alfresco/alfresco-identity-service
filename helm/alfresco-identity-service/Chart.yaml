@@ -1,5 +1,9 @@
 name: alfresco-identity-service
+<<<<<<< HEAD
 version: 0.5.0
+=======
+version: 0.4.2
+>>>>>>> master
 description: The Alfresco Identity Service provides a Single Sign On experience for the Alfresco Digital Business Platform (DBP).
 keywords:
   - alfresco
