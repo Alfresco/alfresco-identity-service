@@ -64,7 +64,7 @@ helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT
 ```
 
 <!-- markdownlint-disable MD029 -->
-2. Get the release name from the previous command and set it as a varible:
+2. Get the release name from the previous command and set it as a variable:
 <!-- markdownlint-disable MD029 -->
 
 ```bash
@@ -80,7 +80,7 @@ helm status $RELEASENAME
 ```
 
 <!-- markdownlint-disable MD029 -->
-4. Get Minikube or ELB IP and set it as a variable for future use:
+4. Get local or ELB IP and set it as a variable for future use:
 <!-- markdownlint-disable MD029 -->
 
 ```bash
