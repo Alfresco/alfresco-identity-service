@@ -1,12 +1,12 @@
-#Configuring a PingFederate instance with the Alfresco Identity Service
+# Configuring a PingFederate instance with the Alfresco Identity Service
 
 The Identity Service can be configured to use PingFederate as an identity provider. The following steps detail this configuration.
 
-##Prerequisites
+## Prerequisites
 
 Ensure you have installed the Identity Service before starting. You will also need to have administrative access to your instance of PingFederate.
 
-##Configuration
+## Configuration
 There are three main steps involved in configuring a PingFederate instance with the Identity Service:
 
 1. Obtain your parameters from PingFederate.
@@ -92,18 +92,18 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 6. On the **General Info** tab verify that the imported values correspond to those from the Identity Service setup.
 7. On the **Browser SSO** tab click **Configure Browser SSO** which will launch a new set of tabs for configuring the browser SSO.
 
-   ####Configuring browser SSO
+   #### Configuring browser SSO
    1. On the **SAML Profiles** tab tick all four checkboxes.
    2. On the **Assertion Creation** tab click **Configure Assertion Creation** which will launch a new set of tabs for configuring the assertion creation.
 
-      ####Configuring assertion creation
+      #### Configuring assertion creation
       1. On the **Identity Mapping** tab ensure the **Standard** checkbox is ticked.
       2. Under the heading **Attribute Contract**:
          * Enter *Email* into **Extend the contract**.
          * Choose *urn:oasis:names:tc:SAML:2.0:attrname-format:basic* from the **Attribute name format** dropdown and click **Add**.
       3. On the **Authentication Source Mapping** tab click **Map New Adapter Instance...** which will launch a new set of tabs for mapping a new adapter instance.
 
-         ####Mapping a new adapter instance
+         #### Mapping a new adapter instance
          1. On the **Adapter Instance** tab select *IdP Adapter* from the dropdown menu.
          2. On the **Attribute Contract Fulfillment** tab:
              * In the **email** row select *Adapter* from the **source** dropdown.
@@ -118,7 +118,7 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 
    3. On the **Protocol Settings** tab click **Configure Protocol Settings** which will launch a new set of tabs for configuring the protocol settings.
 
-      ####Configuring protocol settings
+      #### Configuring protocol settings
       1. On the **Assertion Consumer Service URL** tab verify that the default row binding for *POST* points to the Identity Service endpoint similar to the following screenshot.
       ![Assertion Consumer Service Default URL](./assertion-consumer-service-default-url.png)
       2. On the **SLO Service URLs** tab verify that the row for the *POST* binding points to your Identity Service endpoint similar to the following screenshot.
@@ -134,11 +134,11 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 
 8. On the **Credentials** tab click **Configure Credentials** which will launch a new set of tabs for configuring the credentials. 
 
-   ####Configuring credentials
+   #### Configuring credentials
    1. On the **Digital Signature Settings** tab select your organization's certificate from the **Signing Certificate** dropdown. 
    2. On the **Signature Verification Settings** tab click **Manage Signature Verification Settings** which will launch a new set of tabs for the signature verification settings.
 
-      ####Signature verification settings
+      #### Signature verification settings
       1. On the **Trust Model** tab select *Unanchored*.
       2. On the **Signature Verification Certificate** tab click **Manage Certificate**.
       3. Click **Import** and browse for the `.cert` file you created earlier in the **Filename** field.
