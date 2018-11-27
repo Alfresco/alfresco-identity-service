@@ -64,7 +64,7 @@ helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT
 ```
 
 <!-- markdownlint-disable MD029 -->
-2. Get the release name from the previous command and set it as a varible:
+2. Get the release name from the previous command and set it as a variable:
 <!-- markdownlint-disable MD029 -->
 
 ```bash
@@ -80,7 +80,7 @@ helm status $RELEASENAME
 ```
 
 <!-- markdownlint-disable MD029 -->
-4. Get Minikube or ELB IP and set it as a variable for future use:
+4. Get local or ELB IP and set it as a variable for future use:
 <!-- markdownlint-disable MD029 -->
 
 ```bash
@@ -125,6 +125,30 @@ helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT
 ```
 
 If you want to deploy your own realm with further customizations, see *Customizing the Realm* below.
+
+## Multiple Replicas, High Availability and Clustering
+
+For added resilience, we rely on support in the Keycloak chart for specifying multiple replicas.  To enable this you will need to deploy the identity chart with this additional setting:
+
+```bash
+
+  --set alfresco-infrastructure.alfresco-identity-service.keycloak.keycloak.replicas=3
+
+```
+
+In addition, for high availability, Keycloak supports clustering.  For more information on how to configure high availability and clustering, you can consult this additional documentation.  
+
+
+[Keycloak Stable chart Readme](https://github.com/helm/charts/tree/master/stable/keycloak#high-availability-and-clustering)
+
+
+[Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/4.5/server_installation/#standalone-clustered-configuration)
+
+
+[Keycloak Clustering](https://www.keycloak.org/docs/4.5/server_installation/#_clustering)
+
+
+**_NOTE:_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/4.5/server_installation/#sticky-sessions) are used so keep that in mind if you choose to use a different ingress type than nginx.
 
 ## Customizing the Realm
 
