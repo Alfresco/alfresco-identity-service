@@ -1,28 +1,34 @@
 
 ## Release Notes - Authorization Service - Version identity-service-1.0
                                                                                                     
-<h2>        Epic
+<h2>Epic
 </h2>
 <ul>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-134'>AUTH-134</a>] -         Identity Service 1.0
 </li>
 </ul>
     
-<h2>        Story
+<h2>Story
 </h2>
 <ul>
+<!--
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-2'>AUTH-2</a>] -         Education in SSO and related Technologies
 </li>
+-->
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-65'>AUTH-65</a>] -         Integrate code into APS to implement the use of the internal auth token
 </li>
+<!--
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-77'>AUTH-77</a>] -         Identity Service 0.1
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-95'>AUTH-95</a>] -         Identity Service 0.2
 </li>
+-->
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-130'>AUTH-130</a>] -         Make Alfresco-Identity-Service Github repo public
 </li>
+<!--
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-135'>AUTH-135</a>] -         CLONE - Identity Service 0.2
 </li>
+-->
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-148'>AUTH-148</a>] -         Custom Alfresco Login Theme
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-149'>AUTH-149</a>] -         Identify All Artifacts that need to be localized
@@ -37,18 +43,22 @@
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-155'>AUTH-155</a>] -         Complete and Update Documentation for Deploying the Identity Service
 </li>
+<!--
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-156'>AUTH-156</a>] -         Transfer of Knowledge
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-157'>AUTH-157</a>] -         Ready-To-Release Checklist
 </li>
+-->
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-158'>AUTH-158</a>] -         Publish Artifacts
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-159'>AUTH-159</a>] -         Naming
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-160'>AUTH-160</a>] -         Release Notes
 </li>
+<!--
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-161'>AUTH-161</a>] -         Identity Service Support Matrix
 </li>
+-->
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-162'>AUTH-162</a>] -         Automate regression testing for LDAP Authentication
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-184'>AUTH-184</a>] -         Create a list of 3rd Party Software Dependencies 
@@ -57,7 +67,7 @@
 </li>
 </ul>
                                                                                                                                                             
-<h2>        Bug
+<h2>Bug
 </h2>
 <ul>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-120'>AUTH-120</a>] -         Pass the secret name as values to identity service 0.2 helm chart
@@ -117,8 +127,10 @@
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-94'>AUTH-94</a>] -         Identity Service (Keycloak) Persistence
 </li>
+<!--
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-96'>AUTH-96</a>] -         Identity Service 0.3
 </li>
+-->
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-97'>AUTH-97</a>] -         CLONE - Ensure Keycloak Realm is Configurable at Deploy Time
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-106'>AUTH-106</a>] -         Automated testing of SSO for APS and ACS
