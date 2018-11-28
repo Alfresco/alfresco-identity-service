@@ -49,14 +49,11 @@ This environment variable will be used in the deployment steps.
 
 Using the following command only the identity service and the [nginx-ingress](https://github.com/Alfresco/alfresco-infrastructure-deployment#nginx-ingress-custom-configuration) will be deployed:
 
-<!--TODO Change to stable alfresco-infrastructure that includes alfresco-identity-service AUTH-193-->
 ```bash
 
-helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
 helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
 
-
-helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT \
+helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
@@ -105,7 +102,7 @@ This is deployed with the **default example realm applied** which results in def
 You can override the default redirectUri of `http://localhost*` for your environment with the `alfresco-identity-service.client.alfresco.redirectUris` property:
 
 ```bash
-helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT \
+helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
@@ -116,7 +113,7 @@ helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT
 including multiple redirectUris:
 
 ```bash
-helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT \
+helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
@@ -174,9 +171,9 @@ kubectl create secret generic realm-secret \
 
 ```bash
 
-helm repo add alfresco-incubator https://kubernetes-charts.alfresco.com/incubator
+helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
 
-helm install alfresco-incubator/alfresco-infrastructure --version 3.0.0-SNAPSHOT \
+helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
