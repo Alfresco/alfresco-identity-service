@@ -13,8 +13,6 @@
 <h2>Story
 </h2>
 <ul>
-<li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-65'>AUTH-65</a>] -         Integrate code into APS to implement the use of the internal auth token
-</li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-130'>AUTH-130</a>] -         Make Alfresco-Identity-Service Github repo public
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-148'>AUTH-148</a>] -         Custom Alfresco Login Theme
@@ -33,8 +31,6 @@
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-158'>AUTH-158</a>] -         Publish Artifacts
 </li>
-<li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-159'>AUTH-159</a>] -         Naming
-</li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-160'>AUTH-160</a>] -         Release Notes
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-162'>AUTH-162</a>] -         Automate regression testing for LDAP Authentication
@@ -50,10 +46,6 @@
 <ul>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-120'>AUTH-120</a>] -         Pass the secret name as values to identity service 0.2 helm chart
 </li>
-<li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-144'>AUTH-144</a>] -         alfresco-anaxes-hello-world documentation steps inconsistency
-</li>
-<li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-145'>AUTH-145</a>] -         alfresco-anaxes-hello-world-ui throws SyntaxError in browser console
-</li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-152'>AUTH-152</a>] -         ACS6: New identity-service authentication sub-system can freeze server
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-171'>AUTH-171</a>] -         Token request with SAML provider results with &quot;upstream sent too big header&quot;
@@ -61,10 +53,6 @@
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-172'>AUTH-172</a>] -         Identity Service Ingress is Broken Due to Truncation Differences
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-178'>AUTH-178</a>] -         Empty Realm in Identity Service
-</li>
-<li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-181'>AUTH-181</a>] -         Enable per-namespace host names in Bamboo-driven SAML tests
-</li>
-<li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-182'>AUTH-182</a>] -         Install jq binary in Bamboo elastic agents
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-183'>AUTH-183</a>] -         Keycloak stateful sets are left over after &quot;helm delete&quot;
 </li>
@@ -81,8 +69,6 @@
 <h2>        Task
 </h2>
 <ul>
-<li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-15'>AUTH-15</a>] -         Move the activity-sso-idm project from the Activiti org to the Alfresco org
-</li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-17'>AUTH-17</a>] -         A proof of concept that shows how to consume an identity token across several components of the platforms
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-25'>AUTH-25</a>] -         Design user token that will be used to represent the logged in user
@@ -91,15 +77,11 @@
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-41'>AUTH-41</a>] -         A proof of concept that shows how to consume an identity token across several components of the platforms
 </li>
-<li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-46'>AUTH-46</a>] -         Investigate how AWS Cognito could be used directly
-</li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-64'>AUTH-64</a>] -         Integrate code into ACS to implement the use of the internal auth token
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-67'>AUTH-67</a>] -         Ensure Keycloak Realm is Configurable at Deploy Time
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-68'>AUTH-68</a>] -         Use the Official Keycloak Helm Chart
-</li>
-<li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-69'>AUTH-69</a>] -         Update Hello World to demonstrate SSO
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-85'>AUTH-85</a>] -         Move SSO token implementation back to Alfresco Community
 </li>
@@ -120,8 +102,6 @@
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-142'>AUTH-142</a>] -         Update Identity Service description
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-143'>AUTH-143</a>] -         Separate Test Cases for Authorization
-</li>
-<li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-146'>AUTH-146</a>] -         Identity Service implicit flow regression testing
 </li>
 <li>[<a href='https://issues.alfresco.com/jira/browse/AUTH-175'>AUTH-175</a>] -         Update Identity Service to latest Version of Keycloak Chart
 </li>
