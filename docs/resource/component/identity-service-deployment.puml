@@ -22,16 +22,18 @@ node "External IdP" as EXT {
 }
 
 node "Alfresco DBP" {
-    node "Identity Service" as AIS {
+    frame "Identity Service" as AIS {
         component "Theme" as THEME #white
-        component "Keycloak" as KEY #lightgrey
+        component "Keycloak" as KEY
         database "Realm Secret" as SEC #lightgrey
         database "Postgresql" as PSQL #lightgrey
     }
-    node "Alfresco Component\n(ACS / APS)" as AC #white
+    
+        component "APS (REST)" as APS #lightgrey
+        component "ACS (REST)" as ACS #lightgrey
+        
     database "Volume Claim" as VOL #white
 }
-
 
 EXT <-> LDAP
 LDAP <--> KEY
@@ -39,15 +41,17 @@ LDAP <--> KEY
 CLIENT --> NGINX
 CLIENT <-> EXT
 
-NGINX --> AC
+NGINX --> APS
+NGINX --> ACS
 NGINX --> KEY
 
-THEME -> KEY
-KEY <-- SEC
+THEME .> KEY
+KEY <.. SEC
 EXT <--> KEY
 KEY <--> PSQL
 
-KEY <--> AC
+KEY <..> ACS
+KEY <..> APS
 
 PSQL <--> VOL
 
