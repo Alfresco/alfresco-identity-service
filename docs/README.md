@@ -1,4 +1,4 @@
-## Component Name
+## Alfresco Identity Service
 
 ![Completeness Badge](https://img.shields.io/badge/Document_Level-In_Progress-yellow.svg?style=flat-square)
 
@@ -53,7 +53,7 @@ A basic understanding of:
 The components typically involved in a Client Application's single-sign on against DBP REST APIs is perhaps best viewed in the
 context of the Kubernetes deployment:
 
-![Alfresco Identity Service Deployment](resource/component/identity-service-deployment.png "Alfresco Identity Service Deployment")
+![Alfresco Identity Service Components](resource/component/identity-service-components.png "Alfresco Identity Service Components")
 
 #### Data Model
 

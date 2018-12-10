@@ -1,6 +1,6 @@
 @startuml
 
-Title: Alfresco Identity Service Deployment Overview
+Title: Alfresco Identity Service Component Overview
 
 skinparam componentStyle uml2
 skinparam linetype ortho
