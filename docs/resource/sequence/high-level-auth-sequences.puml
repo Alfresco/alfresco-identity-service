@@ -1,0 +1,113 @@
+@startuml
+autonumber
+Title: Alfresco Components / Identity Service High-Level Flows
+
+actor "User's\nBrowser" as UB
+participant "App" as APP
+participant "Identity\nService" as IS
+participant "Alfresco\nComponent\n(ACS, APS)" as ALFC
+database "Alfresco\nComponent\nDatabase" as ALFCDB
+participant "External IdP" as EXT
+participant "LDAP" as LDAP
+
+note right of ALFC
+- X endpoints represent abbreviated flows where either 
+a subsystem is not configured for the scenario
+or an external system does not know about the particular user
+- Note that this is high-level, not all details are shown
+end note
+
+== 1. JWT (Implicit) Authentication Against Identity Service Configured for LDAP ==
+
+ALFC<->LDAP: LDAP User/Group Sync
+ALFC<->ALFCDB
+... LDAP sync completed ...
+UB<->APP: Request page
+UB<->APP: Login initiated
+UB->IS: Request token
+activate IS
+note left of IS
+Identity Service has not
+authenticated this user
+end note
+IS->UB: Return login page
+deactivate IS
+UB->IS: Submit login form
+activate IS
+note left of IS
+username=bsmith
+password=mypass
+end note
+IS<->LDAP: Validate user/pass
+... User is now authenticated with Identity Service ...
+IS->UB: Return token
+note left of IS
+JWT: eyJhbGci...
+end note
+deactivate IS
+... App / Browser has obtained JWT from Identity Service ...
+UB->ALFC: GET /some-api
+note right of UB
+HTTP Headers
+Authorization: Bearer eyJhbGci...
+end note
+activate ALFC
+ALFC<-->IS: Get signing keys
+ALFC->ALFC: Verify JWT
+ALFC<->ALFCDB: User in Context
+ALFC<->ALFC: Authorization/ACLs
+ALFC->UB: Response
+deactivate ALFC
+
+== 2. JWT (Implicit) Authentication Against Identity Service Configured for SAML ==
+
+ALFC<->LDAP: LDAP User/Group Sync
+ALFC<->ALFCDB
+... LDAP sync completed ...
+UB<->APP: Request page
+UB<->APP: Login initiated
+UB->IS: Request token
+activate IS
+note left of IS
+Identity Service has not
+authenticated this user
+end note
+IS->UB: Redirect to SAML IdP
+deactivate IS
+UB->EXT: Initiate SAML login
+activate EXT
+EXT->EXT: Validate SAML request
+EXT->UB: Return login page
+UB->EXT: Submit login form
+EXT<->LDAP: Validate user/pass
+note left of EXT
+username=bsmith
+password=mypass
+end note
+... User is now authenticated with External IdP ...
+EXT->UB: Redirect with SAML response
+deactivate EXT
+UB->IS: SAML response
+activate IS
+IS->IS: Validate SAML response
+... User is now authenticated with Identity Service ...
+IS->UB: Return token
+note left of IS
+JWT: eyJhbGci...
+end note
+deactivate IS
+... App / Browser has obtained JWT from Identity Service ...
+UB->ALFC: GET /some-api
+note right of UB
+HTTP Headers
+Authorization: Bearer eyJhbGci...
+end note
+activate ALFC
+ALFC<-->IS: Get signing keys
+ALFC->ALFC: Verify JWT
+ALFC<->ALFCDB: User in Context
+ALFC<->ALFC: Authorization/ACLs
+ALFC->UB: Response
+deactivate ALFC
+
+@enduml
