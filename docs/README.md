@@ -6,7 +6,7 @@
 
 ### Purpose
 The Alfresco Identity Service was initially introduced to the architecture as a means for Client Applications to implement single sign-on
-across components of the Digital Business Platform via [OpenID Connect](https://openid.net/connect/) while providing the option to 
+across components of the Digital Business Platform (via [OpenID Connect](https://openid.net/connect/)) while providing the option to 
 delegate authentication of the user to an external Identity Provider over protocols like SAML, OpenID Connect, and LDAP.
 
 Aspects of Common Identity and Governance are likely to be the responsibility of the Identity Service in the future.
@@ -26,17 +26,17 @@ The primary deployment mechanism is via a Kubernetes Helm chart, and typically a
 
 ### Artifacts and Guidance
 
-| Source Code   | https://github.com/Alfresco/alfresco-identity-service                             |
-| License       | Apache 2                                                                          |
-| Issue Tracker | https://issues.alfresco.com/jira/projects/AUTH                                    |
-| Documentation | TODO                                                                              |
-| Contributions | https://github.com/Alfresco/alfresco-identity-service/blob/master/CONTRIBUTING.md |
+Source Code: https://github.com/Alfresco/alfresco-identity-service
+License: Apache 2
+Issue Tracker: https://issues.alfresco.com/jira/projects/AUTH
+Documentation: TODO
+Contributions: https://github.com/Alfresco/alfresco-identity-service/blob/master/CONTRIBUTING.md
 
 *** 
 
 
 ### Prerequisite Knowledge
-A basic understanding of:
+A basic understanding of the following would be helpful in understanding the Identity Service:
 * OAuth 2
 * OpenID Connect
 * SAML
@@ -68,7 +68,7 @@ but here's a high-level overview of a few common scenarios:
 
 ### APIs and Interfaces
 
-In it's initial introduction, only the endpoints necessary for SAML and Open ID Connect protocols are supported in the Identity Service.
+In its initial introduction, only the endpoints necessary for SAML and Open ID Connect protocols are supported in the Identity Service.
 
 From a UI perspective, an Alfresco login theme is provided, but the admin console is Keycloak's default.
 
