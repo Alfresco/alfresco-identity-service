@@ -2,7 +2,7 @@
 
 ![Completeness Badge](https://img.shields.io/badge/Document_Level-In_Progress-yellow.svg?style=flat-square)
 
-![Version Badge](https://img.shields.io/badge/Version-Future-blue.svg?style=flat-square)
+![Version Badge](https://img.shields.io/badge/Version-1.0-ff69b4.svg?style=flat-square)
 
 ### Purpose
 The Alfresco Identity Service was initially introduced to the architecture as a means for Client Applications to implement single sign-on
