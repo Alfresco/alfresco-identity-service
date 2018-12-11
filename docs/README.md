@@ -63,9 +63,15 @@ See the [ADR on JWT details](adrs/0001-Internal-JWT-Token-Details.md).
 #### Flows
 
 The details of various auth protocols like SAML and OpenID Connect are readily available on the web so we won't repeat them here,
-but here's a high-level overview of a few common scenarios:
+but below are high-level overviews of a few common scenarios:
 
-![Alfresco Identity Service High-Level Auth Sequences](resource/sequence/high-level-auth-sequences.png "Alfresco Identity Service High-Level Auth Sequences")
+##### Auth Against LDAP
+
+![Alfresco JWT (Implicit) Authentication Against Identity Service Configured for LDAP](resource/sequence/high-level-ldap-auth-sequence.png "Alfresco JWT (Implicit) Authentication Against Identity Service Configured for LDAP")
+
+##### Auth Against SAML
+
+![Alfresco JWT (Implicit) Authentication Against Identity Service Configured for SAML](resource/sequence/high-level-saml-auth-sequence.png "Alfresco JWT (Implicit) Authentication Against Identity Service Configured for SAML")
 
 ### APIs and Interfaces
 
