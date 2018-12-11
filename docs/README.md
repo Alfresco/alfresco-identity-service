@@ -26,7 +26,9 @@ The primary deployment mechanism is via a Kubernetes Helm chart, and typically a
 
 ### Artifacts and Guidance
 
-* Source Code: https://github.com/Alfresco/alfresco-identity-service
+* Source Code
+** https://github.com/Alfresco/alfresco-identity-service
+** https://github.com/Alfresco/alfresco-keycloak-theme
 * License: Apache 2
 * Issue Tracker: https://issues.alfresco.com/jira/projects/AUTH
 * Documentation: TODO
