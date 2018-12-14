@@ -1,0 +1,60 @@
+@startuml
+
+Title: Alfresco Identity Service Component Overview
+
+skinparam componentStyle uml2
+skinparam linetype ortho
+skinparam rectangle {
+    BorderStyle dashed
+    FontSize 15
+    FontStyle none
+}
+
+actor "Client" as CLIENT
+
+node "NGINX Ingress" {
+    component "ingress-controller" as NGINX #lightgrey
+}
+
+database LDAP #white
+
+node "External IdP" as EXT {
+}
+
+node "Alfresco DBP" {
+    frame "Identity Service" as AIS {
+        component "Theme" as THEME #white
+        component "Keycloak" as KEY
+        database "Realm Secret" as SEC #lightgrey
+        database "Postgresql" as PSQL #lightgrey
+    }
+    
+        component "APS (REST)" as APS #lightgrey
+        component "ACS (REST)" as ACS #lightgrey
+        
+    database "Volume Claim" as VOL #white
+}
+
+EXT <-> LDAP
+LDAP <--> KEY
+
+CLIENT --> NGINX
+CLIENT <-> EXT
+
+NGINX --> APS
+NGINX --> ACS
+NGINX --> KEY
+
+THEME .> KEY
+KEY <.. SEC
+EXT <--> KEY
+KEY <--> PSQL
+
+KEY <..> ACS
+KEY <..> APS
+
+PSQL <--> VOL
+
+center footer Copyright 2018 Alfresco Software Inc
+
+@enduml
