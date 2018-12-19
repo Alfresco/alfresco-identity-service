@@ -59,7 +59,7 @@ helm install alfresco-stable/alfresco-infrastructure \
 You can customize a realm during the deployment process or manually in the administration console after you have deployed the Identity Service.
 
 #### Realm customization during deployment
-The below steps advise how to add a realm file to your deployment that contains details of its configuration.
+The following steps advise how to add a realm file to your deployment that contains details of its configuration.
 
 1. Create a realm file. A [sample realm](../../helm/alfresco-identity-service/alfresco-realm.json) file is contained in this project.
 
@@ -89,7 +89,7 @@ The below steps advise how to add a realm file to your deployment that contains 
 4. Once the deployment has finished, sign in to the [Management Console](http://www.keycloak.org/docs/4.5/server_admin/index.html#admin-console) to configure your new realm.
 
 #### Manually customize a realm post-deployment
-The below steps describe how to add a new realm manually post-deployment.
+The following steps describe how to add a new realm manually post-deployment.
 
 1. Open the administration console and [add a new realm](http://www.keycloak.org/docs/4.5/server_admin/index.html#_create-realm) called *Alfresco*.
 
@@ -100,7 +100,7 @@ The below steps describe how to add a new realm manually post-deployment.
 4. [Add a new user](http://www.keycloak.org/docs/4.5/server_admin/index.html#_create-new-user) with a username of "testuser", email of "test@test.com" and first and last name of "test".
 
 #### Manually import a realm file post-deployment
-The below steps explain how to import a realm file post-deployment.
+The following steps explain how to import a realm file post-deployment.
 
 1. Create a realm file based on the [sample realm file](../../helm/alfresco-identity-service/alfresco-realm.json) provided in this project, or just use the sample file as it is.
 
