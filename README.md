@@ -2,17 +2,7 @@
 
 The *Alfresco Identity Service* will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication. This project contains the open-source core of this service.
 
-## Prerequisites
-
-The Alfresco Identity Service deployment requires:
-
-| Component        | Recommended version |
-| ------------- |:-------------:|
-| Docker     | 17.0.9.1 |
-| Kubernetes | 1.8.4    |
-| Kubectl    | 1.8.4    |
-| Helm       | 2.8.2    |
-| Kops       | 1.8.1    |
+Check [prerequisites section](https://github.com/Alfresco/alfresco-dbp-deployment/blob/master/README-prerequisite.md) before you start.
 
 Any variation from these technologies and versions may affect the end result. If you do experience any issues please let us know through our [Gitter channel](https://gitter.im/Alfresco/platform-services?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
 
