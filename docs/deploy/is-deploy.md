@@ -19,7 +19,7 @@ The following steps detail a default deployment of the Identity Service. See [Cu
 
 * [default client redirect URIs](./is-customize.md#client-redirect-uris)
 * [realm customization](./is-customize.md#customizing-the-realm)
-* [increasing resilience and clustering](./is-customize.md#clustering)
+* [increasing resiliency using replicas](./is-customize.md#replicas)
 
 1. You need to deploy the [Alfresco Infrastructure chart](https://github.com/Alfresco/alfresco-infrastructure-deployment#1-deploy-the-infrastructure-charts) in order to deploy the Identity Service. Use the following command to deploy it:
 
