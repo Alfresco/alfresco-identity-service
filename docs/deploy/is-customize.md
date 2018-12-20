@@ -14,7 +14,7 @@ It is possible to override some parameters set for the default realm and clients
 
 ### Client redirect URIs
 
-The default redirect URI set during deployment is: `http://localhost*`. Using the `alfresco-identity-service.client.alfresco.redirectUris` property, you can specify a different redirect URI similar to the following example:
+The default redirect URI set during deployment is: `http://localhost*`. When deploying the Identity Service to a remote system, this URI should be changed to match the hostname of the remote system. Use the `alfresco-identity-service.client.alfresco.redirectUris` property to specify a different redirect URI as per the following example:
 
 ```bash
 helm install alfresco-stable/alfresco-infrastructure \
