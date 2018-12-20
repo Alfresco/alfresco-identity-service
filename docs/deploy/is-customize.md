@@ -1,9 +1,6 @@
 # Customizing an Identity Service deployment
 
-## Increasing resilience
-There are a number of options for increasing the availability and resilience of a deployment.
-
-### Replicas
+## Replicas
 During deployment you can specify multiple replicas to increase the resilience of an Identity Service deployment.
 
 To enable multiple replicas, use the following command during the Helm chart deployment:
@@ -11,22 +8,6 @@ To enable multiple replicas, use the following command during the Helm chart dep
 ```bash
 --set alfresco-infrastructure.alfresco-identity-service.keycloak.keycloak.replicas=3
 ```
-
-### Clustering
-
-Clustering is another method that can be used to increase the resilience of a deployment. Information on how to configure clustering is available in the following locations:
-
-
-* [High availability and clustering](https://github.com/helm/charts/tree/master/stable/keycloak#high-availability-and-clustering)
-
-
-* [Standalone clustered mode](https://www.keycloak.org/docs/4.5/server_installation/#standalone-clustered-configuration)
-
-
-* [Clustering](https://www.keycloak.org/docs/4.5/server_installation/#_clustering)
-
-
-**Note:** Keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/4.5/server_installation/#sticky-sessions) are used, so be aware if you are using an ingress other than Nginx.
 
 ## Client and realm customization
 It is possible to override some parameters set for the default realm and clients during and post-deployment.
