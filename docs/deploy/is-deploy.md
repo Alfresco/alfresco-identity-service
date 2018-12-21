@@ -52,7 +52,7 @@ The following steps detail a default deployment of the Identity Service. See [Cu
 4. Set your local or ELB IP address as a variable for future use:
 
 	```
-	export ELBADDRESS=$(kubectl get services $RELEASENAME-nginx-ingress-controller --	namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+	export ELBADDRESS=$(kubectl get services $RELEASENAME-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 	```
 
 5. The default realm values are as follows. You should update all administrator passwords to more complex ones after you have deployed the Identity Service.
