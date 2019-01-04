@@ -7,8 +7,6 @@ source "${here}/build.properties"
 
 echo "Downloading keycloak"
 curl -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/keycloak-$KEYCLOAK_VERSION.zip
-curl -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/keycloak-$KEYCLOAK_VERSION.zip.sha1
-sha1sum -c keycloak-$KEYCLOAK_VERSION.zip.sha1
 
 echo "unzipping keycloak"
 unzip -oq keycloak-$KEYCLOAK_VERSION.zip
