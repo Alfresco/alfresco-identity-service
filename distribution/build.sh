@@ -10,7 +10,6 @@ curl -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/keycloak-$KEYCLOA
 
 echo "unzipping keycloak"
 unzip -oq keycloak-$KEYCLOAK_VERSION.zip
-curl -v "http://localhost:8080/auth/realms/alfresco/protocol/openid-connect/auth?client_id=security-admin-console&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fadmin%2Falfresco%2Fconsole%2F&state=cd79cde9-02d2-4b9d-8299-870e638b7b6e&response_mode=fragment&response_type=code&scope=openid&nonce=fba6bbdb-27d4-49c1-8e7f-04fb4904fa5c" | grep "Alfresco Identity Service"
 
 echo "adding realm"
 mkdir -p keycloak-$KEYCLOAK_VERSION/realm
