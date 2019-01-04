@@ -19,6 +19,8 @@ sed -i'.bak' "
 " keycloak-$KEYCLOAK_VERSION/realm/alfresco-realm.json
 
 echo "adding themes"
+rm -rf alfresco
+mkdir alfresco
 docker run --rm -v "$PWD/alfresco:/tmp" alfresco/alfresco-keycloak-theme:$THEME_VERSION sh -c "cp -rf /alfresco/* /tmp/"
 cp -rf alfresco keycloak-$KEYCLOAK_VERSION/themes/
 rm -rf alfresco
