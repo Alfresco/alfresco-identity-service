@@ -1,7 +1,7 @@
 #!/bin/sh
 set -o errexit
 
-source ./build.properties
+source $PWD/build.properties
 
 echo "Downloading keycloak"
 curl -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/keycloak-$KEYCLOAK_VERSION.zip
