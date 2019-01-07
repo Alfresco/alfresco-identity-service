@@ -32,7 +32,7 @@ echo "set \"JAVA_OPTS=%JAVA_OPTS% -Dkeycloak.import=%~dp0..\\\realm\\\alfresco-r
 echo "\n# Alfresco realm import " >> keycloak-$KEYCLOAK_VERSION/bin/standalone.conf.ps1
 echo "\$JAVA_OPTS += \"-Dkeycloak.import=\$pwd\\\..\\\realm\\\alfresco-realm.json\"" >> keycloak-$KEYCLOAK_VERSION/bin/standalone.conf.ps1
 
-rm -f keycloak-$KEYCLOAK_VERSION/keycloak-$KEYCLOAK_VERSION/themes/keycloak/common/resources/node_modules/rcue/dist/img/git-Logo.svg
+rm -f keycloak-$KEYCLOAK_VERSION/themes/keycloak/common/resources/node_modules/rcue/dist/img/git-Logo.svg
 rm -rf alfresco-identity-$IDENTITY_VERSION
 mkdir alfresco-identity-$IDENTITY_VERSION
 cp -rf keycloak-$KEYCLOAK_VERSION/* alfresco-identity-$IDENTITY_VERSION/
