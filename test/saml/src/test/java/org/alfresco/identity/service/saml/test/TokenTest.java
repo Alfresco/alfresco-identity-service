@@ -1,5 +1,6 @@
 package org.alfresco.identity.service.saml.test;
 
+import static org.alfresco.identity.service.saml.test.TokenTestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.BufferedReader;
@@ -119,8 +120,10 @@ import org.slf4j.LoggerFactory;
         driver.get("https://" + getHostname() + "/auth/realms/" + getRealm() +"/protocol/openid-connect/auth?response_type=id_token%20token&client_id=alfresco&state=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs&redirect_uri=http%3A%2F%2F" + getHostname() + "%2Fdummy_redirect&scope=openid%20profile%20email&nonce=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs");
         logger.info("Login page URL: " + driver.getCurrentUrl());
 
-        //Click on SAML link on login page
-        WebElement element = driver.findElement(ByLinkText.linkText(TokenTestConstants.ELEMENT_SAML));
+        //Click on SAML link on login page, the link is theme-dependent
+        String themeName = getTheme();
+        WebElement element = driver.findElement(
+            themeName.compareTo(ALFRESCO_THEME_NAME) == 0 ? ELEMENT_SAML_ALFRESCO : ELEMENT_SAML_KEYCLOAK);
         element.click();
 
         //Select User, Enter password, and submit form on SAML page
@@ -184,17 +187,17 @@ import org.slf4j.LoggerFactory;
         {
             String[] split = url.split("#");
 
-            if(split != null && split.length == 2 && StringUtils.isNotBlank(split[1]))
+            if(split.length == 2 && StringUtils.isNotBlank(split[1]))
             {
                 String[] params = split[1].split("&");
 
-                if (params != null && params.length > 0)
+                if (params.length > 0)
                 {
                     for (String param : params)
                     {
                         String[] working = param.split("=");
 
-                        if (working != null && working.length >= 1 && StringUtils.isNotBlank(working[0]))
+                        if (working.length >= 1 && StringUtils.isNotBlank(working[0]))
                         {
                             map.put(working[0], ((working.length == 2 && StringUtils.isNotBlank(working[1])) ? working[1] : ""));
                         }
@@ -260,14 +263,7 @@ import org.slf4j.LoggerFactory;
 
     private String getHostname()
     {
-        String keycloak_hostname = System.getenv(TokenTestConstants.ENV_KEYCLOAK_HOSTNAME);
-        
-        if (StringUtils.isEmpty(keycloak_hostname))
-        {
-            keycloak_hostname = appProps.getProperty(TokenTestConstants.PROP_KEYCLOAK_HOSTNAME);
-        }
-
-        return keycloak_hostname;
+        return resolveProperty(PROP_KEYCLOAK_HOSTNAME);
     }
 
     /**
@@ -279,16 +275,11 @@ import org.slf4j.LoggerFactory;
      */
     private String getIssuer()
     {
-        String keycloak_issuer = System.getenv(TokenTestConstants.ENV_KEYCLOAK_ISSUER);
+        String keycloak_issuer = resolveProperty(PROP_KEYCLOAK_ISSUER);
         
         if (StringUtils.isEmpty(keycloak_issuer))
         {
-            keycloak_issuer = appProps.getProperty(TokenTestConstants.PROP_KEYCLOAK_ISSUER);
-
-            if (StringUtils.isEmpty(keycloak_issuer))
-            {
-                keycloak_issuer = buildIssuer(getHostname(), getRealm());
-            }
+            keycloak_issuer = buildIssuer(getHostname(), getRealm());
         }
 
         return keycloak_issuer;
@@ -296,50 +287,57 @@ import org.slf4j.LoggerFactory;
 
     private String getRealm()
     {
-        String keycloak_realm = System.getenv(TokenTestConstants.ENV_KEYCLOAK_REALM);
-        
-        if (StringUtils.isEmpty(keycloak_realm))
-        {
-            keycloak_realm = appProps.getProperty(TokenTestConstants.PROP_KEYCLOAK_REALM);
-        }
-
-        return keycloak_realm;
+        return resolveProperty(PROP_KEYCLOAK_REALM);
     }
 
     private String getUser()
     {
-        String saml_user = System.getenv(TokenTestConstants.ENV_SAML_USERNAME);
-        
-        if (StringUtils.isEmpty(saml_user))
-        {
-            saml_user = appProps.getProperty(TokenTestConstants.PROP_SAML_USERNAME);
-        }
+        return resolveProperty(PROP_SAML_USERNAME);
+    }
 
-        return saml_user;
+    private String getTheme()
+    {
+        return resolveProperty(PROP_KEYCLOAK_THEME);
     }
 
     private String getPassword()
     {
-        String saml_password = System.getenv(TokenTestConstants.ENV_SAML_PASSWORD);
-        
-        if (StringUtils.isEmpty(saml_password))
-        {
-            saml_password = appProps.getProperty(TokenTestConstants.PROP_SAML_PASSWORD);
-        }
-
-        return saml_password;
+        return resolveProperty(PROP_SAML_PASSWORD);
     }
 
     private Boolean isBrowserEnable()
-    { 
-        String enabled = appProps.getProperty(TokenTestConstants.PROP_ENABLE_BROWSER);
-        
+    {
+        String enabled = resolveProperty(PROP_ENABLE_BROWSER);
+
         if (StringUtils.isNotBlank(enabled))
         {
             return Boolean.valueOf(enabled);
         }
 
         return false;
+    }
+
+    /**
+     * Return property value
+     * <BR>
+     * Values can be overridden from environment variables. In this case the following naming convention applies:
+     * <P>
+     * <code>property.name (property) -> PROPERTY_NAME (environment variable)</code>
+     *
+     * @param propertyName property name
+     * @return property value
+     */
+    private String resolveProperty(String propertyName)
+    {
+        String envVarName = propertyName.replace(".", "_").toUpperCase();
+        String propertyValue = System.getenv(envVarName);
+
+        if (StringUtils.isEmpty(propertyValue))
+        {
+            propertyValue = appProps.getProperty(propertyName);
+        }
+
+        return propertyValue;
     }
 
     private String buildIssuer(String hostname, String realm)
