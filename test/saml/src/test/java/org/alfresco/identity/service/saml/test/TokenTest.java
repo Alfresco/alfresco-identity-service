@@ -187,17 +187,17 @@ import org.slf4j.LoggerFactory;
         {
             String[] split = url.split("#");
 
-            if(split != null && split.length == 2 && StringUtils.isNotBlank(split[1]))
+            if(split.length == 2 && StringUtils.isNotBlank(split[1]))
             {
                 String[] params = split[1].split("&");
 
-                if (params != null && params.length > 0)
+                if (params.length > 0)
                 {
                     for (String param : params)
                     {
                         String[] working = param.split("=");
 
-                        if (working != null && working.length >= 1 && StringUtils.isNotBlank(working[0]))
+                        if (working.length >= 1 && StringUtils.isNotBlank(working[0]))
                         {
                             map.put(working[0], ((working.length == 2 && StringUtils.isNotBlank(working[1])) ? working[1] : ""));
                         }
@@ -305,6 +305,18 @@ import org.slf4j.LoggerFactory;
         return resolveProperty(PROP_SAML_PASSWORD);
     }
 
+    private Boolean isBrowserEnable()
+    {
+        String enabled = resolveProperty(PROP_ENABLE_BROWSER);
+
+        if (StringUtils.isNotBlank(enabled))
+        {
+            return Boolean.valueOf(enabled);
+        }
+
+        return false;
+    }
+
     /**
      * Return property value
      * <BR>
@@ -326,18 +338,6 @@ import org.slf4j.LoggerFactory;
         }
 
         return propertyValue;
-    }
-
-    private Boolean isBrowserEnable()
-    { 
-        String enabled = appProps.getProperty(TokenTestConstants.PROP_ENABLE_BROWSER);
-        
-        if (StringUtils.isNotBlank(enabled))
-        {
-            return Boolean.valueOf(enabled);
-        }
-
-        return false;
     }
 
     private String buildIssuer(String hostname, String realm)
