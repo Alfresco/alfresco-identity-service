@@ -1,8 +1,6 @@
 package org.alfresco.identity.service.saml.test;
 
-import static org.alfresco.identity.service.saml.test.TokenTestConstants.ALFRESCO_THEME_NAME;
-import static org.alfresco.identity.service.saml.test.TokenTestConstants.ELEMENT_SAML_ALFRESCO;
-import static org.alfresco.identity.service.saml.test.TokenTestConstants.ELEMENT_SAML_KEYCLOAK;
+import static org.alfresco.identity.service.saml.test.TokenTestConstants.*;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.BufferedReader;
@@ -265,14 +263,7 @@ import org.slf4j.LoggerFactory;
 
     private String getHostname()
     {
-        String keycloak_hostname = System.getenv(TokenTestConstants.ENV_KEYCLOAK_HOSTNAME);
-        
-        if (StringUtils.isEmpty(keycloak_hostname))
-        {
-            keycloak_hostname = appProps.getProperty(TokenTestConstants.PROP_KEYCLOAK_HOSTNAME);
-        }
-
-        return keycloak_hostname;
+        return resolveProperty(PROP_KEYCLOAK_HOSTNAME);
     }
 
     /**
@@ -284,16 +275,11 @@ import org.slf4j.LoggerFactory;
      */
     private String getIssuer()
     {
-        String keycloak_issuer = System.getenv(TokenTestConstants.ENV_KEYCLOAK_ISSUER);
+        String keycloak_issuer = resolveProperty(PROP_KEYCLOAK_ISSUER);
         
         if (StringUtils.isEmpty(keycloak_issuer))
         {
-            keycloak_issuer = appProps.getProperty(TokenTestConstants.PROP_KEYCLOAK_ISSUER);
-
-            if (StringUtils.isEmpty(keycloak_issuer))
-            {
-                keycloak_issuer = buildIssuer(getHostname(), getRealm());
-            }
+            keycloak_issuer = buildIssuer(getHostname(), getRealm());
         }
 
         return keycloak_issuer;
@@ -301,50 +287,45 @@ import org.slf4j.LoggerFactory;
 
     private String getRealm()
     {
-        String keycloak_realm = System.getenv(TokenTestConstants.ENV_KEYCLOAK_REALM);
-        
-        if (StringUtils.isEmpty(keycloak_realm))
-        {
-            keycloak_realm = appProps.getProperty(TokenTestConstants.PROP_KEYCLOAK_REALM);
-        }
-
-        return keycloak_realm;
+        return resolveProperty(PROP_KEYCLOAK_REALM);
     }
 
     private String getUser()
     {
-        String saml_user = System.getenv(TokenTestConstants.ENV_SAML_USERNAME);
-        
-        if (StringUtils.isEmpty(saml_user))
-        {
-            saml_user = appProps.getProperty(TokenTestConstants.PROP_SAML_USERNAME);
-        }
-
-        return saml_user;
+        return resolveProperty(PROP_SAML_USERNAME);
     }
 
     private String getTheme()
     {
-        String theme_name = System.getenv(TokenTestConstants.ENV_KEYCLOAK_THEME);
-
-        if (StringUtils.isEmpty(theme_name))
-        {
-            theme_name = appProps.getProperty(TokenTestConstants.PROP_KEYCLOAK_THEME);
-        }
-
-        return theme_name;
+        return resolveProperty(PROP_KEYCLOAK_THEME);
     }
 
     private String getPassword()
     {
-        String saml_password = System.getenv(TokenTestConstants.ENV_SAML_PASSWORD);
-        
-        if (StringUtils.isEmpty(saml_password))
+        return resolveProperty(PROP_SAML_PASSWORD);
+    }
+
+    /**
+     * Return property value
+     * <BR>
+     * Values can be overridden from environment variables. In this case the following naming convention applies:
+     * <P>
+     * <code>property.name (property) -> PROPERTY_NAME (environment variable)</code>
+     *
+     * @param propertyName property name
+     * @return property value
+     */
+    private String resolveProperty(String propertyName)
+    {
+        String envVarName = propertyName.replace(".", "_").toUpperCase();
+        String propertyValue = System.getenv(envVarName);
+
+        if (StringUtils.isEmpty(propertyValue))
         {
-            saml_password = appProps.getProperty(TokenTestConstants.PROP_SAML_PASSWORD);
+            propertyValue = appProps.getProperty(propertyName);
         }
 
-        return saml_password;
+        return propertyValue;
     }
 
     private Boolean isBrowserEnable()

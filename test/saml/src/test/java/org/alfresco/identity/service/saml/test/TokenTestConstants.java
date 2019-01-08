@@ -8,14 +8,6 @@ import org.openqa.selenium.By;
 
 public final class TokenTestConstants
 {
-    //Envionment Variables
-    public final static String ENV_SAML_USERNAME = "SAML_USERNAME";
-    public final static String ENV_SAML_PASSWORD = "SAML_PASSWORD";
-    public final static String ENV_KEYCLOAK_HOSTNAME = "KEYCLOAK_HOSTNAME";
-    public final static String ENV_KEYCLOAK_ISSUER = "KEYCLOAK_ISSUER";
-    public final static String ENV_KEYCLOAK_REALM = "KEYCLOAK_REALM";
-    public final static String ENV_KEYCLOAK_THEME = "KEYCLOAK_THEME";
-
     //Property File Keys
     public final static String PROP_SAML_USERNAME = "saml.username";
     public final static String PROP_SAML_PASSWORD = "saml.password";
