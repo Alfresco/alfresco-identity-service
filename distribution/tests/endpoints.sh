@@ -1,7 +1,5 @@
 #!/bin/bash
 
-set -o errexit
-
 rm -rf alfresco-identity-$IDENTITY_VERSION
 unzip alfresco-identity-$IDENTITY_VERSION.zip
 
@@ -16,6 +14,8 @@ echo starting the identity service
 
 sleep 15
 echo Started Alfresco Identity
+
+set -o errexit
 
 curl -v http://localhost:8080/auth/
 curl -v http://localhost:8080/auth/admin/alfresco/console/
