@@ -1082,7 +1082,6 @@
       "useTemplateMappers": false
     }
   ],
-  "clientTemplates": [],
   "browserSecurityHeaders": {
     "xContentTypeOptions": "nosniff",
     "xRobotsTag": "none",
