@@ -41,4 +41,4 @@ ls alfresco-identity-$IDENTITY_VERSION
 
 echo packaging identity
 zip -r alfresco-identity-$IDENTITY_VERSION.zip alfresco-identity-$IDENTITY_VERSION
-sha1sum alfresco-identity-$IDENTITY_VERSION.zip > alfresco-identity-$IDENTITY_VERSION.zip.sha1
+openssl md5 -binary alfresco-identity-$IDENTITY_VERSION.zip > alfresco-identity-$IDENTITY_VERSION.md5
