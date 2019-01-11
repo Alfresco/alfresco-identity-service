@@ -1,4 +1,4 @@
-Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-$IDENTITY_VERSION%'"
+Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'"
 
 ./standalone.ps1 --background
 
@@ -6,7 +6,7 @@ start-sleep -s 15
 
 function checkStatus {
     if ($args[0] -notmatch $args[1]) {
-        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-$IDENTITY_VERSION%'" | foreach { kill $_.ProcessId }
+        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'" | foreach { kill $_.ProcessId }
         $test=$args[0]
         $check=$args[1]
         throw "Accessing $test does not output $check "
@@ -24,5 +24,5 @@ $Body = @{
 }
 checkStatus (Invoke-RestMethod "http://localhost:8080/auth/realms/alfresco/protocol/openid-connect/token" -Method Post -Body $Body).access_token "."
 
-Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-$IDENTITY_VERSION%'"
-Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-$IDENTITY_VERSION%'" | foreach { kill $_.ProcessId }
+Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'"
+Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'" | foreach { kill $_.ProcessId }

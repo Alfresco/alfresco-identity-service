@@ -1,19 +1,19 @@
 #!/bin/bash
 
-rm -rf alfresco-identity-$IDENTITY_VERSION
-unzip alfresco-identity-$IDENTITY_VERSION.zip
+rm -rf alfresco-identity-service-$IDENTITY_VERSION
+unzip alfresco-identity-service-$IDENTITY_VERSION.zip
 
 EXISTENT_KEYCLOAK_INSTANCES=$(ps aux | grep "standalone" | awk '{print $2}' | head -n 2 )
 echo $EXISTENT_KEYCLOAK_INSTANCES
 kill $EXISTENT_KEYCLOAK_INSTANCES
 
-cd alfresco-identity-$IDENTITY_VERSION/bin
+cd alfresco-identity-service-$IDENTITY_VERSION/bin
 
-echo starting the identity service
+echo "Starting the identity service"
 /bin/bash -c './standalone.sh &'
 
 sleep 15
-echo Started Alfresco Identity
+echo "Started Alfresco Identity"
 
 set -o errexit
 

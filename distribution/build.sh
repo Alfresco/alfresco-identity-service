@@ -33,12 +33,12 @@ echo '# Alfresco realm import ' >> keycloak-$KEYCLOAK_VERSION/bin/standalone.con
 echo "\$JAVA_OPTS += \"-Dkeycloak.import=\$pwd\\\..\\\realm\\\alfresco-realm.json\"" >> keycloak-$KEYCLOAK_VERSION/bin/standalone.conf.ps1
 
 rm -f keycloak-$KEYCLOAK_VERSION/themes/keycloak/common/resources/node_modules/rcue/dist/img/git-Logo.svg
-rm -rf alfresco-identity-$IDENTITY_VERSION
-mkdir alfresco-identity-$IDENTITY_VERSION
-cp -rf keycloak-$KEYCLOAK_VERSION/* alfresco-identity-$IDENTITY_VERSION/
+rm -rf alfresco-identity-service-$IDENTITY_VERSION
+mkdir alfresco-identity-service-$IDENTITY_VERSION
+cp -rf keycloak-$KEYCLOAK_VERSION/* alfresco-identity-service-$IDENTITY_VERSION/
 rm -rf keycloak-$KEYCLOAK_VERSION
-ls alfresco-identity-$IDENTITY_VERSION
+ls alfresco-identity-service-$IDENTITY_VERSION
 
 echo packaging identity
-zip -r alfresco-identity-$IDENTITY_VERSION.zip alfresco-identity-$IDENTITY_VERSION
-openssl md5 -binary alfresco-identity-$IDENTITY_VERSION.zip > alfresco-identity-$IDENTITY_VERSION.md5
+zip -r alfresco-identity-service-$IDENTITY_VERSION.zip alfresco-identity-service-$IDENTITY_VERSION
+openssl md5 -binary alfresco-identity-service-$IDENTITY_VERSION.zip > alfresco-identity-service-$IDENTITY_VERSION.md5

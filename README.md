@@ -6,6 +6,74 @@ Check [prerequisites section](https://github.com/Alfresco/alfresco-dbp-deploymen
 
 Any variation from these technologies and versions may affect the end result. If you do experience any issues please let us know through our [Gitter channel](https://gitter.im/Alfresco/platform-services?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
 
+For installing the identity service you can choose kubernetes or the distribution zip. Both methods are described in the following paragraphs.
+
+### Standalone Distribution
+
+#### Overview
+This guide helps you get started with the Identity service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of keycloak features or configuration options, consult the official [keyloak readme](https://www.keycloak.org/docs/latest/) .
+
+#### Installing and booting
+
+  1. Download the identity service zip alfresco-identity-service-1.1.0.zip .
+  2. Place the file in a directory you choose and use the unzip utility to extract it.
+
+  Linux/Unix
+  ```bash
+  $ unzip alfresco-identity-service-1.1.0.zip
+  ```
+
+  Windows
+  ```bash
+  > unzip alfresco-identity-service-1.1.0.zip
+  ```
+
+  3. cd to the bin directory of the server distribution and run the standalone boot script.
+
+  Linux/Unix
+  ```bash
+  $ cd alfresco-identity-service-1.1.0/bin
+  $ ./standalone.sh
+  ```
+
+  Windows bat
+  ```bash
+  > ...\alfresco-identity-service-1.1.0\bin\standalone.bat
+  ```
+  Windows powershell
+  ```bash
+  > ...\alfresco-identity-service-1.1.0\bin\standalone.ps1
+  ```
+
+This is deployed with the **default example realm applied** which results in default values of:
+
+| Property                      | Value                    |
+| ----------------------------- | ------------------------ |
+| Admin User Username           | `admin`                  |
+| Admin User Password           | `admin`                  |
+| Admin User Email              | `admin@app.activiti.com` |
+| Alfresco Client Redirect URIs | `*`      |
+
+#### Creating the Master Realm Admin Account
+
+After the server boots, open http://localhost:8080/auth in your web browser. The welcome page will indicate that the server is running.
+
+Enter a username and password to create an initial admin user.
+
+This account will be permitted to log in to the master realm’s administration console, from which you will create realms and users and register applications to be secured by Keycloak.
+
+The Alfresco realm already has the admin account created and you can reach the realm console with the following url:
+
+http://localhost:8080/auth/admin/alfresco/console/
+
+#### Modifying the valid redirect URIs
+
+  1. After logging in to the alfresco realm follow the left side menu and choose clients.
+  2. Choose the alfresco client from the client list.
+  3. In the client settings window you will have to fill in your appropiate redirect URI's for the Content and Process applications.
+
+### Kubernetes Deployment
+
 ### Kubernetes Cluster
 
 These instructions illustrate deployment to a Kubernetes cluster on AWS.
