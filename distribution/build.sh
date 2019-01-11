@@ -14,6 +14,7 @@ unzip -oq keycloak-$KEYCLOAK_VERSION.zip
 echo "adding realm"
 mkdir -p keycloak-$KEYCLOAK_VERSION/realm
 cp ../helm/alfresco-identity-service/alfresco-realm.json keycloak-$KEYCLOAK_VERSION/realm/
+cp -rf README.html keycloak-$KEYCLOAK_VERSION/
 sed -i'.bak' "
   s#ALFRESCO_CLIENT_REDIRECT_URIS#[\"*\"]#g;
 " keycloak-$KEYCLOAK_VERSION/realm/alfresco-realm.json
