@@ -11,6 +11,23 @@ cd alfresco-identity-service-$IDENTITY_VERSION/bin
 echo "Starting the identity service"
 /bin/bash -c './standalone.sh &'
 
+SERVICEUP=0
+ # counters
+COUNTER=0
+ # counters limit
+COUNTER_MAX=60
+ # sleep seconds
+SLEEP_SECONDS=1
+ while [ SERVICEUP -eq 0 ] && [ "$DNS_COUNTER" -le "$DNS_COUNTER_MAX" ]; do
+    response=$(curl --write-out %{http_code} --silent --output /dev/null  http://localhost:8080/auth/)
+    if [ response -eq 200 ]; then
+      SERVICEUP=1
+    else
+      sleep "$SLEEP_SECONDS"
+    fi
+ done
+[ $SERVICEUP -ne 1 ] && log_error "DNS entry for ${hostname} did not propagate within expected time"
+
 sleep 15
 echo "Started Alfresco Identity"
 
