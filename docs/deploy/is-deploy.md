@@ -47,7 +47,7 @@ The following steps detail a default deployment of the Identity Service. See [Cu
 	helm status $RELEASENAME
 	```
 	
-	You need to wait until the status is ``READY 1/1``.
+	In the Pods section of the response, you need to wait until the status is ``1/1`` in the ``READY`` column for all pods.
 
 4. Set your local or ELB IP address as a variable for future use:
 
