@@ -11,10 +11,10 @@ function checkStatus {
     }
 }
 
-COUNTER=0
-COUNTER_MAX=60
-SLEEP_SECONDS=1
-SERVICEUP=0
+COUNTER = 0
+COUNTER_MAX = 60
+SLEEP_SECONDS = 1
+SERVICEUP = 0
 Do {
     result = (curl -v http://localhost:8080/auth/).StatusCode
     if ($result -eq "200") {
@@ -24,7 +24,7 @@ Do {
         $COUNTER++
     }
    
-} While (SERVICEUP -eq 0 -and $COUNTER -lt $COUNTER_MAX) 
+} While ($SERVICEUP -eq 0 -and $COUNTER -lt $COUNTER_MAX) 
 
 if ($SERVICEUP -ne 1) {
     throw "Identity Service timed out "

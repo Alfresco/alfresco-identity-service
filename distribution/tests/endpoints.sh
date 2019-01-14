@@ -22,6 +22,7 @@ SLEEP_SECONDS=1
     response=$(curl --write-out %{http_code} --silent --output /dev/null  http://localhost:8080/auth/)
     if [ response -eq 200 ]; then
       SERVICEUP=1
+      echo "Identity service is up"
     else
       sleep "$SLEEP_SECONDS"
       COUNTER=$((COUNTER + 1))
