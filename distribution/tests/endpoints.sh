@@ -1,6 +1,5 @@
 #!/bin/bash
 
-rm -rf alfresco-identity-service-$IDENTITY_VERSION
 unzip alfresco-identity-service-$IDENTITY_VERSION.zip
 
 EXISTENT_KEYCLOAK_INSTANCES=$(ps aux | grep "standalone" | awk '{print $2}' | head -n 2 )
@@ -25,3 +24,5 @@ curl -v -d 'client_id=alfresco' -d 'username=admin' -d 'password=admin' -d 'gran
 EXISTENT_KEYCLOAK_INSTANCES=$(ps aux | grep "standalone" | awk '{print $2}' | head -n 2 )
 echo $EXISTENT_KEYCLOAK_INSTANCES
 kill $EXISTENT_KEYCLOAK_INSTANCES
+
+rm -rf alfresco-identity-service-$IDENTITY_VERSION

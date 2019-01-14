@@ -6,16 +6,17 @@ Check [prerequisites section](https://github.com/Alfresco/alfresco-dbp-deploymen
 
 Any variation from these technologies and versions may affect the end result. If you do experience any issues please let us know through our [Gitter channel](https://gitter.im/Alfresco/platform-services?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
 
-For installing the identity service you can choose kubernetes or the distribution zip. Both methods are described in the following paragraphs.
+For installing the Identity Service you can choose Kubernetes or the distribution zip. Both methods are described in the following paragraphs.
 
 ### Standalone Distribution
 
 #### Overview
-This guide helps you get started with the Identity service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of keycloak features or configuration options, consult the official [keyloak readme](https://www.keycloak.org/docs/latest/) .
+This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of keycloak features or configuration options, consult the official [Keyloak readme](https://www.keycloak.org/docs/latest/) .
 
 #### Installing and booting
 
-  1. Download the identity service zip alfresco-identity-service-1.1.0.zip .
+  1. Download the Identity Service zip alfresco-identity-service-1.1.0.zip from the Support Portal at http://support.alfresco.com
+
   2. Place the file in a directory you choose and use the unzip utility to extract it.
 
   Linux/Unix
@@ -28,7 +29,7 @@ This guide helps you get started with the Identity service. It covers simple sta
   > unzip alfresco-identity-service-1.1.0.zip
   ```
 
-  3. cd to the bin directory of the server distribution and run the standalone boot script.
+  3. Cd to the bin directory of the server distribution and run the standalone boot script.
 
   Linux/Unix
   ```bash
@@ -68,8 +69,8 @@ http://localhost:8080/auth/admin/alfresco/console/
 
 #### Modifying the valid redirect URIs
 
-  1. After logging in to the alfresco realm follow the left side menu and choose clients.
-  2. Choose the alfresco client from the client list.
+  1. After logging in to the Alfresco realm follow the left side menu and choose clients.
+  2. Choose the Afresco client from the client list.
   3. In the client settings window you will have to fill in your appropiate redirect URI's for the Content and Process applications.
 
 ### Kubernetes Deployment
@@ -103,9 +104,9 @@ This environment variable will be used in the deployment steps.
 
 ## Deploying the Identity Services Chart
 
-1. In order to deploy this chart you have to deploy the [Alfresco Infrastructure chart](https://github.com/Alfresco/alfresco-infrastructure-deployment#1-deploy-the-infrastructure-charts) which will deploy the identity service too.
+1. In order to deploy this chart you have to deploy the [Alfresco Infrastructure chart](https://github.com/Alfresco/alfresco-infrastructure-deployment#1-deploy-the-infrastructure-charts) which will deploy the Identity Service too.
 
-Using the following command only the identity service and the [nginx-ingress](https://github.com/Alfresco/alfresco-infrastructure-deployment#nginx-ingress-custom-configuration) will be deployed:
+Using the following command only the Identity Service and the [nginx-ingress](https://github.com/Alfresco/alfresco-infrastructure-deployment#nginx-ingress-custom-configuration) will be deployed:
 
 ```bash
 
