@@ -18,7 +18,8 @@ COUNTER=0
 COUNTER_MAX=60
  # sleep seconds
 SLEEP_SECONDS=1
- while [ $SERVICEUP -eq 0 ] && [ "$DNS_COUNTER" -le "$DNS_COUNTER_MAX" ]; do
+ while [ $SERVICEUP -eq 0 ] && [ "$COUNTER" -le "$COUNTER_MAX" ]; do
+    echo "Check identity service $COUNTER"
     response=$(curl --write-out %{http_code} --silent --output /dev/null  http://localhost:8080/auth/)
     if [ response -eq 200 ]; then
       SERVICEUP=1

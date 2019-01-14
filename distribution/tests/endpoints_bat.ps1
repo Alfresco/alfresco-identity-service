@@ -9,14 +9,14 @@ function checkStatus {
     }
 }
 
-COUNTER = 0
-COUNTER_MAX = 60
-SLEEP_SECONDS = 1
-SERVICEUP = 0
+$COUNTER = 0
+$COUNTER_MAX = 60
+$SLEEP_SECONDS = 1
+$SERVICEUP = 0
 Do {
     result = (curl -v http://localhost:8080/auth/).StatusCode
     if ($result -eq "200") {
-        SERVICEUP=1
+        $SERVICEUP =1
     } else {
         start-sleep -s $SLEEP_SECONDS
         $COUNTER++
