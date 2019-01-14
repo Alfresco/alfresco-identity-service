@@ -26,10 +26,7 @@ SLEEP_SECONDS=1
       sleep "$SLEEP_SECONDS"
     fi
  done
-[ $SERVICEUP -ne 1 ] && log_error "DNS entry for ${hostname} did not propagate within expected time"
-
-sleep 15
-echo "Started Alfresco Identity"
+[ $SERVICEUP -ne 1 ] && log_error "Identity Service timedout"
 
 set -o errexit
 
