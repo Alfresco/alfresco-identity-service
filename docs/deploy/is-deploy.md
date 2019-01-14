@@ -63,6 +63,3 @@ The following steps detail a default deployment of the Identity Service. See [Cu
 	| Admin User Password           | `admin`                  |
 	| Admin User Email              | `admin@app.activiti.com` |
 	| Alfresco Client Redirect URIs | `http://localhost*`      |
-
-**Note:** Alfresco Process Services requires an email address as the username.
-
