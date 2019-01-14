@@ -1,7 +1,5 @@
 $appid = Start-Process ./standalone.bat -windowstyle hidden -passthru
 
-start-sleep -s 15
-
 function checkStatus {
     if ($args[0] -notmatch $args[1]) {
         Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'" | foreach { kill $_.ProcessId }
@@ -9,6 +7,25 @@ function checkStatus {
         $check=$args[1]
         throw "Accessing $test does not output $check "
     }
+}
+
+COUNTER=0
+COUNTER_MAX=60
+SLEEP_SECONDS=1
+SERVICEUP=0
+Do {
+    result = (curl -v http://localhost:8080/auth/).StatusCode
+    if ($result -eq "200") {
+        SERVICEUP=1
+    } else {
+        start-sleep -s $SLEEP_SECONDS
+        $COUNTER++
+    }
+   
+} While (SERVICEUP -eq 0 -and $COUNTER -lt $COUNTER_MAX) 
+
+if ($SERVICEUP -ne 1) {
+    throw "Identity Service timed out "
 }
 
 checkStatus (curl -v http://localhost:8080/auth/).StatusCode "200"
