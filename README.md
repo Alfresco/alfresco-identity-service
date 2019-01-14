@@ -1,6 +1,6 @@
 # Alfresco Identity Service
 
-The Alfresco Identity Service is responsible for centralizing identity-related capabilities for other Alfresco software.
+The Identity Service allows you to configure user synchronization between a supported LDAP provider or SAML identity provider and the Identity Service for Single Sign On (SSO) capabilities in other Alfresco software.
 
 This project contains the open-source core of this service.
 
