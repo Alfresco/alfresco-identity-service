@@ -11,7 +11,12 @@ ingressHostName: "your ingress dns name"
 
 client:
   alfresco:
-    redirectUris: "[\"http://localhost*\"]"
+    redirectUris:
+    - "http://localhost*"
+    - "https://localhost*"
+    webOrigins:
+    - "http://localhost*"
+    - "https://localhost*"
 
 keycloak:
   rbac:

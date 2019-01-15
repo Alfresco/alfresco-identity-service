@@ -96,7 +96,7 @@ helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
-  --set alfresco-identity-service.client.alfresco.redirectUris=['\"'http://$DNSNAME*'"\'] \
+  --set alfresco-identity-service.client.alfresco.redirectUris="{$DNSNAME}" \
   --namespace $DESIREDNAMESPACE
 ```
 
@@ -107,11 +107,39 @@ helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
-  --set alfresco-identity-service.redirectUris=['\"'http://$DNSNAME*'"\'',''\"'http://$DNSNAME1*'"\'',''\"'http://$DNSNAME2*'"\']` \
+  --set alfresco-identity-service.redirectUris="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
   --namespace $DESIREDNAMESPACE
 ```
 
+Note in case of multiple redirectUris the values must be comma-separated with no whitespaces surrounding the 
+corresponding commas. 
+
 If you want to deploy your own realm with further customizations, see *Customizing the Realm* below.
+
+#### Changing Alfresco Client webOrigins
+
+Similarly to [redirectUris](#changing-alfresco-client-redirecturis), webOrigins can be changed by overriding the 
+`alfresco-identity-service.client.alfresco.webOrigins` property:
+
+```bash
+helm install alfresco-stable/alfresco-infrastructure \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
+  --set alfresco-identity-service.client.alfresco.webOrigins="{$DNSNAME}" \
+  --namespace $DESIREDNAMESPACE
+```
+
+For multiple webOrigins:
+
+```bash
+helm install alfresco-stable/alfresco-infrastructure \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
+  --set alfresco-identity-service.webOrigins="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
+  --namespace $DESIREDNAMESPACE
+```
 
 ## Multiple Replicas, High Availability and Clustering
 
