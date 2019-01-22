@@ -11,15 +11,49 @@ ingressHostName: "your ingress dns name"
 
 client:
   alfresco:
-    extraGroups:
-      - name: testgroup
-        path: "/testgroup"
     redirectUris:
       - "http://localhost*"
       - "https://localhost*"
     webOrigins:
       - "http://localhost*"
       - "https://localhost*"
+
+groups:
+  extraGroups:
+    - name: testgroup
+      path: "/testgroup"
+
+users:
+  extraUsers:
+    - username: testuser
+      enabled: true
+      totp: false
+      emailVerified: false
+      firstName: test
+      lastName: test
+      email: test@test.com
+      credentials:
+        - type: password
+          hashedSaltedValue: "+A2UrlK6T33IHVutjQj9k8S8kMco1IMnmCTngEg+PE+2vO4jJScux6wcltsRIYILv5ggcS3PI7tbsynq5u39sQ=="
+          salt: "IyVlItIo27bmACSLi4yQkA=="
+          hashIterations: 20000
+          counter: 0
+          algorithm: pbkdf2
+          digits: 0
+          period: 0
+      disableableCredentialTypes:
+        - password
+      realmRoles:
+        - uma_authorization
+        - user
+        - offline_access
+      clientRoles:
+        account:
+          - manage-account
+          - view-profile
+      groups:
+        - "/admin"
+        - "/testgroup"
 
 keycloak:
   rbac:
