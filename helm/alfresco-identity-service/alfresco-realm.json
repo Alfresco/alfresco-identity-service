@@ -335,8 +335,10 @@
       "realmRoles": [],
       "clientRoles": {},
       "subGroups": []
-    }
-  ],
+    } {{- range .Values.client.alfresco.extraGroups -}}
+     ,
+     {{ . | toJson }}
+     {{- end }}],
   "defaultRoles": [
     "offline_access",
     "uma_authorization"

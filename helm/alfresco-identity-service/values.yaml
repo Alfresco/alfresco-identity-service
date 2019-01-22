@@ -11,12 +11,15 @@ ingressHostName: "your ingress dns name"
 
 client:
   alfresco:
+    extraGroups:
+      - name: testgroup
+        path: "/testgroup"
     redirectUris:
-    - "http://localhost*"
-    - "https://localhost*"
+      - "http://localhost*"
+      - "https://localhost*"
     webOrigins:
-    - "http://localhost*"
-    - "https://localhost*"
+      - "http://localhost*"
+      - "https://localhost*"
 
 keycloak:
   rbac:
