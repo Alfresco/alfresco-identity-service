@@ -59,7 +59,10 @@
         "composite": false,
         "clientRole": false,
         "containerId": "alfresco"
-      }
+      } {{- range .Values.roles.extraRealmRoles -}}
+        ,
+       {{ . | toJson }}
+       {{- end }}
     ],
     "client": {
       "realm-management": [

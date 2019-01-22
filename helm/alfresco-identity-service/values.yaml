@@ -18,6 +18,14 @@ client:
       - "http://localhost*"
       - "https://localhost*"
 
+roles:
+  extraRealmRoles:
+    - name: test_role
+      scopeParamRequired: true
+      composite: false
+      clientRole: false
+      containerId: "alfresco"
+
 groups:
   extraGroups:
     - name: testgroup
@@ -47,6 +55,7 @@ users:
         - uma_authorization
         - user
         - offline_access
+        - test_role
       clientRoles:
         account:
           - manage-account
