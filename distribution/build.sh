@@ -21,9 +21,6 @@ helm template ../helm/alfresco-identity-service \
     sed -e 's/\"$//' -e 's/^\"//' | base64 -D | jq '.' > keycloak-$KEYCLOAK_VERSION/realm/alfresco-realm.json
 
 cp -rf README.html keycloak-$KEYCLOAK_VERSION/
-sed -i'.bak' "
-  s#ALFRESCO_CLIENT_REDIRECT_URIS#[\"*\"]#g;
-" keycloak-$KEYCLOAK_VERSION/realm/alfresco-realm.json
 
 echo "adding themes"
 
