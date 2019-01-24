@@ -59,7 +59,7 @@
         "composite": false,
         "clientRole": false,
         "containerId": "alfresco"
-      } {{- range .Values.roles.extraRealmRoles -}}
+      } {{- range .Values.realm.alfresco.extraRealmRoles -}}
         ,
        {{ . | toJson }}
        {{- end }}
@@ -338,7 +338,7 @@
       "realmRoles": [],
       "clientRoles": {},
       "subGroups": []
-    } {{- range .Values.groups.extraGroups -}}
+    } {{- range .Values.realm.alfresco.extraGroups -}}
     ,
      {{ . | toJson }}
      {{- end }}],
@@ -502,8 +502,8 @@
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
-      "redirectUris": {{ .Values.client.alfresco.redirectUris | toJson }},
-      "webOrigins": {{ .Values.client.alfresco.webOrigins | toJson }},
+      "redirectUris": {{ .Values.realm.alfresco.client.redirectUris | toJson }},
+      "webOrigins": {{ .Values.realm.alfresco.client.webOrigins | toJson }},
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
@@ -1709,7 +1709,7 @@
       "account" : [ "manage-account", "view-profile" ]
     },
     "groups" : [ "/admin" ]
-  } {{- range .Values.users.extraUsers -}}
+  } {{- range .Values.realm.alfresco.extraUsers -}}
   ,
      {{ . | toJson }}
      {{- end }}
