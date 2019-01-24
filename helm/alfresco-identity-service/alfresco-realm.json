@@ -59,10 +59,12 @@
         "composite": false,
         "clientRole": false,
         "containerId": "alfresco"
-      } {{- range .Values.realm.alfresco.extraRealmRoles -}}
+      } {{- if .Values.realm.alfresco.extraRealmRoles -}}
+        {{- range .Values.realm.alfresco.extraRealmRoles -}}
         ,
-       {{ . | toJson }}
-       {{- end }}
+        {{ . | toJson }}
+        {{- end }}
+        {{- end }}
     ],
     "client": {
       "realm-management": [
@@ -338,10 +340,12 @@
       "realmRoles": [],
       "clientRoles": {},
       "subGroups": []
-    } {{- range .Values.realm.alfresco.extraGroups -}}
-    ,
-     {{ . | toJson }}
-     {{- end }}],
+    } {{- if .Values.realm.alfresco.extraGroups -}}
+     {{- range .Values.realm.alfresco.extraGroups -}}
+     , {{ . | toJson }}
+     {{- end }}
+     {{- end }}
+  ],
   "defaultRoles": [
     "offline_access",
     "uma_authorization"
@@ -502,8 +506,8 @@
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
       "secret": "**********",
-      "redirectUris": {{ .Values.realm.alfresco.client.redirectUris | toJson }},
-      "webOrigins": {{ .Values.realm.alfresco.client.webOrigins | toJson }},
+      "redirectUris": {{ .Values.realm.alfresco.client.redirectUris | default tuple | toJson }},
+      "webOrigins": {{ .Values.realm.alfresco.client.webOrigins | default tuple | toJson }},
       "notBefore": 0,
       "bearerOnly": false,
       "consentRequired": false,
@@ -1709,10 +1713,11 @@
       "account" : [ "manage-account", "view-profile" ]
     },
     "groups" : [ "/admin" ]
-  } {{- range .Values.realm.alfresco.extraUsers -}}
-  ,
-     {{ . | toJson }}
-     {{- end }}
+  } {{- if .Values.realm.alfresco.extraUsers -}}
+    {{- range .Values.realm.alfresco.extraUsers -}}
+    , {{ . | toJson }}
+    {{- end }}
+    {{- end }}
   ],
   "keycloakVersion": "4.5.0.Final"
 }
