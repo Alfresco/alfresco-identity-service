@@ -18,7 +18,7 @@ helm template ../helm/alfresco-identity-service \
     -x templates/realm-secret.yaml \
     --set realm.alfresco.client.redirectUris='{*}' | \
     grep  '\"alfresco-realm.json\"' | awk '{ print $2}' | \
-    sed -e 's/\"$//' -e 's/^\"//' | base64 -D | jq '.' > keycloak-$KEYCLOAK_VERSION/realm/alfresco-realm.json
+    sed -e 's/\"$//' -e 's/^\"//' | base64 --decode | jq '.' > keycloak-$KEYCLOAK_VERSION/realm/alfresco-realm.json
 
 cp -rf README.html keycloak-$KEYCLOAK_VERSION/
 
