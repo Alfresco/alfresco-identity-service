@@ -11,9 +11,15 @@ curl -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/keycloak-$KEYCLOA
 echo "unzipping keycloak"
 unzip -oq keycloak-$KEYCLOAK_VERSION.zip
 
-echo "adding realm"
+echo "generating realm from template"
 mkdir -p keycloak-$KEYCLOAK_VERSION/realm
-cp ../helm/alfresco-identity-service/alfresco-realm.json keycloak-$KEYCLOAK_VERSION/realm/
+helm template ../helm/alfresco-identity-service \
+    -f ../helm/alfresco-identity-service/values.yaml \
+    -x templates/realm-secret.yaml \
+    --set realm.alfresco.client.redirectUris='{*}' | \
+    grep  '\"alfresco-realm.json\"' | awk '{ print $2}' | \
+    sed -e 's/\"$//' -e 's/^\"//' | base64 -D | jq '.' > keycloak-$KEYCLOAK_VERSION/realm/alfresco-realm.json
+
 cp -rf README.html keycloak-$KEYCLOAK_VERSION/
 sed -i'.bak' "
   s#ALFRESCO_CLIENT_REDIRECT_URIS#[\"*\"]#g;
