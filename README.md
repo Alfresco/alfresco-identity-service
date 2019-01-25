@@ -165,7 +165,7 @@ helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
-  --set alfresco-identity-service.realm.alfresco.client.redirectUris="{$DNSNAME}" \
+  --set alfresco-identity-service.realm.alfresco.client.redirectUris={$DNSNAME} \
   --namespace $DESIREDNAMESPACE
 ```
 
@@ -176,7 +176,7 @@ helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
-  --set alfresco-identity-service.realm.alfresco.client.redirectUris="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
+  --set alfresco-identity-service.realm.alfresco.client.redirectUris={$DNSNAME,$DNSNAME1,$DNSNAME2} \
   --namespace $DESIREDNAMESPACE
 ```
 
@@ -195,7 +195,7 @@ helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
-  --set alfresco-identity-service.realm.alfresco.client.webOrigins="{$DNSNAME}" \
+  --set alfresco-identity-service.realm.alfresco.client.webOrigins={$DNSNAME} \
   --namespace $DESIREDNAMESPACE
 ```
 
@@ -206,7 +206,7 @@ helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
-  --set alfresco-identity-service.realm.alfresco.client.webOrigins="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
+  --set alfresco-identity-service.realm.alfresco.client.webOrigins={$DNSNAME,$DNSNAME1,$DNSNAME2} \
   --namespace $DESIREDNAMESPACE
 ```
 
