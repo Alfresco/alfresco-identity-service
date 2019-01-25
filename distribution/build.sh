@@ -5,16 +5,29 @@ set -o errexit
 declare -r here="$(dirname "${BASH_SOURCE[0]}")"
 source "${here}/build.properties"
 
+CHART_DIR="${here}/../helm/alfresco-identity-service"
+HELM_REPO_NAME="identity-incubator"
+HELM_REPO_URL="https://kubernetes-charts.alfresco.com/incubator"
+
 echo "Downloading keycloak"
-curl -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/keycloak-$KEYCLOAK_VERSION.zip
+curl --silent --show-error -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/keycloak-$KEYCLOAK_VERSION.zip
 
 echo "unzipping keycloak"
 unzip -oq keycloak-$KEYCLOAK_VERSION.zip
 
 echo "generating realm from template"
 mkdir -p keycloak-$KEYCLOAK_VERSION/realm
-helm template ../helm/alfresco-identity-service \
-    -f ../helm/alfresco-identity-service/values.yaml \
+
+if [ -z "$(helm repo list | grep ${HELM_REPO_NAME})" ]
+then
+    echo "adding helm repository"
+    helm repo add ${HELM_REPO_NAME} "${HELM_REPO_URL}"
+fi
+
+helm repo update
+helm dependency update ${CHART_DIR}
+helm template ${CHART_DIR} \
+    -f ${CHART_DIR}/values.yaml \
     -x templates/realm-secret.yaml \
     --set realm.alfresco.client.redirectUris='{*}' | \
     grep  '\"alfresco-realm.json\"' | awk '{ print $2}' | \
