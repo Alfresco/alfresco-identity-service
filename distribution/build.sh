@@ -21,7 +21,7 @@ helm init --client-only
 if [ -z "$(helm repo list | grep ${HELM_REPO_NAME})" ]
 then
     echo "adding helm repository"
-    helm repo add ${HELM_REPO_NAME} ${bamboo_repo_location}
+    helm repo add ${HELM_REPO_NAME} ${bamboo_helm_repo_location}
 fi
 
 helm repo update
