@@ -6,8 +6,7 @@ declare -r here="$(dirname "${BASH_SOURCE[0]}")"
 source "${here}/build.properties"
 
 CHART_DIR="${here}/../helm/alfresco-identity-service"
-HELM_REPO_NAME="identity-incubator"
-HELM_REPO_URL="https://kubernetes-charts.alfresco.com/incubator"
+HELM_REPO_NAME="identity-test"
 
 echo "Downloading keycloak"
 curl --silent --show-error -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/keycloak-$KEYCLOAK_VERSION.zip
@@ -22,7 +21,7 @@ helm init --client-only
 if [ -z "$(helm repo list | grep ${HELM_REPO_NAME})" ]
 then
     echo "adding helm repository"
-    helm repo add ${HELM_REPO_NAME} "${HELM_REPO_URL}"
+    helm repo add ${HELM_REPO_NAME} ${bamboo_repo_location}
 fi
 
 helm repo update
