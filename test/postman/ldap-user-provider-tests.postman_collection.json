@@ -213,7 +213,6 @@
 							"listen": "test",
 							"script": {
 								"id": "260dfb01-e063-48b5-ac06-284b93d97524",
-								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -234,7 +233,10 @@
 									"});",
 									"",
 									"pm.test(\"LDAP user has correct email\", function() {",
-									"   pm.expect(jsonData.email).to.equal(pm.iterationData.get(\"email\"));",
+									"    // KeyCloak should import LDAP users' usernames and emails in lower case (see comments in AUTH-217 for ",
+									"    // a list of references). Our testing revealed this may not always be the case, hence case-insensitive",
+									"    // comparison (not using \"chai-string\" because it doesn't come with Postman).",
+									"    pm.expect(jsonData.email.toLowerCase()).to.equal(pm.iterationData.get(\"email\").toLowerCase());",
 									"});",
 									"",
 									"pm.test(\"LDAP user has correct attributes\", function() {",
@@ -249,18 +251,19 @@
 									"});",
 									"",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
 								"id": "48412015-1d7b-49a2-820b-da430d4d212f",
-								"type": "text/javascript",
 								"exec": [
 									"// store current username, as returned from data file, as an env. variable so that it can be used for request",
 									"pm.environment.set(\"currentLdapUser\", pm.iterationData.get(\"username\"));"
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -337,7 +340,6 @@
 							"listen": "test",
 							"script": {
 								"id": "a88012eb-57c4-44f8-807b-b4459cd706ae",
-								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -396,26 +398,27 @@
 									"    pm.expect(payloadJson.name).to.equal(pm.iterationData.get(\"firstName\") + \" \" + pm.iterationData.get(\"lastName\"));",
 									"    pm.expect(payloadJson.given_name).to.equal(pm.iterationData.get(\"firstName\"));",
 									"    pm.expect(payloadJson.family_name).to.equal(pm.iterationData.get(\"lastName\"));",
-									"    pm.expect(payloadJson.email).to.equal(pm.iterationData.get(\"email\"));",
+									"    pm.expect(payloadJson.email.toLowerCase()).to.equal(pm.iterationData.get(\"email\").toLowerCase());",
 									"    pm.expect(payloadJson.preferred_username).to.equal(pm.iterationData.get(\"username\"));",
 									"});",
 									"pm.environment.set(\"currentLdapUserAccessToken\", jsonData.access_token);",
 									"pm.environment.set(\"currentLdapUserRefreshToken\", jsonData.refresh_token);",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
 								"id": "a6e515a8-c08d-413c-a644-c730241c2033",
-								"type": "text/javascript",
 								"exec": [
 									"pm.environment.set(\"currentLdapUser\", pm.iterationData.get(\"username\"));",
 									"// test data passwords are identical to users' \"firstName\"",
 									"pm.environment.set(\"currentLdapUserPassword\", pm.iterationData.get(\"firstName\"));",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -475,7 +478,6 @@
 							"listen": "test",
 							"script": {
 								"id": "f271ba7c-1ded-4329-95c0-8f0d5f06a86a",
-								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 200\", function () {",
 									"    pm.response.to.have.status(200);",
@@ -530,23 +532,24 @@
 									"    pm.expect(payloadJson.name).to.equal(pm.iterationData.get(\"firstName\") + \" \" + pm.iterationData.get(\"lastName\"));",
 									"    pm.expect(payloadJson.given_name).to.equal(pm.iterationData.get(\"firstName\"));",
 									"    pm.expect(payloadJson.family_name).to.equal(pm.iterationData.get(\"lastName\"));",
-									"    pm.expect(payloadJson.email).to.equal(pm.iterationData.get(\"email\"));",
+									"    pm.expect(payloadJson.email.toLowerCase()).to.equal(pm.iterationData.get(\"email\").toLowerCase());",
 									"    pm.expect(payloadJson.preferred_username).to.equal(pm.iterationData.get(\"username\"));",
 									"});",
 									"",
 									"",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						},
 						{
 							"listen": "prerequest",
 							"script": {
 								"id": "7c95b618-1017-4548-b0f1-57a517205a78",
-								"type": "text/javascript",
 								"exec": [
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
