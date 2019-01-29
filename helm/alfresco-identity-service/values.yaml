@@ -9,9 +9,55 @@ ingress:
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
 ingressHostName: "your ingress dns name"
 
-client:
+realm:
   alfresco:
-    redirectUris: "[\"http://localhost*\"]"
+    client:
+      redirectUris:
+        - "http://localhost*"
+        - "https://localhost*"
+      webOrigins:
+        - "http://localhost*"
+        - "https://localhost*"
+    extraRealmRoles:
+      - name: test_role
+        scopeParamRequired: true
+        composite: false
+        clientRole: false
+        containerId: "alfresco"
+    extraGroups:
+      - name: testgroup
+        path: "/testgroup"
+    extraUsers:
+      - username: testuser
+        enabled: true
+        totp: false
+        emailVerified: false
+        firstName: test
+        lastName: test
+        email: test@test.com
+        credentials:
+          - type: password
+            hashedSaltedValue: "+A2UrlK6T33IHVutjQj9k8S8kMco1IMnmCTngEg+PE+2vO4jJScux6wcltsRIYILv5ggcS3PI7tbsynq5u39sQ=="
+            salt: "IyVlItIo27bmACSLi4yQkA=="
+            hashIterations: 20000
+            counter: 0
+            algorithm: pbkdf2
+            digits: 0
+            period: 0
+        disableableCredentialTypes:
+          - password
+        realmRoles:
+          - uma_authorization
+          - user
+          - offline_access
+          - test_role
+        clientRoles:
+          account:
+            - manage-account
+            - view-profile
+        groups:
+          - "/admin"
+          - "/testgroup"
 
 keycloak:
   rbac:

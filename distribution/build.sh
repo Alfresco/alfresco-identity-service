@@ -2,22 +2,44 @@
 
 set -o errexit
 
-declare -r here="$(dirname "${BASH_SOURCE[0]}")"
-source "${here}/build.properties"
+declare -r currentDir="$(dirname "${BASH_SOURCE[0]}")"
+source "${currentDir}/build.properties"
+
+CHART_DIR="${currentDir}/../helm/alfresco-identity-service"
+HELM_REPO_NAME="identity-test"
 
 echo "Downloading keycloak"
-curl -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/keycloak-$KEYCLOAK_VERSION.zip
+curl --silent --show-error -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/keycloak-$KEYCLOAK_VERSION.zip
 
 echo "unzipping keycloak"
 unzip -oq keycloak-$KEYCLOAK_VERSION.zip
 
-echo "adding realm"
+echo "generating realm from template"
 mkdir -p keycloak-$KEYCLOAK_VERSION/realm
-cp ../helm/alfresco-identity-service/alfresco-realm.json keycloak-$KEYCLOAK_VERSION/realm/
+
+#
+# Alfresco realm template is stored in ../helm/alfresco-identity-service/alfresco-realm.json. It isn't a valid JSON
+# file and is also missing the corresponding "values.yaml" values. In order to generate a valid realm file, it must be
+# rendered (without installation) using helm. Note only "realm-secret.yaml" needs to be rendered as this is how the
+# realm gets passed on to keycloak when on k8s.
+#
+helm init --client-only
+if [ -z "$(helm repo list | grep ${HELM_REPO_NAME})" ]
+then
+    echo "adding helm repository"
+    helm repo add ${HELM_REPO_NAME} ${bamboo_helm_repo_location}
+fi
+
+helm repo update
+helm dependency update ${CHART_DIR}
+helm template ${CHART_DIR} \
+    -f ${CHART_DIR}/values.yaml \
+    -x templates/realm-secret.yaml \
+    --set realm.alfresco.client.redirectUris='{*}' | \
+    grep  '\"alfresco-realm.json\"' | awk '{ print $2}' | \
+    sed -e 's/\"$//' -e 's/^\"//' | base64 --decode | jq '.' > keycloak-$KEYCLOAK_VERSION/realm/alfresco-realm.json
+
 cp -rf README.html keycloak-$KEYCLOAK_VERSION/
-sed -i'.bak' "
-  s#ALFRESCO_CLIENT_REDIRECT_URIS#[\"*\"]#g;
-" keycloak-$KEYCLOAK_VERSION/realm/alfresco-realm.json
 
 echo "adding themes"
 
