@@ -28,7 +28,7 @@ fi
 # Alfresco realm template is stored in ../helm/alfresco-identity-service/alfresco-realm.json. It isn't a valid JSON
 # file and is also missing the corresponding "values.yaml" values. In order to generate a valid realm file, it must be
 # rendered (without installation) using helm. Note only "realm-secret.yaml" needs to be rendered as this is how the
-# realm gets passed on to keycloak.
+# realm gets passed on to keycloak when on k8s.
 #
 helm repo update
 helm dependency update ${CHART_DIR}
