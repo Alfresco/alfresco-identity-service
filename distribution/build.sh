@@ -17,6 +17,12 @@ unzip -oq keycloak-$KEYCLOAK_VERSION.zip
 echo "generating realm from template"
 mkdir -p keycloak-$KEYCLOAK_VERSION/realm
 
+#
+# Alfresco realm template is stored in ../helm/alfresco-identity-service/alfresco-realm.json. It isn't a valid JSON
+# file and is also missing the corresponding "values.yaml" values. In order to generate a valid realm file, it must be
+# rendered (without installation) using helm. Note only "realm-secret.yaml" needs to be rendered as this is how the
+# realm gets passed on to keycloak when on k8s.
+#
 helm init --client-only
 if [ -z "$(helm repo list | grep ${HELM_REPO_NAME})" ]
 then
@@ -24,12 +30,6 @@ then
     helm repo add ${HELM_REPO_NAME} ${bamboo_helm_repo_location}
 fi
 
-#
-# Alfresco realm template is stored in ../helm/alfresco-identity-service/alfresco-realm.json. It isn't a valid JSON
-# file and is also missing the corresponding "values.yaml" values. In order to generate a valid realm file, it must be
-# rendered (without installation) using helm. Note only "realm-secret.yaml" needs to be rendered as this is how the
-# realm gets passed on to keycloak when on k8s.
-#
 helm repo update
 helm dependency update ${CHART_DIR}
 helm template ${CHART_DIR} \
