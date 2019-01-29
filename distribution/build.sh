@@ -2,10 +2,10 @@
 
 set -o errexit
 
-declare -r here="$(dirname "${BASH_SOURCE[0]}")"
-source "${here}/build.properties"
+declare -r currentDir="$(dirname "${BASH_SOURCE[0]}")"
+source "${currentDir}/build.properties"
 
-CHART_DIR="${here}/../helm/alfresco-identity-service"
+CHART_DIR="${currentDir}/../helm/alfresco-identity-service"
 HELM_REPO_NAME="identity-test"
 
 echo "Downloading keycloak"
@@ -24,6 +24,12 @@ then
     helm repo add ${HELM_REPO_NAME} ${bamboo_helm_repo_location}
 fi
 
+#
+# Alfresco realm template is stored in ../helm/alfresco-identity-service/alfresco-realm.json. It isn't a valid JSON
+# file and is also missing the corresponding "values.yaml" values. In order to generate a valid realm file, it must be
+# rendered (without installation) using helm. Note only "realm-secret.yaml" needs to be rendered as this is how the
+# realm gets passed on to keycloak.
+#
 helm repo update
 helm dependency update ${CHART_DIR}
 helm template ${CHART_DIR} \
