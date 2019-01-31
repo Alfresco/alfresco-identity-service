@@ -1719,5 +1719,5 @@
     {{- end }}
     {{- end }}
   ],
-  "keycloakVersion": "4.5.0.Final"
+  "keycloakVersion": "4.8.3.Final"
 }
