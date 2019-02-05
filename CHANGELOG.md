@@ -20,7 +20,7 @@
 
 * [<a href='https://issues.alfresco.com/jira/browse/AUTH-227'>AUTH-227</a>] - SAML login button doesn't appear when using Alfresco login theme
 
-
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-251'>AUTH-251</a>] - Incorrect example for alfresco-identity-service.enabled
 
 #### Tasks
 
