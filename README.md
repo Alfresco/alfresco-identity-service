@@ -216,7 +216,7 @@ For added resilience, we rely on support in the Keycloak chart for specifying mu
 
 ```bash
 
-  --set alfresco-infrastructure.alfresco-identity-service.keycloak.keycloak.replicas=3
+  --set alfresco-identity-service.keycloak.keycloak.replicas=3
 
 ```
 
@@ -264,7 +264,7 @@ helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
-  --set alfresco-infrastructure.alfresco-identity-service.keycloak.keycloak.extraArgs="-Dkeycloak.import=/realm/realm.json" \
+  --set alfresco-identity-service.keycloak.keycloak.extraArgs="-Dkeycloak.import=/realm/realm.json" \
   --namespace $DESIREDNAMESPACE
 ```
 
