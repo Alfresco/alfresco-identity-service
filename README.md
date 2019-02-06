@@ -173,8 +173,8 @@ including multiple redirectUris:
 
 ```bash
 helm install alfresco-stable/alfresco-infrastructure \
-  --set activemq.enabled=false \
-  --set nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-identity-service.enabled=true \
   --set alfresco-identity-service.realm.alfresco.client.redirectUris="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
   --namespace $DESIREDNAMESPACE
@@ -192,8 +192,8 @@ Similarly to [redirectUris](#changing-alfresco-client-redirecturis), webOrigins 
 
 ```bash
 helm install alfresco-stable/alfresco-infrastructure \
-  --set activemq.enabled=false \
-  --set nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-identity-service.enabled=true \
   --set alfresco-identity-service.realm.alfresco.client.webOrigins="{$DNSNAME}" \
   --namespace $DESIREDNAMESPACE
@@ -203,8 +203,8 @@ For multiple webOrigins:
 
 ```bash
 helm install alfresco-stable/alfresco-infrastructure \
-  --set activemq.enabled=false \
-  --set nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-identity-service.enabled=true \
   --set alfresco-identity-service.realm.alfresco.client.webOrigins="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
   --namespace $DESIREDNAMESPACE
@@ -261,8 +261,8 @@ kubectl create secret generic realm-secret \
 helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
 
 helm install alfresco-stable/alfresco-infrastructure \
-  --set activemq.enabled=false \
-  --set nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
   --set alfresco-identity-service.enabled=true \
   --set alfresco-identity-service.keycloak.keycloak.extraArgs="-Dkeycloak.import=/realm/realm.json" \
   --namespace $DESIREDNAMESPACE
