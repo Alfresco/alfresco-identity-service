@@ -29,6 +29,9 @@
 
 * [<a href='https://issues.alfresco.com/jira/browse/AUTH-246'>AUTH-246</a>] - Upgrade to Keycloak 4.8.3.Final
 
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-250'>AUTH-250</a>] - Stable Identity Service 1.1 Chart
+
+
 ---
 
 ### *Alfresco Identity Service 1.0*
