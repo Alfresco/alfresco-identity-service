@@ -113,9 +113,9 @@ Using the following command only the Identity Service and the [nginx-ingress](ht
 helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
 
 helm install alfresco-stable/alfresco-infrastructure \
-  --set activemq.enabled=false \
-  --set nginx-ingress.enabled=true \
-  --set alfresco-identity-service.enabled=true \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
   --namespace $DESIREDNAMESPACE
 ```
 
@@ -162,9 +162,9 @@ You can override the default redirectUri of `http://localhost*` for your environ
 
 ```bash
 helm install alfresco-stable/alfresco-infrastructure \
-  --set activemq.enabled=false \
-  --set nginx-ingress.enabled=true \
-  --set alfresco-identity-service.enabled=true \
+  --set alfresco-infrastructure.activemq.enabled=false \
+  --set alfresco-infrastructure.nginx-ingress.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
   --set alfresco-identity-service.realm.alfresco.client.redirectUris="{$DNSNAME}" \
   --namespace $DESIREDNAMESPACE
 ```
@@ -175,7 +175,7 @@ including multiple redirectUris:
 helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
-  --set alfresco-identity-service.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
   --set alfresco-identity-service.realm.alfresco.client.redirectUris="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
   --namespace $DESIREDNAMESPACE
 ```
@@ -194,7 +194,7 @@ Similarly to [redirectUris](#changing-alfresco-client-redirecturis), webOrigins 
 helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
-  --set alfresco-identity-service.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
   --set alfresco-identity-service.realm.alfresco.client.webOrigins="{$DNSNAME}" \
   --namespace $DESIREDNAMESPACE
 ```
@@ -205,7 +205,7 @@ For multiple webOrigins:
 helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
-  --set alfresco-identity-service.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
   --set alfresco-identity-service.realm.alfresco.client.webOrigins="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
   --namespace $DESIREDNAMESPACE
 ```
@@ -263,7 +263,7 @@ helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
 helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
   --set alfresco-infrastructure.nginx-ingress.enabled=true \
-  --set alfresco-identity-service.enabled=true \
+  --set alfresco-infrastructure.alfresco-identity-service.enabled=true \
   --set alfresco-identity-service.keycloak.keycloak.extraArgs="-Dkeycloak.import=/realm/realm.json" \
   --namespace $DESIREDNAMESPACE
 ```
