@@ -22,6 +22,8 @@
 
 * [<a href='https://issues.alfresco.com/jira/browse/AUTH-251'>AUTH-251</a>] - Incorrect example for alfresco-identity-service.enabled
 
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-252'>AUTH-252</a>] - Identity Service not saving data to alfresco-volume-claim
+
 #### Tasks
 
 
