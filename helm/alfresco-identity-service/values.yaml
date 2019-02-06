@@ -102,6 +102,7 @@ keycloak:
     nameOverride: postgresql-id
     imageTag: "10.1"
     persistence:
+      enabled: true
       existingClaim: "alfresco-volume-claim"
       subPath: "alfresco-identity-service/database-data"
     resources:
