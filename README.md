@@ -7,7 +7,7 @@ This project contains the open-source core of this service.
 ## Deploying the Identity Service
 The steps in [Deploying the Identity Service](docs/deploy/is-deploy.md) detail how to deploy the Identity Service into an existing cluster. These steps use a set of default deployment options that can be customized by reading [Customizing an Identity Service deployment](docs/deploy/is-customize.md). It is recommended that you read through the customization options before starting your deployment.
 
-## Configuring identity providers 
+## Configuring Identity Providers 
 Once you have deployed the Identity Service, you can configure your user synchronization with an LDAP instance or setup an existing identity provider to authenticate with the Identity Service.
 
 An example setup has been provided for configuring the Identity Service with a SAML 2.0 identity provider: [PingFederate](docs/config/ping-federate-example.md).
