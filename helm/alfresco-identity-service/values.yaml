@@ -65,6 +65,8 @@ keycloak:
   keycloak:
     username: admin
     password: admin
+    service:
+      port: 80
     extraInitContainers: |
       - name: theme-provider
         image: alfresco/alfresco-keycloak-theme:0.1
