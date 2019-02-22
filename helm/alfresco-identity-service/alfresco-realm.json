@@ -1707,7 +1707,16 @@
     } ],
     "disableableCredentialTypes" : [ "password" ],
     "requiredActions" : [ ],
-    "realmRoles" : [ "uma_authorization", "user", "offline_access" ],
+    "realmRoles" : [ 
+      "uma_authorization", 
+      "user", 
+      "offline_access"
+      {{- if .Values.realm.alfresco.extraAdminUserRealmRoles -}}
+      {{- range .Values.realm.alfresco.extraAdminUserRealmRoles -}}
+      ,
+      {{ . | toJson }}
+      {{- end }}
+      {{- end }} ],
     "clientRoles" : {
       "realm-management": [ "view-clients", "manage-users", "manage-clients", "view-users", "manage-realm", "view-realm" ],
       "account" : [ "manage-account", "view-profile" ]
