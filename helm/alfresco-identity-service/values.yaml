@@ -7,7 +7,6 @@ ingress:
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-name: "identity_affinity_route"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
-ingressHostName: "your ingress dns name"
 
 realm:
   alfresco:
