@@ -329,6 +329,12 @@
           "containerId": "140feb9e-fd73-4d02-97f6-928ed67020f1"
         }
       ]
+      {{- if .Values.realm.alfresco.extraClientRoles -}}
+        {{- range .Values.realm.alfresco.extraClientRoles -}}
+        ,
+        {{ . | toJson }}
+        {{- end }}
+        {{- end }}
     }
   },
   "groups": [
