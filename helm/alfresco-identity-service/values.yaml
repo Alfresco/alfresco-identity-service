@@ -11,13 +11,6 @@ ingressHostName: "your ingress dns name"
 
 realm:
   alfresco:
-    client:
-      redirectUris:
-        - "http://localhost*"
-        - "https://localhost*"
-      webOrigins:
-        - "http://localhost*"
-        - "https://localhost*"
     extraRealmRoles:
       - name: test_role
         scopeParamRequired: true
@@ -27,6 +20,8 @@ realm:
     extraGroups:
       - name: testgroup
         path: "/testgroup"
+      - name: testgroup2
+        path: "/testgroup2"
     extraUsers:
       - username: testuser
         enabled: true
@@ -58,7 +53,114 @@ realm:
         groups:
           - "/admin"
           - "/testgroup"
-
+extraClients:
+  alfresco:
+    clientRoles:
+      - name: test_client_role1
+        scopeParamRequired: false
+        composite: false
+        clientRole: true
+      - name: test_client_role2
+        scopeParamRequired: false
+        composite: false
+        clientRole: true
+    id: be13165d-2792-43aa-abdb-2c6cdb627184
+    clientId: alfresco
+    surrogateAuthRequired: false
+    enabled: true
+    clientAuthenticatorType: client-secret
+    secret: "**********"
+    redirectUris:
+      - "*"
+    webOrigins:
+      - "*"
+    notBefore: 0
+    bearerOnly: false
+    consentRequired: false
+    standardFlowEnabled: true
+    implicitFlowEnabled: true
+    directAccessGrantsEnabled: true
+    serviceAccountsEnabled: false
+    publicClient: true
+    frontchannelLogout: false
+    protocol: openid-connect
+    attributes: {}
+    fullScopeAllowed: true
+    nodeReRegistrationTimeout: -1
+    protocolMappers:
+      - id: 202b6b67-dea4-440b-b250-867fa7eb7333
+        name: role list
+        protocol: saml
+        protocolMapper: saml-role-list-mapper
+        consentRequired: false
+        config:
+          single: 'false'
+          attribute.nameformat: Basic
+          attribute.name: Role
+      - id: cdb53973-5bf0-4de4-945d-901de3205016
+        name: email
+        protocol: openid-connect
+        protocolMapper: oidc-usermodel-property-mapper
+        consentRequired: true
+        consentText: "${email}"
+        config:
+          userinfo.token.claim: 'true'
+          user.attribute: email
+          id.token.claim: 'true'
+          access.token.claim: 'true'
+          claim.name: email
+          jsonType.label: String
+      - id: 8dd3c664-426e-44e7-931f-5e0700ed9e7f
+        name: username
+        protocol: openid-connect
+        protocolMapper: oidc-usermodel-property-mapper
+        consentRequired: true
+        consentText: "${username}"
+        config:
+          userinfo.token.claim: 'true'
+          user.attribute: username
+          id.token.claim: 'true'
+          access.token.claim: 'true'
+          claim.name: preferred_username
+          jsonType.label: String
+      - id: aa1a443c-4716-424b-b695-49961d9cf98a
+        name: family name
+        protocol: openid-connect
+        protocolMapper: oidc-usermodel-property-mapper
+        consentRequired: true
+        consentText: "${familyName}"
+        config:
+          userinfo.token.claim: 'true'
+          user.attribute: lastName
+          id.token.claim: 'true'
+          access.token.claim: 'true'
+          claim.name: family_name
+          jsonType.label: String
+      - id: b29201a7-e442-47f6-a589-1b6faaf27b20
+        name: full name
+        protocol: openid-connect
+        protocolMapper: oidc-full-name-mapper
+        consentRequired: true
+        consentText: "${fullName}"
+        config:
+          id.token.claim: 'true'
+          access.token.claim: 'true'
+      - id: 292f1e75-3216-447d-886a-6ab91b0dee1d
+        name: given name
+        protocol: openid-connect
+        protocolMapper: oidc-usermodel-property-mapper
+        consentRequired: true
+        consentText: "${givenName}"
+        config:
+          userinfo.token.claim: 'true'
+          user.attribute: firstName
+          id.token.claim: 'true'
+          access.token.claim: 'true'
+          claim.name: given_name
+          jsonType.label: String
+    useTemplateConfig: false
+    useTemplateScope: false
+    useTemplateMappers: false
 keycloak:
   rbac:
     create: false
