@@ -806,7 +806,7 @@
 		{
 			"id": "a4cb39a3-77a5-4826-9f53-ec3591f86517",
 			"key": "identityServiceUrl",
-			"value": "{{dbpurl}}/auth",
+			"value": "{{protocol}}://alfresco-identity-service.{{dbpurl}}/auth",
 			"type": "string"
 		},
 		{
@@ -855,6 +855,12 @@
 			"id": "c9cfb905-c7e6-4cda-b02a-19c9973a8ed2",
 			"key": "skipTokenHeaderChecks",
 			"value": "true",
+			"type": "string"
+		},
+		{
+			"id": "676d0ac4-4e7b-4d64-906a-c84259a5bc10",
+			"key": "protocol",
+			"value": "https",
 			"type": "string"
 		}
 	]

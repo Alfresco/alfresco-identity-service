@@ -548,7 +548,7 @@
 		{
 			"id": "8529fd2c-39ae-4a3b-bb9b-c8219d786e4b",
 			"key": "identityServiceUrl",
-			"value": "{{dbpurl}}/auth",
+			"value": "{{protocol}}://alfresco-identity-service.{{dbpurl}}/auth",
 			"type": "string"
 		},
 		{
@@ -597,6 +597,12 @@
 			"id": "2032ee66-f3e1-4834-b313-6bbb47959ca0",
 			"key": "adminUserEmail",
 			"value": "admin@app.activiti.com",
+			"type": "string"
+		},
+		{
+			"id": "9c1e9427-6af7-4939-899b-de3bf9c6927c",
+			"key": "protocol",
+			"value": "https",
 			"type": "string"
 		}
 	]
