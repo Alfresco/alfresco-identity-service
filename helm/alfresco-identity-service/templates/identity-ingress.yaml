@@ -9,7 +9,12 @@ metadata:
 {{- end }}
 spec:
   rules:
+  {{- if .Values.ingress.hostName }}
+  - host: {{ tpl .Values.ingress.hostName . }}
+    http:
+  {{- else }}
   - http:
+  {{- end }}
       paths:
       - path: {{ .Values.ingress.path }}
         backend: 
