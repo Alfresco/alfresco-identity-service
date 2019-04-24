@@ -250,33 +250,39 @@
 	],
 	"variable": [
 		{
-			"id": "3abcd96f-70ac-4414-ae89-4a244b7ebf3b",
+			"id": "cb1b61c1-be11-4d9e-9e53-282bbd6949fa",
 			"key": "adminUserPassword",
 			"value": "admin",
 			"type": "string"
 		},
 		{
-			"id": "b694714c-7bb1-4709-86c6-2a2772e10713",
+			"id": "2bc28ff1-19c4-45ba-a69c-abfdf22b64ff",
 			"key": "adminUserUsername",
 			"value": "admin",
 			"type": "string"
 		},
 		{
-			"id": "2ad606ef-40a6-45a2-928f-d603b8eea18c",
+			"id": "79c373ec-7367-431f-b98a-fa7bb1ee245b",
 			"key": "identityServiceClientId",
 			"value": "alfresco",
 			"type": "string"
 		},
 		{
-			"id": "64216b1e-ab33-4927-b779-a800c55cfadf",
+			"id": "782ff50d-8b14-400a-be51-5cbd62562dba",
 			"key": "protocol",
 			"value": "https",
 			"type": "string"
 		},
 		{
-			"id": "05010bca-91f7-46c6-978c-a50a6eee2426",
+			"id": "95551ff1-5ee7-44c1-b98f-fc4fd9090748",
 			"key": "identityServiceUrl",
 			"value": "alfresco-identity-service.dev-live.ps.dev.alfresco.me/auth",
+			"type": "string"
+		},
+		{
+			"id": "5184ed7f-f034-45ac-87eb-6a4e2e65b8d5",
+			"key": "identityServiceRealm",
+			"value": "alfresco",
 			"type": "string"
 		}
 	]
