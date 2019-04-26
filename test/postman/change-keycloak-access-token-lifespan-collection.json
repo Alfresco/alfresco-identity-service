@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "a9b0b2d8-8d91-41f0-924b-6c27704c54c6",
+		"_postman_id": "d5bad51f-af49-458d-8665-c724aaab50f9",
 		"name": "change-keycloak-access-token-lifespan",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -250,41 +250,34 @@
 	],
 	"variable": [
 		{
-			"id": "cb1b61c1-be11-4d9e-9e53-282bbd6949fa",
+			"id": "af30f67a-e800-492a-b089-0f2c54f6a7cc",
 			"key": "adminUserPassword",
 			"value": "admin",
 			"type": "string"
 		},
 		{
-			"id": "2bc28ff1-19c4-45ba-a69c-abfdf22b64ff",
+			"id": "32117a3a-6011-4d5d-bea8-179134642095",
 			"key": "adminUserUsername",
 			"value": "admin",
 			"type": "string"
 		},
 		{
-			"id": "79c373ec-7367-431f-b98a-fa7bb1ee245b",
+			"id": "098063e8-209b-4b4f-ab7d-9194839ba40c",
 			"key": "identityServiceClientId",
 			"value": "alfresco",
 			"type": "string"
 		},
 		{
-			"id": "782ff50d-8b14-400a-be51-5cbd62562dba",
+			"id": "f1fff73c-ab3e-4289-8af6-06837323a722",
 			"key": "protocol",
 			"value": "https",
 			"type": "string"
 		},
 		{
-			"id": "95551ff1-5ee7-44c1-b98f-fc4fd9090748",
-			"key": "identityServiceUrl",
-			"value": "alfresco-identity-service.dev-live.ps.dev.alfresco.me/auth",
-			"type": "string"
-		},
-		{
-			"id": "5184ed7f-f034-45ac-87eb-6a4e2e65b8d5",
+			"id": "0ff7129e-74a0-4b05-b905-ee2f9bcad4ca",
 			"key": "identityServiceRealm",
 			"value": "alfresco",
 			"type": "string"
 		}
 	]
 }
-
