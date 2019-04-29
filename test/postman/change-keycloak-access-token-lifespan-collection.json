@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "d5bad51f-af49-458d-8665-c724aaab50f9",
+		"_postman_id": "a9b0b2d8-8d91-41f0-924b-6c27704c54c6",
 		"name": "change-keycloak-access-token-lifespan",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -130,7 +130,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n\t\"accessTokenLifespan\": 7200\n}"
+					"raw": "{\n\t\"accessTokenLifespan\": {{expectedAccessTokenLifespan}}\n}"
 				},
 				"url": {
 					"raw": "{{protocol}}://{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}",
@@ -168,8 +168,8 @@
 							"",
 							"",
 							"",
-							"pm.test(\"value of access token lifespan to be 7200\", function () {",
-							"    pm.expect(jsonData.accessTokenLifespan).to.equal(7200);",
+							"pm.test(\"value of access token lifespan to be \" + pm.variables.get(\"expectedAccessTokenLifespan\"), function () {",
+							"    pm.expect(jsonData.accessTokenLifespan).to.equal(parseInt(pm.variables.get(\"expectedAccessTokenLifespan\")));",
 							"});",
 							"",
 							""
@@ -250,33 +250,45 @@
 	],
 	"variable": [
 		{
-			"id": "af30f67a-e800-492a-b089-0f2c54f6a7cc",
+			"id": "fe9e3301-cfb0-4aef-8b06-b84aac682fba",
 			"key": "adminUserPassword",
 			"value": "admin",
 			"type": "string"
 		},
 		{
-			"id": "32117a3a-6011-4d5d-bea8-179134642095",
+			"id": "d7265939-7d55-4a79-83d3-78c56cf60a7b",
 			"key": "adminUserUsername",
 			"value": "admin",
 			"type": "string"
 		},
 		{
-			"id": "098063e8-209b-4b4f-ab7d-9194839ba40c",
+			"id": "b3ad63e8-b53f-4142-896a-08c36f817cef",
 			"key": "identityServiceClientId",
 			"value": "alfresco",
 			"type": "string"
 		},
 		{
-			"id": "f1fff73c-ab3e-4289-8af6-06837323a722",
+			"id": "7dd46f42-f30d-47a5-9a13-8d1f4f06b7f8",
 			"key": "protocol",
 			"value": "https",
 			"type": "string"
 		},
 		{
-			"id": "0ff7129e-74a0-4b05-b905-ee2f9bcad4ca",
+			"id": "f3d1caa4-5bd1-462e-a037-e9e0287eff54",
+			"key": "identityServiceUrl",
+			"value": "alfresco-identity-service.dev-live.ps.dev.alfresco.me/auth",
+			"type": "string"
+		},
+		{
+			"id": "f95f6677-80cc-43c8-9061-d45567cfc7bc",
 			"key": "identityServiceRealm",
 			"value": "alfresco",
+			"type": "string"
+		},
+		{
+			"id": "e443a645-8ce3-4c5f-b52c-0bc12f61565c",
+			"key": "expectedAccessTokenLifespan",
+			"value": "7200",
 			"type": "string"
 		}
 	]
