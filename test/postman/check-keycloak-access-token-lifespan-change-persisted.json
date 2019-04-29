@@ -106,8 +106,8 @@
 							"",
 							"",
 							"",
-							"pm.test(\"value of access token lifespan to be 7200\", function () {",
-							"    pm.expect(jsonData.accessTokenLifespan).to.equal(7200);",
+							"pm.test(\"value of access token lifespan to be \" + pm.variables.get(\"expectedAccessTokenLifespan\"), function () {",
+							"    pm.expect(jsonData.accessTokenLifespan).to.equal(parseInt(pm.variables.get(\"expectedAccessTokenLifespan\")));",
 							"});",
 							"",
 							""
@@ -188,39 +188,45 @@
 	],
 	"variable": [
 		{
-			"id": "c102481c-1831-455f-80fe-5c4a2cae133d",
+			"id": "57d2b499-7ad3-46bf-b8f0-30670ca37855",
 			"key": "adminUserPassword",
 			"value": "admin",
 			"type": "string"
 		},
 		{
-			"id": "14644940-2c89-4055-9bc1-e002a3541ba3",
+			"id": "163202ad-87e8-464d-ad0d-9ebd2001bf9e",
 			"key": "adminUserUsername",
 			"value": "admin",
 			"type": "string"
 		},
 		{
-			"id": "46305d5e-1787-419b-b891-4c6ff4b384aa",
+			"id": "6085b4b3-a268-4cf0-ac8a-6ac4fb0ecd9f",
 			"key": "identityServiceClientId",
 			"value": "alfresco",
 			"type": "string"
 		},
 		{
-			"id": "de982120-0ff8-4a67-a6fd-fd72133e8206",
+			"id": "b44b91c4-5424-436e-bea1-d5e28085c436",
 			"key": "protocol",
 			"value": "https",
 			"type": "string"
 		},
 		{
-			"id": "571d8cdf-997e-4337-a04a-55dfb755a7ab",
+			"id": "7f530e2c-9a2c-4046-8cdd-ce92a09d7000",
 			"key": "identityServiceUrl",
 			"value": "alfresco-identity-service.dev-live.ps.dev.alfresco.me/auth",
 			"type": "string"
 		},
 		{
-			"id": "f87f9440-4ad8-485c-9f52-f6750c8b059a",
+			"id": "c259584f-8060-421c-913a-35f0319608d8",
 			"key": "identityServiceRealm",
 			"value": "alfresco",
+			"type": "string"
+		},
+		{
+			"id": "c1b2c9ed-3967-4e6a-9e6c-9c32b8e252ba",
+			"key": "expectedAccessTokenLifespan",
+			"value": "7200",
 			"type": "string"
 		}
 	]
