@@ -1,0 +1,233 @@
+{
+	"info": {
+		"_postman_id": "152d7ee3-dc69-40f0-a381-ebe16d9e62b3",
+		"name": "check-keycloak-access-token-lifespan-change-persisted",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Generate Keycloak admin access token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "bcedf8cbe-1d10-4dce-991c-678762ee8103",
+						"exec": [
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"var jsonData = pm.response.json();",
+							"",
+							"pm.test(\"Token is bearer token\", function () {",
+							"    pm.expect(jsonData.token_type).to.eql(\"bearer\");",
+							"});",
+							"",
+							"pm.test(\"Response contains access token\", function () {",
+							"    pm.expect(\"access_token\" in jsonData).to.be.true;",
+							"});",
+							"",
+							"var tokens = JSON.parse(responseBody); ",
+							"pm.environment.set(\"kcAdminAccessToken\", tokens.access_token);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/x-www-form-urlencoded"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "{{identityServiceClientId}}",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "{{adminUserUsername}}",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "{{adminUserPassword}}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "{{protocol}}://{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{identityServiceUrl}}"
+					],
+					"path": [
+						"realms",
+						"{{identityServiceRealm}}",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get access token lifespan",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "f0d890fb-91df-4834-81d8-eced6bf4145a",
+						"exec": [
+							"var jsonData = pm.response.json();",
+							"",
+							"console.log(\"---------------------------------------------\");",
+							"console.log(jsonData.accessTokenLifespan);",
+							"",
+							"",
+							"",
+							"pm.test(\"Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});",
+							"",
+							"",
+							"",
+							"pm.test(\"value of access token lifespan to be \" + pm.variables.get(\"expectedAccessTokenLifespan\"), function () {",
+							"    pm.expect(jsonData.accessTokenLifespan).to.equal(parseInt(pm.variables.get(\"expectedAccessTokenLifespan\")));",
+							"});",
+							"",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "bearer",
+					"bearer": [
+						{
+							"key": "token",
+							"value": "{{kcAdminAccessToken}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Accept",
+						"type": "text",
+						"value": "application/json"
+					},
+					{
+						"key": "Content-Type",
+						"name": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{protocol}}://{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}",
+					"protocol": "{{protocol}}",
+					"host": [
+						"{{identityServiceUrl}}"
+					],
+					"path": [
+						"admin",
+						"realms",
+						"{{identityServiceRealm}}"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d23dbdb8-0647-433b-82c3-864ea1db3d55",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "d7b6f557-2fb3-4ee6-a351-ba62dc9ed33d",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "57d2b499-7ad3-46bf-b8f0-30670ca37855",
+			"key": "adminUserPassword",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"id": "163202ad-87e8-464d-ad0d-9ebd2001bf9e",
+			"key": "adminUserUsername",
+			"value": "admin",
+			"type": "string"
+		},
+		{
+			"id": "6085b4b3-a268-4cf0-ac8a-6ac4fb0ecd9f",
+			"key": "identityServiceClientId",
+			"value": "alfresco",
+			"type": "string"
+		},
+		{
+			"id": "b44b91c4-5424-436e-bea1-d5e28085c436",
+			"key": "protocol",
+			"value": "https",
+			"type": "string"
+		},
+		{
+			"id": "7f530e2c-9a2c-4046-8cdd-ce92a09d7000",
+			"key": "identityServiceUrl",
+			"value": "alfresco-identity-service.dev-live.ps.dev.alfresco.me/auth",
+			"type": "string"
+		},
+		{
+			"id": "c259584f-8060-421c-913a-35f0319608d8",
+			"key": "identityServiceRealm",
+			"value": "alfresco",
+			"type": "string"
+		},
+		{
+			"id": "c1b2c9ed-3967-4e6a-9e6c-9c32b8e252ba",
+			"key": "expectedAccessTokenLifespan",
+			"value": "7200",
+			"type": "string"
+		}
+	]
+}
