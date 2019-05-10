@@ -11,7 +11,7 @@ For installing the Identity Service you can choose Kubernetes or the distributio
 ### Standalone Distribution
 
 #### Overview
-This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of keycloak features or configuration options, consult the official [Keyloak readme](https://www.keycloak.org/docs/latest/) .
+This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs/latest/) .
 
 #### Installing and booting
 
