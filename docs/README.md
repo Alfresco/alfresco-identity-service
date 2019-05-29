@@ -18,7 +18,7 @@ The Identity Service leverages the open source identity and access management pr
 realm file containing a pre-defined 'alfresco' client and login theme are imported on bootstrap.
 
 Client Applications can obtain a JSON Web Token (JWT) via OpenID Connect which can then be presented in a Bearer Authorization header
-in an HTTP request against REST APIs of Alfresco components such as Process Services and Content Services.
+in an HTTP request against REST APIs of Alfresco components such as Process Services, Content Services and Alfresco Activiti Enterprise.
 
 The primary deployment mechanism is via a Kubernetes Helm chart, and typically as part of the [alfresco-infrastructure chart](https://github.com/Alfresco/alfresco-infrastructure-deployment).
 
