@@ -1,6 +1,6 @@
 # Configuring the Alfresco Identity Service with SAML for Authn and LDAP for Roles
 
-In some cases there may be a need for the Identity Service to delegate authentication to a SAML IdP which does not have the ability to return role information in the SAML assertion, and can instead retrieve that role information from an LDAP provider.
+In some cases there may be a need for the Identity Service to delegate authentication to a SAML IdP which does not have the ability to return role information in the SAML assertion, and should instead retrieve that role information from an LDAP provider.
 
 The following can serve as a high-level guide which can be combined with sections from the more specific OpenLDAP and PingFederate examples or adapted to other environments.
 
@@ -24,17 +24,17 @@ Ensure you have installed the Identity Service before starting. You will also ne
 
 3. Select **Authentication** from the navigation menu and click the *New* button, give it an alias such as "auto link broker" and click the *Save* button.
 
-4. Click the *Add execution* button and select *Create User If Unique* and click the *Save* button.
+4. Click the **Add execution** button and select *Create User If Unique* and click the **Save** button.
 
-5. Click the *Add execution* button and select *Automatically Link Brokered Account* and click the *Save* button.
+5. Click the **Add execution** button and select *Automatically Link Brokered Account* and click the **Save** button.
 
 6. Set both execution requirements to *Alternative*.
 
-7. Create a SAML **Identity Provider** at the Identity Service and a service provider at your IdP as described in the the [PingFederate example](../ping-federate-example.md) or the Keycloak documentation.
+7. Create a SAML **Identity Provider** at the Identity Service and a service provider at your IdP as described in the the [PingFederate example](ping-federate-example.md) or the Keycloak documentation.
 
 8. Change the *First Login Flow* to the Authentication Flow you created in step 3.
 
-9. Create an LDAP **User Federation** provider as described in the [OpenLDAP example](../openldap-example.md) or the Keycloak documentation.
+9. Create an LDAP **User Federation** provider as described in the [OpenLDAP example](openldap-example.md) or the Keycloak documentation.
 
 10. Set *Edit Mode* to `READ_ONLY` and click *Save*.
 
@@ -42,7 +42,7 @@ Ensure you have installed the Identity Service before starting. You will also ne
 
 12. Give the mapper a name such as `roles`.
 
-13. Select a *Mapper Type* of `role-ldap-mapper`, fill in the details for your environment's LDAP roles and click *Save*.
+13. Select a *Mapper Type* of `role-ldap-mapper`, fill in the details for your environment's LDAP roles and click **Save**.
 
 ## Post-configuration confirmation
 
