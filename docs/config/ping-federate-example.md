@@ -18,7 +18,7 @@ There are three main steps involved in configuring a PingFederate instance with 
 2. Select **Server Settings** from the **System Settings** menu.
 3. Make a note of the value for *My Base URL* under the **Federation Info** heading.
 4. Click **Main** and select **Federation Settings** or **IdP Configuration**, then click **Protocol Endpoints**.
-5. Make a note of the values for *Single Logout (SLO) Service* and *Single Sign-on (SSO) Service* under the **SAML v2.0 Endpoints** heading.
+5. Make a note of the *Redirect* values for *Single Logout (SLO) Service* and *Single Sign-on (SSO) Service* under the **SAML v2.0 Endpoints** heading.
 6. Combine the value of *My Base URL* (from Step 3) with *Single Logout (SLO) Service* and *My Base URL* (from Step 3) with *Single Sign-on (SSO) Service* ready to enter into the Identity Service.
 
 For example:
@@ -33,7 +33,7 @@ For example:
 
    **Note:** If using the default deployment options, the realm will be called `Alfresco`.
 
-3. In the **Settings** of each client (`alfresco` and `activiti` if using the default deployment options) save the following configuration:
+3. In the **Settings** of `alfresco` client (if using the default deployment options) save the following configuration:
 
    * Switch **Implicit Flow Enabled** on.
    * Enter `https://$ELBADDRESS*` in **Valid Redirect URIs**.
@@ -54,13 +54,13 @@ For example:
 7. After clicking **Save**, navigate to the **Mappers** tab and select **Create**.
 8. Make the following configurations:
 
-   * Choose *Attribute Importer* from the **Mapper Type** dropdown.
    * Enter *email* into **Name**.
+   * Choose *Attribute Importer* from the **Mapper Type** dropdown.
    * Enter *EMAIL* into **Attribute Name**.
    * Enter *email* into **User Attribute Name**.
 
 9. After clicking **Save** navigate back to the **Identity Provider Mappers** using the breadcrumb and select the **Export** tab.
-10. **Download** and make a note of the file name and download location.
+10. Click **Download** and make a note of the file name and download location.
 11. Create a file with the extension `.cert` (the file name isn't important other than to locate it later on) with the following content:
 
     ```
