@@ -30,7 +30,7 @@ Ensure you have installed the Identity Service before starting. You will also ne
 
 6. Set both execution requirements to *Alternative*.
 
-7. Create a SAML **Identity Provider** at the Identity Service and a service provider at your IdP as described in the the [PingFederate example](ping-federate-example.md) or the Keycloak documentation.
+7. Create a SAML **Identity Provider** at the Identity Service and a service provider at your IdP as described in the [PingFederate example](ping-federate-example.md) or the Keycloak documentation.
 
 8. Change the *First Login Flow* to the Authentication Flow you created in step 3.
 
