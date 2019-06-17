@@ -40,6 +40,9 @@ For example:
    * Click **+** and enter your application front end URI into the next line of **Valid Redirect URIs**.
 
 4. Select **Identity Providers** from the left hand navigation menu and choose *SAML v2.0* in the **Add Provider** dropdown.
+
+>. Take note of the value given in **Redirect URI**
+
 5. Enter the values you obtained from PingFederate in the first section into **Single Sign-On Service URL** and **Single Logout Service URL**.
 6. Make the following configurations:
 
@@ -88,8 +91,10 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 2. Navigate to **SP Connections** and select **Create New**.
 3. Ensure the **Browser SSO Profiles** connection template with *Protocol SAML 2.0* is selected and then click **Next**.
 4. On the **Connection Options** tab ensure only **Browser SSO** is selected.
-5. On the **Import Metadata** tab select **Choose file** and find the file downloaded in Step 10 of the previous section. 
-6. On the **General Info** tab verify that the imported values correspond to those from the Identity Service setup.
+5. On the **General Info** tab 
+  * Add the *Redirect URI* value that you noted in step >>> but remove */broker/saml/endpoint*.
+  * Add a connection name.
+  * 
 7. On the **Browser SSO** tab click **Configure Browser SSO** which will launch a new set of tabs for configuring the browser SSO.
 
    #### Configuring browser SSO
