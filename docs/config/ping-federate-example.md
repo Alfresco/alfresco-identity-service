@@ -144,7 +144,7 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
         * Click add.
         
       3. On the **Allowable SAML Bindings** tab untick all of the checkboxes except for **POST**.
-      4. On the **Signature Policy** tab untick **Require AuthN requests to be signed when received via the POST or Redirect bindings**.
+      4. On the **Signature Policy** tab tick **Require AuthN requests to be signed when received via the POST or Redirect bindings**.
       5. On the **Encryption Policy** tab ensure that the **None** checkbox is ticked.
       6. On the **Summary** tab verify that the values are as per the following screenshot.
       ![Protocol Settings Summary](./slo-default-url.png)
@@ -155,7 +155,9 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 8. On the **Credentials** tab click **Configure Credentials** which will launch a new set of tabs for configuring the credentials. 
 
    #### Configuring credentials
-   1. On the **Digital Signature Settings** tab select your organization's certificate from the **Signing Certificate** dropdown. 
+   1. On the **Digital Signature Settings** tab
+    * select your organization's key pair and certificate from the **Signing Certificate** dropdown. 
+    * Tick the box below **Include the certificate in the signiture <KeyInfo> element**.
    2. On the **Signature Verification Settings** tab click **Manage Signature Verification Settings** which will launch a new set of tabs for the signature verification settings.
 
       #### Signature verification settings
