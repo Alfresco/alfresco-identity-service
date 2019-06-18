@@ -91,10 +91,10 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 2. Navigate to **SP Connections** and select **Create New**.
 3. Ensure the **Browser SSO Profiles** connection template with *Protocol SAML 2.0* is selected and then click **Next**.
 4. On the **Connection Options** tab ensure only **Browser SSO** is selected.
-5. On the **General Info** tab 
+>5. On the **General Info** tab 
   * Add the *Redirect URI* value that you noted in step >>> but remove */broker/saml/endpoint*.
   * Add a connection name.
-  * 
+  * Add the *Redirect URI* value that you noted in step >>> under *Base URL* but this time remove everything up to the first forward slash such as */auth/realms/alfresco/broker/saml/endpoint*.
 7. On the **Browser SSO** tab click **Configure Browser SSO** which will launch a new set of tabs for configuring the browser SSO.
 
    #### Configuring browser SSO
@@ -104,7 +104,11 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
       #### Configuring assertion creation
       1. On the **Identity Mapping** tab ensure the **Standard** checkbox is ticked.
       2. Under the heading **Attribute Contract**:
-         * Enter *Email* into **Extend the contract**.
+         * Enter *Email* under **Extend the contract**.
+         * Choose *urn:oasis:names:tc:SAML:2.0:attrname-format:basic* from the **Attribute name format** dropdown and click **Add**.
+         * Enter *FirstName* under **Extend the contract**.
+         * Choose *urn:oasis:names:tc:SAML:2.0:attrname-format:basic* from the **Attribute name format** dropdown and click **Add**.
+         * Enter *LastName* under **Extend the contract**.
          * Choose *urn:oasis:names:tc:SAML:2.0:attrname-format:basic* from the **Attribute name format** dropdown and click **Add**.
       3. On the **Authentication Source Mapping** tab click **Map New Adapter Instance...** which will launch a new set of tabs for mapping a new adapter instance.
 
@@ -115,6 +119,10 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
              * In the **email** row select *email* from the **value** dropdown.
              * In the **SAML_SUBJECT** row select *Adapter* from the **source** dropdown.
              * In the **SAML_SUBJECT** row select *subject* from the **value** dropdown.
+             * In the **FirstName** row select *Adapter* from the **source** dropdown.
+             * In the **FirstName** row select *fname* from the **value** dropdown.
+             * In the **LastName** row select *Adapter* from the **source** dropdown.
+             * In the **LastName** row select *lname* from the **value** dropdown.
           3. On the **Summary** tab select **Done** to return to the assertion configuration tabs.
 
       4. On the **Summary** tab verify the values are as per the following screenshot.
@@ -124,10 +132,17 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
    3. On the **Protocol Settings** tab click **Configure Protocol Settings** which will launch a new set of tabs for configuring the protocol settings.
 
       #### Configuring protocol settings
-      1. On the **Assertion Consumer Service URL** tab verify that the default row binding for *POST* points to the Identity Service endpoint similar to the following screenshot.
-      ![Assertion Consumer Service Default URL](./assertion-consumer-service-default-url.png)
-      2. On the **SLO Service URLs** tab verify that the row for the *POST* binding points to your Identity Service endpoint similar to the following screenshot.
-      ![SLO Default URL](./slo-default-url.png)
+      1. On the **Assertion Consumer Service URL** tab:
+        * Choose **POST** from the dropdown menu under **BINDING**.
+        * Add the whole of the *Redirect URI* value that you noted in step >>> to **ENDPOINT URL**.
+        * Click add. 
+      
+      2. On the **SLO Service URLs** tab:
+        * Choose **POST** from the dropdown menu under **BINDING**.
+        * Add the whole of the *Redirect URI* value that you noted in step >>> to **ENDPOINT URL**.
+        * Add the whole of the *Redirect URI* value that you noted in step >>> to **RESPONSE URL**.
+        * Click add.
+        
       3. On the **Allowable SAML Bindings** tab untick all of the checkboxes except for **POST**.
       4. On the **Signature Policy** tab untick **Require AuthN requests to be signed when received via the POST or Redirect bindings**.
       5. On the **Encryption Policy** tab ensure that the **None** checkbox is ticked.
