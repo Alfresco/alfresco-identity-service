@@ -7,10 +7,13 @@ The Identity Service can be configured to use PingFederate as an identity provid
 Ensure you have installed the Identity Service before starting. You will also need to have administrative access to your instance of PingFederate.
 
 ## Configuration
-There are two main steps involved in configuring a PingFederate instance with the Identity Service:
+There are three main steps involved in configuring a PingFederate instance with the Identity Service:
 
-1. Configure your PingFederate connection.
-2. Configure the Identity Service with your PingFederate parameters.
+1. Get the certificate. 
+2. Configure your PingFederate connection.
+3. Configure the Identity Service with your PingFederate parameters.
+
+### Get the certificate. 
 
 * Open a new text file and paste the following into it.
 ```
@@ -18,8 +21,8 @@ There are two main steps involved in configuring a PingFederate instance with th
 
 -----END CERTIFICATE-----
 ```
-* In a seperate tab, open the **certificate descriptor api** at {BASE-URI}/auth/realms/{REALM-NAME}/protocol/saml/descriptor.
-* In the middle of the two lines, add the value found between **<dsig:X509Certificate>** and **</dsig:X509Certificate>** in the **certificate descriptor api** such as in the following example.
+* In a seperate tab, open the **certificate descriptor API** at **{BASE-URI}/auth/realms/{REALM-NAME}/protocol/saml/descriptor**.
+* In the middle of the two lines, add the value found between **<dsig:X509Certificate>** and **</dsig:X509Certificate>** in the **certificate descriptor API** such as in the following example.
 ```
 -----BEGIN CERTIFICATE-----
 MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
@@ -35,9 +38,9 @@ Save the file giving it a name that ends with **.cert**, in this example we will
 4. On the **Connection Options** tab ensure only **Browser SSO** is selected.
 
 5. On the **General Info** tab 
-  * In **Parter's Entity Id** add the value given for **Location** in the **certificate descriptor api**, but remove the following **/broker/saml/endpoint**.
+  * In **Parter's Entity Id** add the value given for **Location** in the **certificate descriptor API**, but remove everything after **{REALM-NAME}**.
   * Add a connection name.
-  * In Base URL, add the value given for **Location** in the **certificate descriptor api** but remove everything up to the first forward slash such as */auth/realms/{REALM-NAME}/broker/saml/endpoint*.
+  * In Base URL, add {Base-URL}.
 7. On the **Browser SSO** tab click **Configure Browser SSO** which will launch a new set of tabs for configuring the browser SSO.
 
    #### Configuring browser SSO
@@ -77,13 +80,13 @@ Save the file giving it a name that ends with **.cert**, in this example we will
       #### Configuring protocol settings
       1. On the **Assertion Consumer Service URL** tab:
         * Choose **POST** from the dropdown menu under **BINDING**.
-        * In **ENDPOINT URL**, add the value given for **Location** in the **certificate descriptor api**.
+        * In **ENDPOINT URL**, add the value given for **Location** in the **certificate descriptor API**.
         * Click add. 
       
       2. On the **SLO Service URLs** tab:
         * Choose **POST** from the dropdown menu under **BINDING**.
-        * In **ENDPOINT URL**, add the value given for **Location** in the **certificate descriptor api**.
-        * In **RESPONSE URL**, add the value given for **Location** in the **certificate descriptor api**.
+        * In **ENDPOINT URL**, add the value given for **Location** in the **certificate descriptor API**.
+        * In **RESPONSE URL**, add the value given for **Location** in the **certificate descriptor API**.
         * Click add.
         
       3. On the **Allowable SAML Bindings** tab untick all of the checkboxes except for **POST**.
