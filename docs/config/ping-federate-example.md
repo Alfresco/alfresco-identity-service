@@ -7,94 +7,37 @@ The Identity Service can be configured to use PingFederate as an identity provid
 Ensure you have installed the Identity Service before starting. You will also need to have administrative access to your instance of PingFederate.
 
 ## Configuration
-There are three main steps involved in configuring a PingFederate instance with the Identity Service:
+There are two main steps involved in configuring a PingFederate instance with the Identity Service:
 
-1. Obtain your parameters from PingFederate.
+1. Configure your PingFederate connection.
 2. Configure the Identity Service with your PingFederate parameters.
-3. Configure your PingFederate connection.
 
-### 1. Obtain parameters from PingFederate
-1. Sign in to your PingFederate instance as a user with administrative privileges.
-2. Select **Server Settings** from the **System Settings** menu.
-3. Make a note of the value for *My Base URL* under the **Federation Info** heading.
-4. Click **Main** and select **Federation Settings** or **IdP Configuration**, then click **Protocol Endpoints**.
-5. Make a note of the *Redirect* values for *Single Logout (SLO) Service* and *Single Sign-on (SSO) Service* under the **SAML v2.0 Endpoints** heading.
-6. Combine the value of *My Base URL* (from Step 3) with *Single Logout (SLO) Service* and *My Base URL* (from Step 3) with *Single Sign-on (SSO) Service* ready to enter into the Identity Service.
+>. Open a new text file and paste the following into it.
+```
+-----BEGIN CERTIFICATE-----
 
-For example:
-> If *My Base URL* is `"https://pingfederate.test.com:9031"` and *Single Sign Logout (SLO) Service* is `"/idp/SLO.saml2"` then the POST SLO service URL is `https://pingfederate.test.com:9031/idp/SLO.saml2`
-
-### 2. Configure the Identity Service
-1. Sign in to the administrator panel of the Identity Service using the following URL: `https://$ELBADDRESS/auth/admin`
-
-   **Note:** The `$ELBADDRESS` will be the one used [during deployment](../../README.md).
-
-2. Select the correct realm to configure PingFederate against.
-
-   **Note:** If using the default deployment options, the realm will be called `Alfresco`.
-
-3. In the **Settings** of `alfresco` client (if using the default deployment options) save the following configuration:
-
-   * Switch **Implicit Flow Enabled** on.
-   * Enter `https://$ELBADDRESS*` in **Valid Redirect URIs**.
-   * Click **+** and enter your application front end URI into the next line of **Valid Redirect URIs**.
-
-4. Select **Identity Providers** from the left hand navigation menu and choose *SAML v2.0* in the **Add Provider** dropdown.
-
->. Take note of the value given in **Redirect URI**
-
-5. Enter the values you obtained from PingFederate in the first section into **Single Sign-On Service URL** and **Single Logout Service URL**.
-6. Make the following configurations:
-
-   * Choose *Unspecified* in the **NameID Policy Format** dropdown.
-   * Switch **HTTP-POST Binding Response** on.
-   * Switch **HTTP-POST Binding for AuthnRequest** on.
-   * Switch **HTTP-POST Binding Logout** on.
-   * Switch **Want AuthnRequests Signed** on.
-   * Choose the appropriate algorithm for your setup from the dropdown in **Signature Algorithm**.
-   * Choose *NONE* in the **SAML Signature Key Name** dropdown.
-
-7. After clicking **Save**, navigate to the **Mappers** tab and select **Create**.
-8. Make the following configurations:
-
-   * Enter *email* into **Name**.
-   * Choose *Attribute Importer* from the **Mapper Type** dropdown.
-   * Enter *EMAIL* into **Attribute Name**.
-   * Enter *email* into **User Attribute Name**.
-
-9. After clicking **Save** navigate back to the **Identity Provider Mappers** using the breadcrumb and select the **Export** tab.
-10. Click **Download** and make a note of the file name and download location.
-11. Create a file with the extension `.cert` (the file name isn't important other than to locate it later on) with the following content:
-
-    ```
-    -----BEGIN CERTIFICATE-----
-    -----END CERTIFICATE-----
-    ```
-
-12. Open the file you downloaded in Step 10 with a text editor.
-13. Find the line beginning with the tag `<dsig:X509Certificate>` and ending with `</dsig:X509Certificate>`.
-![X509 Certificate from export](./keycloak-export-cert.png)
-14. Copy the string in-between these tags and paste the content into the file you created in Step 11 in-between `-----BEGIN CERTIFICATE-----` and
-    `-----END CERTIFICATE-----`.
-    
-The contents of your `.cert` file should now look similar to the following:
-
+-----END CERTIFICATE-----
+```
+>. In a seperate tab, open the **certificate descriptor api** at {BASE-URI}/auth/realms/{REALM-NAME}/protocol/saml/descriptor.
+>. In the middle of the two lines, add the value found between **<dsig:X509Certificate>** and **</dsig:X509Certificate>** in the **certificate descriptor api** such as in the following example.
 ```
 -----BEGIN CERTIFICATE-----
 MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 -----END CERTIFICATE-----
 ```
+Save the file giving it a name that ends with **.cert**, in this example we will use **certificate.cert**.
 
-### 3. Configure your PingFederate connection
+### Configure your PingFederate connection
 
 1. Sign in to your PingFederate instance as a user with administrative privileges.
 2. Navigate to **SP Connections** and select **Create New**.
 3. Ensure the **Browser SSO Profiles** connection template with *Protocol SAML 2.0* is selected and then click **Next**.
 4. On the **Connection Options** tab ensure only **Browser SSO** is selected.
->5. On the **General Info** tab 
-  * Add the *Redirect URI* value that you noted in step >>> but remove */broker/saml/endpoint*.
+
+5. On the **General Info** tab 
+  * In **Parter's Entity Id** add the value given for **Location** in the **certificate descriptor api**, but remove the following **/broker/saml/endpoint**.
   * Add a connection name.
-  * Add the *Redirect URI* value that you noted in step >>> under *Base URL* but this time remove everything up to the first forward slash such as */auth/realms/alfresco/broker/saml/endpoint*.
+  * In Base URL, add the value given for **Location** in the **certificate descriptor api** but remove everything up to the first forward slash such as */auth/realms/{REALM-NAME}/broker/saml/endpoint*.
 7. On the **Browser SSO** tab click **Configure Browser SSO** which will launch a new set of tabs for configuring the browser SSO.
 
    #### Configuring browser SSO
@@ -134,13 +77,13 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
       #### Configuring protocol settings
       1. On the **Assertion Consumer Service URL** tab:
         * Choose **POST** from the dropdown menu under **BINDING**.
-        * Add the whole of the *Redirect URI* value that you noted in step >>> to **ENDPOINT URL**.
+        * In **ENDPOINT URL**, add the value given for **Location** in the **certificate descriptor api**.
         * Click add. 
       
       2. On the **SLO Service URLs** tab:
         * Choose **POST** from the dropdown menu under **BINDING**.
-        * Add the whole of the *Redirect URI* value that you noted in step >>> to **ENDPOINT URL**.
-        * Add the whole of the *Redirect URI* value that you noted in step >>> to **RESPONSE URL**.
+        * In **ENDPOINT URL**, add the value given for **Location** in the **certificate descriptor api**.
+        * In **RESPONSE URL**, add the value given for **Location** in the **certificate descriptor api**.
         * Click add.
         
       3. On the **Allowable SAML Bindings** tab untick all of the checkboxes except for **POST**.
@@ -157,7 +100,7 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
    #### Configuring credentials
    1. On the **Digital Signature Settings** tab
     * select your organization's key pair and certificate from the **Signing Certificate** dropdown. 
-    * Tick the box below **Include the certificate in the signiture <KeyInfo> element**.
+    * Tick the box below **Include the certificate in the signature <KeyInfo> element**.
    2. On the **Signature Verification Settings** tab click **Manage Signature Verification Settings** which will launch a new set of tabs for the signature verification settings.
 
       #### Signature verification settings
@@ -174,4 +117,23 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 
 9. On the **Activation & Summary** tab tick the **Active** checkbox in the **Connection Status** row and **Save**. 
 
-Your new connection should now appear in the **SP Connections** list.
+10. Back on the identity service homepage, click **Manage all SP**.
+11. Your new connection should now appear in the **SP Connections** list. To the right of it click **Export metadata**.
+12. In the summary tab, click **Export**.
+
+
+### Identity Service Configuration
+
+>. At the Identity Service homepage, navigage to **Identity providers**.
+>. Click on **Add provider...**.
+>. Click on **SAML v2.0**.
+>. Scroll down to **Import from file** and click **Select file**.
+>. And chose the file that you downloaded as part of the **Export metadata** step.
+>. Edit the name of alias if needed. This will be the name provided at the log in. Such as saml-4 in the following screen shot.
+![Alias example](./saml-4-alias.PNG)
+
+Now you should see that all your pingfederate configurations have been populated.
+>. Scroll up to **NameID Policy Format** and select **Unspecified** from the drop down menu. 
+>. Scroll to **Valid Redirect URIs** and add your base URI followed by a "*" such as **https://arepository.dev-live.acompany.me**.
+
+
