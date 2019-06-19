@@ -127,13 +127,41 @@ Save the file giving it a name that ends with **.cert**, in this example we will
 >. At the Identity Service homepage, navigage to **Identity providers**.
 >. Click on **Add provider...**.
 >. Click on **SAML v2.0**.
->. Scroll down to **Import from file** and click **Select file**.
->. And chose the file that you downloaded as part of the **Export metadata** step.
 >. Edit the name of alias if needed. This will be the name provided at the log in. Such as saml-4 in the following screen shot.
 ![Alias example](./saml-4-alias.PNG)
+>. Scroll down to **Import from file** and click **Select file**.
+>. And chose the file that you downloaded as part of the **Export metadata** step.
+
 
 Now you should see that all your pingfederate configurations have been populated.
 >. Scroll up to **NameID Policy Format** and select **Unspecified** from the drop down menu. 
 >. Scroll to **Valid Redirect URIs** and add your base URI followed by a "*" such as **https://arepository.dev-live.acompany.me**.
+
+### Configure Mappers
+This section allows an existing SAML user to be automatically created in Identity Service without a SAML user needing to fill in a form on their first log in.
+
+>. In the left column, navigate to Mappers.
+>. Click Create.
+>. Provide the following values:
+Name: Email
+Mapper type: Attribute importer
+Attribute name: Email
+Friendly name: Email
+User attribute Name: Email
+>. Click save.
+
+Now repeat the process two more times with the following values:
+
+Name: FirstName
+Mapper type: Attribute importer
+Attribute name: FirstName
+Friendly name: FirstName
+User attribute Name: FirstName
+
+Name: LastName
+Mapper type: Attribute importer
+Attribute name: LastName
+Friendly name: LastName
+User attribute Name: LastName
 
 
