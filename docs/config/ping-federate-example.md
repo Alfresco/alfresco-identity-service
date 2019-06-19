@@ -12,14 +12,14 @@ There are two main steps involved in configuring a PingFederate instance with th
 1. Configure your PingFederate connection.
 2. Configure the Identity Service with your PingFederate parameters.
 
->. Open a new text file and paste the following into it.
+* Open a new text file and paste the following into it.
 ```
 -----BEGIN CERTIFICATE-----
 
 -----END CERTIFICATE-----
 ```
->. In a seperate tab, open the **certificate descriptor api** at {BASE-URI}/auth/realms/{REALM-NAME}/protocol/saml/descriptor.
->. In the middle of the two lines, add the value found between **<dsig:X509Certificate>** and **</dsig:X509Certificate>** in the **certificate descriptor api** such as in the following example.
+* In a seperate tab, open the **certificate descriptor api** at {BASE-URI}/auth/realms/{REALM-NAME}/protocol/saml/descriptor.
+* In the middle of the two lines, add the value found between **<dsig:X509Certificate>** and **</dsig:X509Certificate>** in the **certificate descriptor api** such as in the following example.
 ```
 -----BEGIN CERTIFICATE-----
 MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
@@ -124,31 +124,32 @@ Save the file giving it a name that ends with **.cert**, in this example we will
 
 ### Identity Service Configuration
 
->. At the Identity Service homepage, navigage to **Identity providers**.
->. Click on **Add provider...**.
->. Click on **SAML v2.0**.
->. Edit the name of alias if needed. This will be the name provided at the log in. Such as saml-4 in the following screen shot.
+* At the Identity Service homepage, navigage to **Identity providers**.
+* Click on **Add provider...**.
+* Click on **SAML v2.0**.
+* Edit the name of alias if needed. This will be the name provided at the log in. Such as saml-4 in the following screen shot:
+
 ![Alias example](./saml-4-alias.PNG)
->. Scroll down to **Import from file** and click **Select file**.
->. And chose the file that you downloaded as part of the **Export metadata** step.
+* Scroll down to **Import from file** and click **Select file**.
+* And chose the file that you downloaded as part of the **Export metadata** step.
 
 
 Now you should see that all your pingfederate configurations have been populated.
->. Scroll up to **NameID Policy Format** and select **Unspecified** from the drop down menu. 
->. Scroll to **Valid Redirect URIs** and add your base URI followed by a "*" such as **https://arepository.dev-live.acompany.me**.
+* Scroll up to **NameID Policy Format** and select **Unspecified** from the drop down menu. 
+* Scroll to **Valid Redirect URIs** and add your base URI followed by a "*" such as **https://arepository.dev-live.acompany.me**.
 
 ### Configure Mappers
 This section allows an existing SAML user to be automatically created in Identity Service without a SAML user needing to fill in a form on their first log in.
 
->. In the left column, navigate to Mappers.
->. Click Create.
->. Provide the following values:
+* In the left column, navigate to Mappers.
+* Click Create.
+* Provide the following values:
 Name: Email
 Mapper type: Attribute importer
 Attribute name: Email
 Friendly name: Email
 User attribute Name: Email
->. Click save.
+* Click save.
 
 Now repeat the process two more times with the following values:
 
