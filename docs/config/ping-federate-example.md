@@ -67,75 +67,75 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 6. On the **Browser SSO** tab click **Configure Browser SSO** which will launch a new set of tabs for configuring the browser SSO.
 
    #### Configuring browser SSO
-   1. On the **SAML Profiles** tab tick all four checkboxes.
-   2. On the **Assertion Creation** tab click **Configure Assertion Creation** which will launch a new set of tabs for configuring the assertion creation.
+1. On the **SAML Profiles** tab tick all four checkboxes.
+2. On the **Assertion Creation** tab click **Configure Assertion Creation** which will launch a new set of tabs for configuring the assertion creation.
 
-      #### Configuring assertion creation
-      1. On the **Identity Mapping** tab ensure the **Standard** checkbox is ticked.
-      2. Under the heading **Attribute Contract**:
-         1. Enter *Email* under **Extend the contract**.
-         2. Choose *urn:oasis:names:tc:SAML:2.0:attrname-format:basic* from the **Attribute name format** dropdown and click **Add**.
-         3. Enter *FirstName* under **Extend the contract**.
-         4. Choose *urn:oasis:names:tc:SAML:2.0:attrname-format:basic* from the **Attribute name format** dropdown and click **Add**.
-         5. Enter *LastName* under **Extend the contract**.
-         6. Choose *urn:oasis:names:tc:SAML:2.0:attrname-format:basic* from the **Attribute name format** dropdown and click **Add**.
-      3. On the **Authentication Source Mapping** tab click **Map New Adapter Instance...** which will launch a new set of tabs for mapping a new adapter instance.
+  #### Configuring assertion creation
+  1. On the **Identity Mapping** tab ensure the **Standard** checkbox is ticked.
+  2. Under the heading **Attribute Contract**:
+     1. Enter *Email* under **Extend the contract**.
+     2. Choose *urn:oasis:names:tc:SAML:2.0:attrname-format:basic* from the **Attribute name format** dropdown and click **Add**.
+     3. Enter *FirstName* under **Extend the contract**.
+     4. Choose *urn:oasis:names:tc:SAML:2.0:attrname-format:basic* from the **Attribute name format** dropdown and click **Add**.
+     5. Enter *LastName* under **Extend the contract**.
+     6. Choose *urn:oasis:names:tc:SAML:2.0:attrname-format:basic* from the **Attribute name format** dropdown and click **Add**.
+  3. On the **Authentication Source Mapping** tab click **Map New Adapter Instance...** which will launch a new set of tabs for mapping a new adapter instance.
 
-         #### Mapping a new adapter instance
-         1. On the **Adapter Instance** tab select *IdP Adapter* from the dropdown menu.
-         2. On the **Attribute Contract Fulfilment** tab:
-             1. In the **Email** row select *Adapter* from the **source** dropdown.
-             2. In the **Email** row select *email* from the **value** dropdown.
-             3. In the **FirstName** row select *Adapter* from the **source** dropdown.
-             4. In the **FirstName** row select *fname* from the **value** dropdown.
-             5. In the **LastName** row select *Adapter* from the **source** dropdown.
-             6. In the **LastName** row select *lname* from the **value** dropdown.
-             7. In the **SAML_SUBJECT** row select *Adapter* from the **source** dropdown.
-             8. In the **SAML_SUBJECT** row select *subject* from the **value** dropdown.        
-          3. On the **Summary** tab select **Done** to return to the assertion configuration tabs.
+  #### Mapping a new adapter instance
+ 1. On the **Adapter Instance** tab select *IdP Adapter* from the dropdown menu.
+ 2. On the **Attribute Contract Fulfilment** tab:
+     1. In the **Email** row select *Adapter* from the **source** dropdown.
+     2. In the **Email** row select *email* from the **value** dropdown.
+     3. In the **FirstName** row select *Adapter* from the **source** dropdown.
+     4. In the **FirstName** row select *fname* from the **value** dropdown.
+     5. In the **LastName** row select *Adapter* from the **source** dropdown.
+     6. In the **LastName** row select *lname* from the **value** dropdown.
+     7. In the **SAML_SUBJECT** row select *Adapter* from the **source** dropdown.
+     8. In the **SAML_SUBJECT** row select *subject* from the **value** dropdown.        
+  3. On the **Summary** tab select **Done** to return to the assertion configuration tabs.
 
-      4. On the **Summary** tab verify the values are as per the following screenshot.
-      ![Assertion Creation Summary](./assertion-creation-summary.png)
-      5. Click **Done** to return to the browser SSO configuration tabs.
+ 4. On the next **Summary** tab verify the values are as per the following screenshot.
+![Assertion Creation Summary](./assertion-creation-summary.png)
+ 5. Click **Done** to return to the browser SSO configuration tabs.
 
-   3. On the **Protocol Settings** tab click **Configure Protocol Settings** which will launch a new set of tabs for configuring the protocol settings.
+ 6. On the **Protocol Settings** tab click **Configure Protocol Settings** which will launch a new set of tabs for configuring the protocol settings.
 
-      #### Configuring protocol settings
-      1. On the **Assertion Consumer Service URL** tab:
-            1. Choose **POST** from the dropdown menu under **BINDING**.
-            2. In **ENDPOINT URL**, add the value of **Redirect URI**.
-            3. Click add. 
-      2. On the **SLO Service URLs** tab:
-            1. Choose **POST** from the dropdown menu under **BINDING**.
-            2. In **ENDPOINT URL**, add the value of **Redirect URI**.
-            3. In **RESPONSE URL**, add the value of **Redirect URI**.
-            4. Click **add**.
-      3. On the **Allowable SAML Bindings** tab untick all of the checkboxes except for **POST**.
-      4. On the **Signature Policy** tab tick **Require AuthN requests to be signed when received via the POST or Redirect bindings**.
-      5. On the **Encryption Policy** tab ensure that the **None** checkbox is ticked.
-      6. On the **Summary** tab verify that the values are as per the following screenshot.
-      ![Protocol Settings Summary](./slo-default-url.png)
-      7. Click **Done** to return to the browser SSO configuration tabs.
+  #### Configuring protocol settings
+  1. On the **Assertion Consumer Service URL** tab:
+        1. Choose **POST** from the dropdown menu under **BINDING**.
+        2. In **ENDPOINT URL**, add the value of **Redirect URI**.
+        3. Click add. 
+  2. On the **SLO Service URLs** tab:
+        1. Choose **POST** from the dropdown menu under **BINDING**.
+        2. In **ENDPOINT URL**, add the value of **Redirect URI**.
+        3. In **RESPONSE URL**, add the value of **Redirect URI**.
+        4. Click **add**.
+  3. On the **Allowable SAML Bindings** tab untick all of the checkboxes except for **POST**.
+  4. On the **Signature Policy** tab tick **Require AuthN requests to be signed when received via the POST or Redirect bindings**.
+  5. On the **Encryption Policy** tab ensure that the **None** checkbox is ticked.
+  6. On the **Summary** tab verify that the values are as per the following screenshot.
+  ![Protocol Settings Summary](./slo-default-url.png)
+  7. Click **Done** to return to the browser SSO configuration tabs.
 
-   4. On the **Summary** tab click **Done** to return to the main SP connection configuration tabs.
+  8. On the **Summary** tab click **Done** to return to the main SP connection configuration tabs.
 
-   5. On the **Credentials** tab click **Configure Credentials** which will launch a new set of tabs for configuring the credentials. 
+  9. On the **Credentials** tab click **Configure Credentials** which will launch a new set of tabs for configuring the credentials. 
 
-   #### Configuring credentials
-   1. On the **Digital Signature Settings** tab
+ #### Configuring credentials
+ 1. On the **Digital Signature Settings** tab:
        1. select your organization's key pair and certificate from the **Signing Certificate** dropdown. 
        2. Tick the box below **Include the certificate in the signature <KeyInfo> element**.
-   2. On the **Signature Verification Settings** tab click **Manage Signature Verification Settings** which will launch a new set of tabs for the signature verification settings.
+ 2. On the **Signature Verification Settings** tab click **Manage Signature Verification Settings** which will launch a new set of tabs for the signature verification settings.
 
-      #### Signature verification settings
-      1. On the **Trust Model** tab select *Unanchored*.
-      2. On the **Signature Verification Certificate** tab click **Manage Certificate**.
-      3. Click **Import** and browse for the `.cert` file you created earlier in the **Filename** field.
-      4. Note the imported certificate's **Serial Number** similar to the following screenshot.
-      ![Import Certificate Summary](./import-cert-summary.png)
-      5. Click **Done**.
-      6. Still on the **Signature Verification Certificate** tab select the certificate with the ID (serial number) from the previous step from the **Primary** dropdown.
-      7. Click **Done** to return to the credentials configuration tabs.
+  #### Signature verification settings
+  1. On the **Trust Model** tab select *Unanchored*.
+  2. On the **Signature Verification Certificate** tab click **Manage Certificate**.
+  3. Click **Import** and browse for the `.cert` file you created earlier in the **Filename** field.
+  4. Note the imported certificate's **Serial Number** similar to the following screenshot.
+  ![Import Certificate Summary](./import-cert-summary.png)
+  5. Click **Done**.
+  6. Still on the **Signature Verification Certificate** tab select the certificate with the ID (serial number) from the previous step from the **Primary** dropdown.
+  7. Click **Done** to return to the credentials configuration tabs.
 
 
 **Export configuration settings**
@@ -149,11 +149,11 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 
 
 ### Identity Service Configuration
-1. Back in the Identity Service tab that you left open:
-    1. Chose the file that you downloaded as part of the **Export metadata** step.
+Back in the Identity Service tab that you left open:
+  1. Chose the file that you downloaded as part of the **Export metadata** step.
 
 Now you should see that all your PingFederate configurations have been populated.
-    2. Scroll up to **NameID Policy Format** and select **Unspecified** from the drop down menu. 
+   2. Scroll up to **NameID Policy Format** and select **Unspecified** from the drop down menu. 
 
 ### Configure Mappers
 This section allows an existing SAML user to be automatically created in Identity Service without a SAML user needing to fill in a form on their first log in.
@@ -161,30 +161,30 @@ This section allows an existing SAML user to be automatically created in Identit
 1. In the left column, navigate to **Mappers**.
 2. Click **Create**.
 3. Provide the following values:
-```
-Name: Email
-Mapper type: Attribute importer
-Attribute name: Email
-Friendly name: Email
-User attribute Name: Email
-```
+    ```
+    Name: Email
+    Mapper type: Attribute importer
+    Attribute name: Email
+    Friendly name: Email
+    User attribute Name: Email
+    ```
 4. Click **save**.
 
 5. Now repeat the process two more times with the following values:
 
-```
-Name: FirstName
-Mapper type: Attribute importer
-Attribute name: FirstName
-Friendly name: FirstName
-User attribute Name: FirstName
-```
-
-```
-Name: LastName
-Mapper type: Attribute importer
-Attribute name: LastName
-Friendly name: LastName
-User attribute Name: LastName
-```
+    ```
+    Name: FirstName
+    Mapper type: Attribute importer
+    Attribute name: FirstName
+    Friendly name: FirstName
+    User attribute Name: FirstName
+    ```
+    
+    ```
+    Name: LastName
+    Mapper type: Attribute importer
+    Attribute name: LastName
+    Friendly name: LastName
+    User attribute Name: LastName
+    ```
 
