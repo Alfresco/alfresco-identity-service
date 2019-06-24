@@ -150,10 +150,10 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 
 ### Identity Service Configuration
 Back in the Identity Service tab that you left open:
-  1. Chose the file that you downloaded as part of the **Export metadata** step.
+1. Chose the file that you downloaded as part of the **Export metadata** step.
 
-Now you should see that all your PingFederate configurations have been populated.
-   2. Scroll up to **NameID Policy Format** and select **Unspecified** from the drop down menu. 
+    Now you should see that all your PingFederate configurations have been populated.
+2. Scroll up to **NameID Policy Format** and select **Unspecified** from the drop down menu. 
 
 ### Configure Mappers
 This section allows an existing SAML user to be automatically created in Identity Service without a SAML user needing to fill in a form on their first log in.
