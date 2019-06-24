@@ -122,10 +122,8 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
   9. On the **Credentials** tab click **Configure Credentials** which will launch a new set of tabs for configuring the credentials. 
 
  #### Configuring credentials
- 1. On the **Digital Signature Settings** tab:
-       1. select your organization's key pair and certificate from the **Signing Certificate** dropdown. 
-       2. Tick the box below **Include the certificate in the signature <KeyInfo> element**.
- 2. On the **Signature Verification Settings** tab click **Manage Signature Verification Settings** which will launch a new set of tabs for the signature verification settings.
+ 1. On the **Digital Signature Settings** tab, select your organization's key pair and certificate from the **Signing Certificate** dropdown. 
+ 2. On the **Signature Verification Settings** tab, click **Manage Signature Verification Settings** which will launch a new set of tabs for the signature verification settings.
 
   #### Signature verification settings
   1. On the **Trust Model** tab select *Unanchored*.
