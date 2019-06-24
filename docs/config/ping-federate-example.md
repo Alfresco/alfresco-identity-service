@@ -187,4 +187,4 @@ This section allows an existing SAML user to be automatically created in Identit
     Friendly name: LastName
     User attribute Name: LastName
     ```
-
+ 
