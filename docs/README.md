@@ -5,16 +5,16 @@
 ![Version Badge](https://img.shields.io/badge/Version-1.0-ff69b4.svg?style=flat-square)
 
 ### Purpose
-The Alfresco Identity Service was initially introduced to the architecture as a means for Client Applications to implement single sign-on
-across components of the Digital Business Platform (via [OpenID Connect](https://openid.net/connect/)) while providing the option to 
+The Alfresco Identity Service (AIS) was initially introduced to the architecture as a means for Client Applications to implement single sign-on
+across components of the Digital Business Platform (DBP) (via [OpenID Connect](https://openid.net/connect/)) while providing the option to 
 delegate authentication of the user to an external Identity Provider over protocols like SAML, OpenID Connect, and LDAP.
 
-Aspects of Common Identity and Governance are likely to be the responsibility of the Identity Service in the future.
+Aspects of Common Identity and Governance are likely to be the responsibility of the AIS in the future.
 
 *** 
 
 ### Overview
-The Identity Service leverages the open source identity and access management project [Keycloak](https://www.keycloak.org/).  An example
+The AIS leverages the open source identity and access management project [Keycloak](https://www.keycloak.org/).  An example
 realm file containing a pre-defined 'alfresco' client and login theme are imported on bootstrap.
 
 Client Applications can obtain a JSON Web Token (JWT) via OpenID Connect which can then be presented in a Bearer Authorization header
@@ -37,7 +37,7 @@ The primary deployment mechanism is via a Kubernetes Helm chart, and typically a
 *** 
 
 ### Prerequisite Knowledge
-A basic understanding of the following would be helpful in understanding the Identity Service:
+A basic understanding of the following would be helpful in understanding the Alfresco Identity Service:
 * OAuth 2
 * OpenID Connect
 * SAML
@@ -93,7 +93,7 @@ The Keycloak chart supports specifying [multiple replicas](https://github.com/he
 
 See Keycloak's documentation on configuring [high availability and clustering](https://www.keycloak.org/docs/4.5/server_installation/#_clustering).
 
-Also see the Identity Service [README](https://github.com/Alfresco/alfresco-identity-service#multiple-replicas-high-availability-and-clustering).
+Also see the AIS [README](https://github.com/Alfresco/alfresco-identity-service#multiple-replicas-high-availability-and-clustering).
 
 *** 
 
@@ -105,7 +105,7 @@ See Keycloak's [Server Admin documentation](https://www.keycloak.org/docs/4.5/se
 
 ### Cloud Considerations
 
-As a standard Kubernetes deployment the Identity Service can easily be deployed to Cloud environments including managed clusters like AWS
+As a standard Kubernetes deployment the AIS can easily be deployed to Cloud environments including managed clusters like AWS
 EKS.
 
 See the documentation for specifics on ingress considerations or leveraging native database services rather than deploying Postgresql.
