@@ -35,7 +35,7 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 1. Sign in to the administrator panel of the Identity Service using the following URL: `https://$ELBADDRESS/auth/admin`.
 2. Select the correct realm to configure PingFederate against.
    **Note:** If using the default deployment options, the realm will be called `Alfresco`.
-3. In the **Settings** of `alfresco` client (if using the default deployment options) save the following configuration:
+3. In the **Settings** of `alfresco` client (if using the default deployment options) save the following configuration:<br />
       a. Switch **Implicit Flow Enabled** on.<br />
       b. Enter `https://$ELBADDRESS*` in **Valid Redirect URIs**.<br />
       c. Click **+** and enter your application front end URI into the <br />next line of **Valid Redirect URIs**.
