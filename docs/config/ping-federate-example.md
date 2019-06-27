@@ -38,7 +38,7 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 3. In the **Settings** of `alfresco` client (if using the default deployment options) save the following configuration:<br />
       a. Switch **Implicit Flow Enabled** on.<br />
       b. Enter `https://$ELBADDRESS*` in **Valid Redirect URIs**.<br />
-      c. Click **+** and enter your application front end URI into the <br />next line of **Valid Redirect URIs**.
+      c. Click **+** and enter your application front end URI into the next line of **Valid Redirect URIs**.
 4. Navigate to **Identity providers**.
 5. Click on **Add provider...**.
 6. Click on **SAML v2.0**.
