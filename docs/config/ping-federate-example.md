@@ -171,7 +171,7 @@ This section allows an existing SAML user to be automatically created in Identit
     ```
  
 ### Enforce SAML Login in Identity Service
-This section allows you to **enforce SAML login**: If you do not enforce the SAML login, the user can decide to use either the Alfresco login or login using the IdP link.
+This section allows you to **enforce SAML login**: If you do not enforce the SAML login, the user can decide to use either the Identity Service login or login using the IdP link.
 In order to enable it follow this steps:
 
 1. Sign in to the administrator panel of the Identity Service.
