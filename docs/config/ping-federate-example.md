@@ -172,13 +172,13 @@ This section allows an existing SAML user to be automatically created in Identit
  
 ### Enforce SAML Login in Identity Service
 This section allows you to **enforce SAML login**: If you do not enforce the SAML login, the user can decide to use either the Identity Service login or login using the IdP link.
-In order to enable it follow this steps:
+In order to enable it follow these steps:
 
 1. Sign in to the administrator panel of the Identity Service.
 2. Select **Authentication** from side options
-3. Locate and click on **Flows** tabe
+3. Locate and click on **Flows** tab
 4. From the drop down list select **Browser**
 5. Locate **Identity Provider Redirector** as **Auth Type** and press the *Action*/*Config* link
-6. Fill the **Alias** and **Description** fields with the identity provider you configured above (in this case *saml* for both) and save form.
+6. Fill the **Alias** and **Description** fields with the identity provider you configured above (in this case *saml* for both) and save the form.
 
-Now the SAML login should be enforced and user is redirected straight to the IdP login page (PingFederate in this case).
+Now the SAML login should be enforced and the user is redirected straight to the IdP login page (PingFederate in this case).
