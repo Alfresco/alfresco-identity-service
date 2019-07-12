@@ -69,7 +69,7 @@
 					]
 				},
 				"url": {
-					"raw": "{{protocol}}://{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+					"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{identityServiceUrl}}"
@@ -149,7 +149,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{protocol}}://{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}",
+					"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{identityServiceUrl}}"
