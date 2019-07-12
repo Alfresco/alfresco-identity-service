@@ -69,7 +69,7 @@
 					]
 				},
 				"url": {
-					"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+					"raw": "{{protocol}}://{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{identityServiceUrl}}"
@@ -133,7 +133,7 @@
 					"raw": "{\n\t\"accessTokenLifespan\": {{expectedAccessTokenLifespan}}\n}"
 				},
 				"url": {
-					"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}",
+					"raw": "{{protocol}}://{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{identityServiceUrl}}"
@@ -211,7 +211,7 @@
 					"raw": ""
 				},
 				"url": {
-					"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}",
+					"raw": "{{protocol}}://{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}",
 					"protocol": "{{protocol}}",
 					"host": [
 						"{{identityServiceUrl}}"
@@ -276,7 +276,7 @@
 		{
 			"id": "f3d1caa4-5bd1-462e-a037-e9e0287eff54",
 			"key": "identityServiceUrl",
-			"value": "{{protocol}}://alfresco-identity-service.{{dbpurl}}/auth",
+			"value": "alfresco-identity-service.{{dbpurl}}/auth",
 			"type": "string"
 		},
 		{
