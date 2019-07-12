@@ -276,7 +276,7 @@
 		{
 			"id": "f3d1caa4-5bd1-462e-a037-e9e0287eff54",
 			"key": "identityServiceUrl",
-			"value": "alfresco-identity-service.dev-live.ps.dev.alfresco.me/auth",
+			"value": "{{protocol}}://alfresco-identity-service.{{dbpurl}}/auth",
 			"type": "string"
 		},
 		{
