@@ -72,7 +72,8 @@
 							]
 						},
 						"url": {
-							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"raw": "{{protocol}}://{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{identityServiceUrl}}"
 							],
@@ -184,7 +185,8 @@
 							]
 						},
 						"url": {
-							"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}/user-storage/{{usersProviderId}}/sync?action=triggerFullSync",
+							"raw": "{{protocol}}://{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}/user-storage/{{usersProviderId}}/sync?action=triggerFullSync",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{identityServiceUrl}}"
 							],
@@ -285,7 +287,8 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}/users?username={{currentLdapUser}}",
+							"raw": "{{protocol}}://{{identityServiceUrl}}/admin/realms/{{identityServiceRealm}}/users?username={{currentLdapUser}}",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{identityServiceUrl}}"
 							],
@@ -456,7 +459,8 @@
 							]
 						},
 						"url": {
-							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"raw": "{{protocol}}://{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{identityServiceUrl}}"
 							],
@@ -585,7 +589,8 @@
 							]
 						},
 						"url": {
-							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"raw": "{{protocol}}://{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{identityServiceUrl}}"
 							],
@@ -665,7 +670,8 @@
 							]
 						},
 						"url": {
-							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"raw": "{{protocol}}://{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{identityServiceUrl}}"
 							],
@@ -739,7 +745,8 @@
 							]
 						},
 						"url": {
-							"raw": "{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"raw": "{{protocol}}://{{identityServiceUrl}}/realms/{{identityServiceRealm}}/protocol/openid-connect/token",
+							"protocol": "{{protocol}}",
 							"host": [
 								"{{identityServiceUrl}}"
 							],
@@ -806,7 +813,7 @@
 		{
 			"id": "a4cb39a3-77a5-4826-9f53-ec3591f86517",
 			"key": "identityServiceUrl",
-			"value": "{{protocol}}://alfresco-identity-service.{{dbpurl}}/auth",
+			"value": "alfresco-identity-service.{{dbpurl}}/auth",
 			"type": "string"
 		},
 		{
