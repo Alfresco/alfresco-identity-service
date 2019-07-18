@@ -3,9 +3,14 @@ export $(shell sed 's/=.*//' build.properties)
 
 IMAGE:=quay.io/alfresco/alfresco-identity-service:$(IDENTITY_VERSION)
 
-build:
-	./build.sh && \
+
+build: distribution image
+	
+image:
 	docker build --force-rm=true --no-cache=true --build-arg IDENTITY_VERSION=$(IDENTITY_VERSION) -t $(IMAGE) -f Dockerfile .
+
+distribution:
+	./build.sh
 	
 push:
 	@docker push $(IMAGE)

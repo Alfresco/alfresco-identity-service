@@ -18,9 +18,7 @@ RUN yum install -y unzip && yum clean all && \
 
 COPY ./docker/ /scripts/
 
-# USER 1000
 EXPOSE 8080
 
 ENTRYPOINT [ "/scripts/docker-entrypoint.sh" ]
 CMD ["-b", "0.0.0.0"]
-#CMD ["sleep", "10000"]
