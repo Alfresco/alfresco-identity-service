@@ -17,10 +17,14 @@ image:
 	docker build --force-rm=true --no-cache=true --build-arg IDENTITY_VERSION=$(IDENTITY_VERSION) -t $(PRIVATE_IMAGE) -f Dockerfile .
 	docker tag $(PRIVATE_IMAGE) $(PUBLIC_IMAGE)
 
-push:		
+push_private:
 	@docker push $(PRIVATE_IMAGE)
+
+push_public:
 	@docker push $(PUBLIC_IMAGE)
 
+push: push_private push_public
+	
 # this will be executed only  on CI/CD (Bamboo) where there is a whitesource agent installed
 scan:
 	bash /home/bamboo/bamboo-agent-config/scripts/agent/whitesource-agent.sh -d ${SCAN_FOLDER} -product "Alfresco Identity Service" -project "Identity Service" -projectVersion "${IDENTITY_VERSION}"

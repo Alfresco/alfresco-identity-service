@@ -1,5 +1,11 @@
 # About
-> Building `alfresco-identity-service` [![Docker Repository on Quay](https://quay.io/repository/alfresco/alfresco-identity-service/status?token=9a426dcd-f3b7-4f59-997e-56ae03bc2ce7 "Docker Repository on Quay")](https://quay.io/repository/alfresco/alfresco-identity-service)  based on `quay.io/alfresco/alfresco-base-java`.
+> Building `alfresco-identity-service` using`quay.io/alfresco/alfresco-base-java` as base image.
+
+> Image(s) available under:
+*  private `quay.io` [![Docker Repository on Quay](https://quay.io/repository/alfresco/alfresco-identity-service/status?token=9a426dcd-f3b7-4f59-997e-56ae03bc2ce7 "Docker Repository on Quay")](https://quay.io/repository/alfresco/alfresco-identity-service)  repository
+* public `hub.docker.com` [![](https://images.microbadger.com/badges/version/alfresco/alfresco-identity-service:1.2.svg)](https://hub.docker.com/r/alfresco/alfresco-identity-service:1.2 "Get your own version badge on microbadger.com") repository
+
+
 
 # Usage
 > checkout the [Makefile](./Makefile). All commands will be executed within this folder.
