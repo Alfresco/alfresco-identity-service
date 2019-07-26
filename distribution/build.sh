@@ -75,6 +75,6 @@ rm -f $DISTRIBUTION_NAME.md5
 echo packaging identity
 zip -r $DISTRIBUTION_NAME.zip $DISTRIBUTION_NAME
 openssl md5 $DISTRIBUTION_NAME.zip > $DISTRIBUTION_NAME.md5
-rm -rf $DISTRIBUTION_NAME
+#rm -rf $DISTRIBUTION_NAME
 sudo rm -rf alfresco
 ls -la
