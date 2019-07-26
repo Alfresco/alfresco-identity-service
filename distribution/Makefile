@@ -1,25 +1,36 @@
 include build.properties
 export $(shell sed 's/=.*//' build.properties)
 
-IMAGE:=quay.io/alfresco/alfresco-identity-service:$(IDENTITY_VERSION)
+PRIVATE_IMAGE	:=quay.io/alfresco/alfresco-identity-service:$(IDENTITY_VERSION)
+PUBLIC_IMAGE	:=alfresco/alfresco-identity-service:$(IDENTITY_VERSION)
 
+ifeq ($(SCAN_FOLDER),)
+	SCAN_FOLDER:=.
+endif
 
 build: distribution image
 	
-image:
-	docker build --force-rm=true --no-cache=true --build-arg IDENTITY_VERSION=$(IDENTITY_VERSION) -t $(IMAGE) -f Dockerfile .
-
 distribution:
 	./build.sh
-	
-push:
-	@docker push $(IMAGE)
+
+image:
+	docker build --force-rm=true --no-cache=true --build-arg IDENTITY_VERSION=$(IDENTITY_VERSION) -t $(PRIVATE_IMAGE) -f Dockerfile .
+	docker tag $(PRIVATE_IMAGE) -t $(PUBLIC_IMAGE)
+
+push:		
+	@docker push $(PRIVATE_IMAGE)
+	@docker push $(PUBLIC_IMAGE)
+
+# this will be executed only  on CI/CD (Bamboo) where there is a whitesource agent installed
+scan:
+	bash /home/bamboo/bamboo-agent-config/scripts/agent/whitesource-agent.sh -d ${SCAN_FOLDER} -product "Alfresco Identity Service" -project "Identity Service" -projectVersion "${IDENTITY_VERSION}"
 
 run:
-	@docker run -p 8080:8080 -p 9990:9990 --name alfresco-ids --rm $(IMAGE)
+	@docker run -p 8080:8080 -p 9990:9990 --name alfresco-ids --rm $(PRIVATE_IMAGE)
 
 stop:
 	docker kill alfresco-ids
 
 sh:
 	docker exec -it $$(docker ps -aq --filter name=alfresco-ids) sh
+	
