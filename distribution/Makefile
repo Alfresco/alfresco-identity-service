@@ -8,25 +8,24 @@ ifeq ($(SCAN_FOLDER),)
 	SCAN_FOLDER:=.
 endif
 
-build: distribution image
+build: distribution image push_private
 	
 distribution:
 	./build.sh
 
 image:
 	docker build --force-rm=true --no-cache=true --build-arg IDENTITY_VERSION=$(IDENTITY_VERSION) -t $(PRIVATE_IMAGE) -f Dockerfile .
-	docker tag $(PRIVATE_IMAGE) $(PUBLIC_IMAGE)
-
+	
 push_private:
 	@docker push $(PRIVATE_IMAGE)
 
 push_public:
+	@docker rmi $(PRIVATE_IMAGE)
+	@docker pull $(PRIVATE_IMAGE)
+	@docker tag $(PRIVATE_IMAGE) $(PUBLIC_IMAGE)
 	@docker push $(PUBLIC_IMAGE)
-
-push: push_private push_public
 	
-# this will be executed only  on CI/CD (Bamboo) where there is a whitesource agent installed
-scan:
+scan: # this will be executed only  on CI/CD (Bamboo) where there is a whitesource agent installed
 	bash /home/bamboo/bamboo-agent-config/scripts/agent/whitesource-agent.sh -d ${SCAN_FOLDER} -product "Alfresco Identity Service" -project "Identity Service" -projectVersion "${IDENTITY_VERSION}"
 
 run:
