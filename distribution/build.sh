@@ -53,11 +53,13 @@ echo "adding themes"
 docker run --rm -v "$PWD/alfresco:/tmp" alfresco/alfresco-keycloak-theme:$THEME_VERSION sh -c "rm -rf /tmp/* && cp -rf /alfresco/* /tmp/"
 cp -rf alfresco $KEYCLOAK_NAME/themes/
 
+# unix settings
 echo '# Alfresco realm import ' >> $KEYCLOAK_NAME/bin/standalone.conf
 echo 'JAVA_OPTS="$JAVA_OPTS -Dkeycloak.import=$JBOSS_HOME/realm/alfresco-realm.json"' >> $KEYCLOAK_NAME/bin/standalone.conf
 
+# windows settings
 echo 'rem # Alfresco realm import ' >> $KEYCLOAK_NAME/bin/standalone.conf.bat
-echo "set \"JAVA_OPTS=%JAVA_OPTS% -Dkeycloak.import=%~dp0..\\\realm\\\alfresco-realm.json\"\n:JAVA_OPTS_SET" >> $KEYCLOAK_NAME/bin/standalone.conf.bat
+echo -e "set \"JAVA_OPTS=%JAVA_OPTS% -Dkeycloak.import=%~dp0..\\\realm\\\alfresco-realm.json\"\n:JAVA_OPTS_SET" >> $KEYCLOAK_NAME/bin/standalone.conf.bat
 
 echo '# Alfresco realm import ' >> $KEYCLOAK_NAME/bin/standalone.conf.ps1
 echo "\$JAVA_OPTS += \"-Dkeycloak.import=\$pwd\\\..\\\realm\\\alfresco-realm.json\"" >> $KEYCLOAK_NAME/bin/standalone.conf.ps1
