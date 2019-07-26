@@ -15,7 +15,7 @@ distribution:
 
 image:
 	docker build --force-rm=true --no-cache=true --build-arg IDENTITY_VERSION=$(IDENTITY_VERSION) -t $(PRIVATE_IMAGE) -f Dockerfile .
-	docker tag $(PRIVATE_IMAGE) -t $(PUBLIC_IMAGE)
+	docker tag $(PRIVATE_IMAGE) $(PUBLIC_IMAGE)
 
 push:		
 	@docker push $(PRIVATE_IMAGE)
