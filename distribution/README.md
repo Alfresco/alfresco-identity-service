@@ -3,7 +3,7 @@
 
 > Image(s) available under:
 *  private `quay.io` [![Docker Repository on Quay](https://quay.io/repository/alfresco/alfresco-identity-service/status?token=9a426dcd-f3b7-4f59-997e-56ae03bc2ce7 "Docker Repository on Quay")](https://quay.io/repository/alfresco/alfresco-identity-service)  repository
-* public `hub.docker.com` [![](https://images.microbadger.com/badges/version/alfresco/alfresco-identity-service:1.2.svg)](https://hub.docker.com/r/alfresco/alfresco-identity-service:1.2 "Get your own version badge on microbadger.com") repository
+* public `hub.docker.com` [![](https://images.microbadger.com/badges/image/alfresco/alfresco-identity-service.svg)](https://microbadger.com/images/alfresco/alfresco-identity-service "Get your own image badge on microbadger.com") repository
 
 
 
