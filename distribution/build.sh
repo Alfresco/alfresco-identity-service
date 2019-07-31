@@ -1,21 +1,28 @@
 #!/bin/bash
-
 set -o errexit
 
 declare -r currentDir="$(dirname "${BASH_SOURCE[0]}")"
 source "${currentDir}/build.properties"
 
 CHART_DIR="${currentDir}/../helm/alfresco-identity-service"
-HELM_REPO_NAME="identity-test"
 
-echo "Downloading keycloak"
-curl --silent --show-error -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/keycloak-$KEYCLOAK_VERSION.zip
+HELM_REPO_NAME="alfresco-incubator"
+KEYCLOAK_NAME=keycloak-$KEYCLOAK_VERSION
+KEYCLOAK_DISTRO=$KEYCLOAK_NAME.zip
+DISTRIBUTION_NAME=alfresco-identity-service-$IDENTITY_VERSION
 
-echo "unzipping keycloak"
-unzip -oq keycloak-$KEYCLOAK_VERSION.zip
+if [ "$bamboo_helm_repo_location" == "" ]; then
+    bamboo_helm_repo_location=https://kubernetes-charts.alfresco.com/incubator
+fi
+
+echo "Downloading Keycloak"
+curl --silent --show-error -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/$KEYCLOAK_DISTRO
+
+echo "unzipping Keycloak"
+unzip -oq $KEYCLOAK_DISTRO
 
 echo "generating realm from template"
-mkdir -p keycloak-$KEYCLOAK_VERSION/realm
+mkdir -p $KEYCLOAK_NAME/realm
 
 #
 # Alfresco realm template is stored in ../helm/alfresco-identity-service/alfresco-realm.json. It isn't a valid JSON
@@ -37,31 +44,37 @@ helm template ${CHART_DIR} \
     -x templates/realm-secret.yaml \
     --set realm.alfresco.client.redirectUris='{*}' | \
     grep  '\"alfresco-realm.json\"' | awk '{ print $2}' | \
-    sed -e 's/\"$//' -e 's/^\"//' | base64 --decode | jq '.' > keycloak-$KEYCLOAK_VERSION/realm/alfresco-realm.json
+    sed -e 's/\"$//' -e 's/^\"//' | base64 --decode | jq '.' > $KEYCLOAK_NAME/realm/alfresco-realm.json
 
-cp -rf README.html keycloak-$KEYCLOAK_VERSION/
+cp -rf README.html $KEYCLOAK_NAME/
 
 echo "adding themes"
 
 docker run --rm -v "$PWD/alfresco:/tmp" alfresco/alfresco-keycloak-theme:$THEME_VERSION sh -c "rm -rf /tmp/* && cp -rf /alfresco/* /tmp/"
-cp -rf alfresco keycloak-$KEYCLOAK_VERSION/themes/
+cp -rf alfresco $KEYCLOAK_NAME/themes/
 
-echo '# Alfresco realm import ' >> keycloak-$KEYCLOAK_VERSION/bin/standalone.conf
-echo 'JAVA_OPTS="$JAVA_OPTS -Dkeycloak.import=../realm/alfresco-realm.json"' >> keycloak-$KEYCLOAK_VERSION/bin/standalone.conf
+# unix settings
+echo '# Alfresco realm import ' >> $KEYCLOAK_NAME/bin/standalone.conf
+echo 'JAVA_OPTS="$JAVA_OPTS -Dkeycloak.import=$JBOSS_HOME/realm/alfresco-realm.json"' >> $KEYCLOAK_NAME/bin/standalone.conf
 
-echo 'rem # Alfresco realm import ' >> keycloak-$KEYCLOAK_VERSION/bin/standalone.conf.bat
-echo "set \"JAVA_OPTS=%JAVA_OPTS% -Dkeycloak.import=%~dp0..\\\realm\\\alfresco-realm.json\"\n:JAVA_OPTS_SET" >> keycloak-$KEYCLOAK_VERSION/bin/standalone.conf.bat
+# windows settings
+echo 'rem # Alfresco realm import ' >> $KEYCLOAK_NAME/bin/standalone.conf.bat
+echo -e "set \"JAVA_OPTS=%JAVA_OPTS% -Dkeycloak.import=%~dp0..\\\realm\\\alfresco-realm.json\"\n:JAVA_OPTS_SET" >> $KEYCLOAK_NAME/bin/standalone.conf.bat
 
-echo '# Alfresco realm import ' >> keycloak-$KEYCLOAK_VERSION/bin/standalone.conf.ps1
-echo "\$JAVA_OPTS += \"-Dkeycloak.import=\$pwd\\\..\\\realm\\\alfresco-realm.json\"" >> keycloak-$KEYCLOAK_VERSION/bin/standalone.conf.ps1
+echo '# Alfresco realm import ' >> $KEYCLOAK_NAME/bin/standalone.conf.ps1
+echo "\$JAVA_OPTS += \"-Dkeycloak.import=\$pwd\\\..\\\realm\\\alfresco-realm.json\"" >> $KEYCLOAK_NAME/bin/standalone.conf.ps1
 
-rm -f keycloak-$KEYCLOAK_VERSION/themes/keycloak/common/resources/node_modules/rcue/dist/img/git-Logo.svg
-rm -rf alfresco-identity-service-$IDENTITY_VERSION
-mkdir alfresco-identity-service-$IDENTITY_VERSION
-cp -rf keycloak-$KEYCLOAK_VERSION/* alfresco-identity-service-$IDENTITY_VERSION/
-rm -rf keycloak-$KEYCLOAK_VERSION
-ls alfresco-identity-service-$IDENTITY_VERSION
-
+rm -f $KEYCLOAK_NAME/themes/keycloak/common/resources/node_modules/rcue/dist/img/git-Logo.svg
+rm -rf $DISTRIBUTION_NAME
+mkdir -p $DISTRIBUTION_NAME
+cp -rf $KEYCLOAK_NAME/* $DISTRIBUTION_NAME/
+rm -rf $KEYCLOAK_NAME
+rm -rf $KEYCLOAK_DISTRO
+rm -f $DISTRIBUTION_NAME.zip
+rm -f $DISTRIBUTION_NAME.md5
 echo packaging identity
-zip -r alfresco-identity-service-$IDENTITY_VERSION.zip alfresco-identity-service-$IDENTITY_VERSION
-openssl md5 -binary alfresco-identity-service-$IDENTITY_VERSION.zip > alfresco-identity-service-$IDENTITY_VERSION.md5
+zip -r $DISTRIBUTION_NAME.zip $DISTRIBUTION_NAME
+openssl md5 $DISTRIBUTION_NAME.zip > $DISTRIBUTION_NAME.md5
+#rm -rf $DISTRIBUTION_NAME
+sudo rm -rf alfresco
+ls -la
