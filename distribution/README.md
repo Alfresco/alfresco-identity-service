@@ -52,7 +52,7 @@
   $ make push_private
   ```
 
-  * push the image to hub.docker.com
-  ```shell
-  $ make push_public
-  ```
+* push the image to hub.docker.com
+```shell
+$ make push_public
+```
