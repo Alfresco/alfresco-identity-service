@@ -47,7 +47,12 @@
   $ make stop
   ```
 
-* push the image to quay
+* push the image to quay.io
   ```shell
-  $ make push
+  $ make push_private
+  ```
+
+  * push the image to hub.docker.com
+  ```shell
+  $ make push_public
   ```
