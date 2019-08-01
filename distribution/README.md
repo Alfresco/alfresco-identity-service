@@ -53,6 +53,6 @@
   ```
 
 * push the image to hub.docker.com
-```shell
-$ make push_public
-```
+  ```shell
+  $ make push_public
+  ```
