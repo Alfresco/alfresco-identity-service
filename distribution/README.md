@@ -23,7 +23,11 @@
 
 * build the image (if you have the distribution zip)
   ```shell  
-  $ make image
+  # this will create the image that will be stored in quay.io
+  $ make private_image
+  
+  # this will create the image that will be stored in hub.docker.com
+  $ make public_image
   ```
 
 * start alfresco-identity-service (open http://localhost:8080/auth)
@@ -43,7 +47,12 @@
   $ make stop
   ```
 
-* push the image to quay
+* push the image to quay.io
   ```shell
-  $ make push
+  $ make push_private
+  ```
+
+* push the image to hub.docker.com
+  ```shell
+  $ make push_public
   ```
