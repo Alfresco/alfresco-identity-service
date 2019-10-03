@@ -2,7 +2,7 @@ FROM quay.io/alfresco/alfresco-base-java:8
 LABEL version="1.0"
 LABEL maintainer="Platform Services Team"
 
-ARG IDENTITY_VERSION=1.2
+ARG IDENTITY_VERSION=1.2-AUTH-356
 ENV KEYCLOAK_USER=admin
 ENV KEYCLOAK_PASSWORD=admin
 ENV DB_VENDOR=H2
