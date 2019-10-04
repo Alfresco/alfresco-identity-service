@@ -111,6 +111,7 @@ Using the following command only the Identity Service and the [nginx-ingress](ht
 ```bash
 
 helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
+helm repo add codecentric https://codecentric.github.io/helm-charts
 
 helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \
@@ -259,6 +260,7 @@ kubectl create secret generic realm-secret \
 ```bash
 
 helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
+helm repo add codecentric https://codecentric.github.io/helm-charts
 
 helm install alfresco-stable/alfresco-infrastructure \
   --set alfresco-infrastructure.activemq.enabled=false \

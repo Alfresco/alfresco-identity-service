@@ -59,6 +59,9 @@ realm:
           - "/testgroup"
 
 keycloak:
+  image:
+    repository: quay.io/alfresco/alfresco-identity-service
+    tag: 1.2
   rbac:
     create: false
   keycloak:
@@ -79,19 +82,19 @@ keycloak:
             cp -R /alfresco/* /theme
         volumeMounts:
           - name: theme
-            mountPath: /theme    
+            mountPath: /theme
     extraVolumes: |
       - name: realm-secret
         secret:
           secretName: realm-secret
       - name: theme
-        emptyDir: {}    
+        emptyDir: {}
     extraVolumeMounts: |
       - name: realm-secret
         mountPath: "/realm/"
         readOnly: true
       - name: theme
-        mountPath: /opt/jboss/keycloak/themes/alfresco  
+        mountPath: /opt/jboss/keycloak/themes/alfresco
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
     persistence:
       deployPostgres: true
