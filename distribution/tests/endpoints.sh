@@ -4,7 +4,7 @@ unzip alfresco-identity-service-$IDENTITY_VERSION.zip
 
 EXISTENT_KEYCLOAK_INSTANCES=$(ps aux | grep "standalone" | awk '{print $2}' | head -n 2 )
 echo $EXISTENT_KEYCLOAK_INSTANCES
-kill $EXISTENT_KEYCLOAK_INSTANCES
+#kill $EXISTENT_KEYCLOAK_INSTANCES
 
 cd alfresco-identity-service-$IDENTITY_VERSION/bin
 
