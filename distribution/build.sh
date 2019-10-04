@@ -1,5 +1,5 @@
 #!/bin/bash
-set -ox errexit
+set -o errexit
 
 declare -r currentDir="$(dirname "${BASH_SOURCE[0]}")"
 source "${currentDir}/build.properties"
