@@ -36,6 +36,7 @@ then
     echo "adding helm repository"
     helm repo add ${HELM_REPO_NAME} ${bamboo_helm_repo_location}
 fi
+helm repo add codecentric https://codecentric.github.io/helm-charts
 
 helm repo update
 helm dependency update ${CHART_DIR}
