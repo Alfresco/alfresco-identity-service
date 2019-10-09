@@ -17,7 +17,7 @@ RUN yum install -y unzip && yum clean all && \
     rm -rf $IDENTITY_SERVICE_NAME
 
 COPY ./docker/ /opt/jboss/tools/
-
+USER root
 EXPOSE 8080
 
 ENTRYPOINT [ "/opt/jboss/tools/docker-entrypoint.sh" ]
