@@ -68,7 +68,7 @@ keycloak:
       repository: quay.io/alfresco/alfresco-identity-service
       tag: 1.2
       pullSecrets:
-        - name: quay-registry-secret
+        - quay-registry-secret
     service:
       port: 80
     extraInitContainers: |
