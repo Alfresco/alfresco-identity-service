@@ -16,7 +16,7 @@ RUN yum install -y unzip && yum clean all && \
     unzip -oq $IDENTITY_SERVICE_NAME && \
     rm -rf $IDENTITY_SERVICE_NAME
 
-COPY ./docker/ /scripts/
+COPY ./docker/ /opt/jboss/tools/
 
 EXPOSE 8080
 
