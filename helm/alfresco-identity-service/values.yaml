@@ -59,14 +59,14 @@ realm:
           - "/testgroup"
 
 keycloak:
-  image:
-    repository: quay.io/alfresco/alfresco-identity-service
-    tag: 1.2
   rbac:
     create: false
   keycloak:
     username: admin
     password: admin
+    image:
+      repository: quay.io/alfresco/alfresco-identity-service
+      tag: 1.2
     service:
       port: 80
     extraInitContainers: |
