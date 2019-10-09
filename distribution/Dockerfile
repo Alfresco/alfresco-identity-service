@@ -20,5 +20,5 @@ COPY ./docker/ /scripts/
 
 EXPOSE 8080
 
-ENTRYPOINT [ "/scripts/docker-entrypoint.sh" ]
+ENTRYPOINT [ "/opt/jboss/tools/docker-entrypoint.sh" ]
 CMD ["-b", "0.0.0.0"]
