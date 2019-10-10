@@ -3,8 +3,6 @@ LABEL version="1.0"
 LABEL maintainer="Platform Services Team"
 
 ARG IDENTITY_VERSION=1.2
-#ENV KEYCLOAK_USER=admin
-#ENV KEYCLOAK_PASSWORD=admin
 ENV DB_VENDOR=H2
 ENV LANG en_US.UTF-8
 
