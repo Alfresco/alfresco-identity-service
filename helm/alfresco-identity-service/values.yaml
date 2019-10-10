@@ -95,7 +95,7 @@ keycloak:
     extraVolumeMounts: |
 #      - name: realm-secret
 #        mountPath: "/realm/"
-        readOnly: true
+#        readOnly: true
       - name: theme
         mountPath: /opt/jboss/keycloak/themes/alfresco
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
