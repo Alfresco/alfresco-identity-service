@@ -3,8 +3,8 @@ LABEL version="1.0"
 LABEL maintainer="Platform Services Team"
 
 ARG IDENTITY_VERSION=1.2
-#ENV KEYCLOAK_USER=admin
-#ENV KEYCLOAK_PASSWORD=admin
+ENV KEYCLOAK_USER=admin
+ENV KEYCLOAK_PASSWORD=admin
 ENV DB_VENDOR=H2
 ENV LANG en_US.UTF-8
 
@@ -17,7 +17,7 @@ RUN yum install -y unzip && yum clean all && \
     rm -rf $IDENTITY_SERVICE_NAME
 
 COPY ./docker/ /opt/jboss/tools/
-USER root
+
 EXPOSE 8080
 
 ENTRYPOINT [ "/opt/jboss/tools/docker-entrypoint.sh" ]

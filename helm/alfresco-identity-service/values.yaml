@@ -63,7 +63,7 @@ keycloak:
     create: false
   keycloak:
     username: admin
-    password: admin
+#    password: admin
     image:
       repository: quay.io/alfresco/alfresco-identity-service
       tag: 1.2
