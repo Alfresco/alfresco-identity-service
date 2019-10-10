@@ -14,7 +14,8 @@ ENV JBOSS_HOME /alfresco-identity-service-$IDENTITY_VERSION
 COPY $IDENTITY_SERVICE_NAME .
 RUN yum install -y unzip && yum clean all && \
     unzip -oq $IDENTITY_SERVICE_NAME && \
-    rm -rf $IDENTITY_SERVICE_NAME
+    rm -rf $IDENTITY_SERVICE_NAME && \
+    chmod 777 -R $JBOSS_HOME
 
 COPY ./docker/ /opt/jboss/tools/
 
