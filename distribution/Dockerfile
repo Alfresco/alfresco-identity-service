@@ -17,10 +17,15 @@ RUN yum install -y unzip && yum clean all && \
     rm -rf $IDENTITY_SERVICE_NAME && \
     chmod 777 -R $JBOSS_HOME
 
+USER root
+
+RUN yum update -y && yum install -y epel-release git && yum install -y jq openssl which && yum clean all
+
+USER 1000
+
 COPY ./docker/ /opt/jboss/tools/
 
 EXPOSE 8080
-EXPOSE 8443
 
 ENTRYPOINT [ "/opt/jboss/tools/docker-entrypoint.sh" ]
 CMD ["-b", "0.0.0.0"]
