@@ -62,6 +62,15 @@ keycloak:
   rbac:
     create: false
   keycloak:
+    extraEnv: |
+      - name: PROXY_ADDRESS_FORWARDING
+        value: "true"
+      - name: KEYCLOAK_LOGLEVEL
+        value: DEBUG
+      - name: WILDFLY_LOGLEVEL
+        value: DEBUG
+      - name: X509_CA_BUNDLE
+        value: "/var/run/secrets/kubernetes.io/serviceaccount/ca.crt"
     extraPorts: |
       - containerPort: 8443
         name: https
