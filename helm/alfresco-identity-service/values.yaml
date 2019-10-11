@@ -62,6 +62,10 @@ keycloak:
   rbac:
     create: false
   keycloak:
+    extraPorts: |
+      - containerPort: 8443
+        name: https
+        protocol: TCP
     username: admin
     password: admin
     image:
