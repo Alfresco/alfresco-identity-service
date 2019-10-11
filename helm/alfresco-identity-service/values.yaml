@@ -70,13 +70,6 @@ keycloak:
       pullPolicy: Always
       pullSecrets:
         - quay-registry-secret
-    extraEnv: |
-      - name: KEYCLOAK_LOGLEVEL
-            value: DEBUG
-      - name: WILDFLY_LOGLEVEL
-            value: DEBUG
-      - name: PROXY_ADDRESS_FORWARDING
-            value: "true"
     service:
       port: 80
     extraInitContainers: |
