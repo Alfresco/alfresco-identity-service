@@ -62,7 +62,6 @@ keycloak:
   rbac:
     create: false
   keycloak:
-    replicas: 3
     extraPorts: |
       - containerPort: 8443
         name: https
