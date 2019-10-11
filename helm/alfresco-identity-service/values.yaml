@@ -59,6 +59,7 @@ realm:
           - "/testgroup"
 
 keycloak:
+  replicas: 3
   rbac:
     create: false
   keycloak:
