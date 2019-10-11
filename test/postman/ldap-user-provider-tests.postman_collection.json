@@ -396,7 +396,7 @@
 									"    pm.expect(payloadJson.iss).to.equal(",
 									"         // instead of concatenating pm.variables.get(\"dbpurl\") and \"auth\" this should be simply \"idenityServiceUrl\" but ",
 									"         // {{dbpurl}} doesn't expand when called from pm.variables.get(). Is this a Postman bug?",
-									"        \"http://alfresco-identity-service.\"+[pm.variables.get(\"dbpurl\"), \"auth/realms\", pm.variables.get(\"identityServiceRealm\")].join(\"/\")",
+									"        \"https://alfresco-identity-service.\"+[pm.variables.get(\"dbpurl\"), \"auth/realms\", pm.variables.get(\"identityServiceRealm\")].join(\"/\")",
 									"    );",
 									"    pm.expect(payloadJson.name).to.equal(pm.iterationData.get(\"firstName\") + \" \" + pm.iterationData.get(\"lastName\"));",
 									"    pm.expect(payloadJson.given_name).to.equal(pm.iterationData.get(\"firstName\"));",
