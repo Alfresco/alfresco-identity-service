@@ -15,6 +15,8 @@ RUN yum install -y unzip && yum clean all && \
     rm -rf $IDENTITY_SERVICE_NAME && \
     chmod 777 -R $JBOSS_HOME
 
+RUN microdnf update -y && microdnf install -y gzip hostname java-11-openjdk-headless openssl tar which && microdnf clean all
+
 COPY ./docker/ /opt/jboss/tools/
 
 EXPOSE 8080
