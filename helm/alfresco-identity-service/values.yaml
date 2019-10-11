@@ -59,10 +59,10 @@ realm:
           - "/testgroup"
 
 keycloak:
-  replicas: 3
   rbac:
     create: false
   keycloak:
+    replicas: 3
     extraPorts: |
       - containerPort: 8443
         name: https
