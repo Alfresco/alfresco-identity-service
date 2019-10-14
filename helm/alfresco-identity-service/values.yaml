@@ -62,6 +62,9 @@ keycloak:
   rbac:
     create: false
   keycloak:
+    ingress:
+      enabled: true
+      path: /auth
     extraEnv: |
       - name: PROXY_ADDRESS_FORWARDING
         value: "true"
