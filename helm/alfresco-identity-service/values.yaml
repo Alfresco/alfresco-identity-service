@@ -62,6 +62,8 @@ keycloak:
   rbac:
     create: false
   keycloak:
+    cli:
+      enabled: false
     extraEnv: |
       - name: PROXY_ADDRESS_FORWARDING
         value: "true"
