@@ -70,9 +70,9 @@ keycloak:
       - name: WILDFLY_LOGLEVEL
         value: DEBUG
       - name: KEYCLOAK_HTTP_PORT
-        value: 8080
+        value: "8080"
       - name: KEYCLOAK_HTTPS_PORT
-        value: 8443
+        value: "8443"
     extraPorts: |
       - containerPort: 8443
         name: https
