@@ -107,7 +107,7 @@ rm -rf $KEYCLOAK_NAME/standalone/configuration/standalone_xml_history
 rm -f $KEYCLOAK_NAME/themes/keycloak/common/resources/node_modules/rcue/dist/img/git-Logo.svg
 rm -rf $DISTRIBUTION_NAME
 mkdir -p $DISTRIBUTION_NAME
-cp -rf $KEYCLOAK_NAME/* $DISTRIBUTION_NAME/
+cp -rf ../$KEYCLOAK_NAME/* $DISTRIBUTION_NAME/
 rm -rf $KEYCLOAK_NAME
 rm -rf $KEYCLOAK_DISTRO
 rm -f $DISTRIBUTION_NAME.zip
