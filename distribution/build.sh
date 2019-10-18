@@ -65,6 +65,44 @@ echo -e "set \"JAVA_OPTS=%JAVA_OPTS% -Dkeycloak.import=%~dp0..\\\realm\\\alfresc
 echo '# Alfresco realm import ' >> $KEYCLOAK_NAME/bin/standalone.conf.ps1
 echo "\$JAVA_OPTS += \"-Dkeycloak.import=\$pwd\\\..\\\realm\\\alfresco-realm.json\"" >> $KEYCLOAK_NAME/bin/standalone.conf.ps1
 
+#####################
+# Create DB modules #
+#####################
+
+mkdir -p $KEYCLOAK_NAME/modules/system/layers/base/com/mysql/jdbc/main
+cd $KEYCLOAK_NAME/modules/system/layers/base/com/mysql/jdbc/main
+curl -O https://repo1.maven.org/maven2/mysql/mysql-connector-java/$JDBC_MYSQL_VERSION/mysql-connector-java-$JDBC_MYSQL_VERSION.jar
+cp /opt/jboss/tools/databases/mysql/module.xml .
+
+mkdir -p $KEYCLOAK_NAME/modules/system/layers/base/org/postgresql/jdbc/main
+cd $KEYCLOAK_NAME/modules/system/layers/base/org/postgresql/jdbc/main
+curl -L https://repo1.maven.org/maven2/org/postgresql/postgresql/$JDBC_POSTGRES_VERSION/postgresql-$JDBC_POSTGRES_VERSION.jar > postgres-jdbc.jar
+cp /opt/jboss/tools/databases/postgres/module.xml .
+
+mkdir -p $KEYCLOAK_NAME/modules/system/layers/base/org/mariadb/jdbc/main
+cd $KEYCLOAK_NAME/modules/system/layers/base/org/mariadb/jdbc/main
+curl -L https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/$JDBC_MARIADB_VERSION/mariadb-java-client-$JDBC_MARIADB_VERSION.jar > mariadb-jdbc.jar
+cp /opt/jboss/tools/databases/mariadb/module.xml .
+
+######################
+# Configure Keycloak #
+######################
+
+cd $KEYCLOAK_NAME
+
+bin/jboss-cli.sh --file=/opt/jboss/tools/cli/standalone-configuration.cli
+rm -rf $KEYCLOAK_NAME/standalone/configuration/standalone_xml_history
+
+bin/jboss-cli.sh --file=/opt/jboss/tools/cli/standalone-ha-configuration.cli
+rm -rf $KEYCLOAK_NAME/standalone/configuration/standalone_xml_history
+
+###################
+# Set permissions #
+###################
+
+chown -R jboss:0 $KEYCLOAK_NAME
+chmod -R g+rw $KEYCLOAK_NAME
+
 rm -f $KEYCLOAK_NAME/themes/keycloak/common/resources/node_modules/rcue/dist/img/git-Logo.svg
 rm -rf $DISTRIBUTION_NAME
 mkdir -p $DISTRIBUTION_NAME
