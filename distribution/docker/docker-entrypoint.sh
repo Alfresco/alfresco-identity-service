@@ -47,10 +47,6 @@ if [ "$KEYCLOAK_HOSTNAME" != "" ]; then
     if [ "$KEYCLOAK_HTTPS_PORT" != "" ]; then
         SYS_PROPS+=" -Dkeycloak.hostname.fixed.httpsPort=$KEYCLOAK_HTTPS_PORT"
     fi
-
-    if [ "$KEYCLOAK_ALWAYS_HTTPS" != "" ]; then
-            SYS_PROPS+=" -Dkeycloak.hostname.fixed.alwaysHttps=$KEYCLOAK_ALWAYS_HTTPS"
-    fi
 fi
 
 ################
@@ -66,7 +62,7 @@ fi
 ########################
 
 if [ -z "$BIND" ]; then
-    BIND=$(hostname --all-ip-addresses)
+    BIND=$(hostname -i)
 fi
 if [ -z "$BIND_OPTS" ]; then
     for BIND_IP in $BIND
@@ -103,8 +99,6 @@ if [ "$DB_VENDOR" == "" ]; then
         export DB_VENDOR="mysql"
     elif (getent hosts mariadb &>/dev/null); then
         export DB_VENDOR="mariadb"
-    elif (getent hosts oracle &>/dev/null); then
-        export DB_VENDOR="oracle"
     fi
 fi
 
@@ -116,8 +110,6 @@ if [ "$DB_VENDOR" == "" ]; then
         export DB_VENDOR="mysql"
     elif (printenv | grep '^MARIADB_ADDR=' &>/dev/null); then
         export DB_VENDOR="mariadb"
-    elif (printenv | grep '^ORACLE_ADDR=' &>/dev/null); then
-        export DB_VENDOR="oracle"
     fi
 fi
 
@@ -134,8 +126,6 @@ case "$DB_VENDOR" in
         DB_NAME="MySQL";;
     mariadb)
         DB_NAME="MariaDB";;
-    oracle)
-        DB_NAME="Oracle";;
     h2)
         DB_NAME="Embedded H2";;
     *)
@@ -168,9 +158,13 @@ echo ""
 echo "========================================================================="
 echo ""
 
+if [ "$DB_VENDOR" != "h2" ]; then
+    /bin/sh /opt/jboss/tools/databases/change-database.sh $DB_VENDOR
+fi
 
 /opt/jboss/tools/x509.sh
 /opt/jboss/tools/jgroups.sh $JGROUPS_DISCOVERY_PROTOCOL $JGROUPS_DISCOVERY_PROPERTIES
+/opt/jboss/tools/autorun.sh
 
 ##################
 # Start Keycloak #
