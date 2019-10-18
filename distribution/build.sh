@@ -68,21 +68,22 @@ echo "\$JAVA_OPTS += \"-Dkeycloak.import=\$pwd\\\..\\\realm\\\alfresco-realm.jso
 #####################
 # Create DB modules #
 #####################
+pwd
 
 mkdir -p $KEYCLOAK_NAME/modules/system/layers/base/com/mysql/jdbc/main
 cd $KEYCLOAK_NAME/modules/system/layers/base/com/mysql/jdbc/main
 curl -O https://repo1.maven.org/maven2/mysql/mysql-connector-java/$JDBC_MYSQL_VERSION/mysql-connector-java-$JDBC_MYSQL_VERSION.jar
-cp docker/databases/mysql/module.xml .
+cp ${currentDir}/docker/databases/mysql/module.xml .
 
 mkdir -p $KEYCLOAK_NAME/modules/system/layers/base/org/postgresql/jdbc/main
 cd $KEYCLOAK_NAME/modules/system/layers/base/org/postgresql/jdbc/main
 curl -L https://repo1.maven.org/maven2/org/postgresql/postgresql/$JDBC_POSTGRES_VERSION/postgresql-$JDBC_POSTGRES_VERSION.jar > postgres-jdbc.jar
-cp docker/databases/postgres/module.xml .
+cp ${currentDir}/docker/databases/postgres/module.xml .
 
 mkdir -p $KEYCLOAK_NAME/modules/system/layers/base/org/mariadb/jdbc/main
 cd $KEYCLOAK_NAME/modules/system/layers/base/org/mariadb/jdbc/main
 curl -L https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/$JDBC_MARIADB_VERSION/mariadb-java-client-$JDBC_MARIADB_VERSION.jar > mariadb-jdbc.jar
-cp docker/databases/mariadb/module.xml .
+cp ${currentDir}/docker/databases/mariadb/module.xml .
 
 ######################
 # Configure Keycloak #
