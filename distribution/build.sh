@@ -94,10 +94,10 @@ cd $SCRIPTPATH
 
 cd $KEYCLOAK_NAME
 
-bin/jboss-cli.sh --file=/opt/jboss/tools/cli/standalone-configuration.cli
+bin/jboss-cli.sh --file=$SCRIPTPATH/docker/cli/standalone-configuration.cli
 rm -rf $KEYCLOAK_NAME/standalone/configuration/standalone_xml_history
 
-bin/jboss-cli.sh --file=/opt/jboss/tools/cli/standalone-ha-configuration.cli
+bin/jboss-cli.sh --file=$SCRIPTPATH/docker/cli/standalone-ha-configuration.cli
 rm -rf $KEYCLOAK_NAME/standalone/configuration/standalone_xml_history
 
 ###################
