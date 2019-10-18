@@ -86,6 +86,8 @@ cd $KEYCLOAK_NAME/modules/system/layers/base/org/mariadb/jdbc/main
 curl -L https://repo1.maven.org/maven2/org/mariadb/jdbc/mariadb-java-client/$JDBC_MARIADB_VERSION/mariadb-java-client-$JDBC_MARIADB_VERSION.jar > mariadb-jdbc.jar
 cp $SCRIPTPATH/docker/databases/mariadb/module.xml .
 
+cd $SCRIPTPATH
+
 ######################
 # Configure Keycloak #
 ######################
