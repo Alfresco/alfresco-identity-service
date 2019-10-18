@@ -104,7 +104,6 @@ rm -rf $KEYCLOAK_NAME/standalone/configuration/standalone_xml_history
 # Set permissions #
 ###################
 
-chown -R jboss:0 $KEYCLOAK_NAME
 chmod -R g+rw $KEYCLOAK_NAME
 
 rm -f $KEYCLOAK_NAME/themes/keycloak/common/resources/node_modules/rcue/dist/img/git-Logo.svg
