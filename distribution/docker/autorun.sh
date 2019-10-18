@@ -8,7 +8,7 @@ if [[ -d "$ENTRYPOINT_DIR" ]]; then
   for f in "$ENTRYPOINT_DIR"/*; do
     if [[ "$f" == *.cli ]]; then
       echo "Executing cli script: $f"
-      bin/jboss-cli.sh --file="$f"
+      $JBOSS_HOME/bin/jboss-cli.sh --file="$f"
     elif [[ -x "$f" ]]; then
       echo "Executing: $f"
       "$f"
