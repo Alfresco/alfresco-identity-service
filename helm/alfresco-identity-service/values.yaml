@@ -61,7 +61,7 @@ realm:
 keycloak:
   image:
     repository: quay.io/alfresco/alfresco-identity-service
-    tag: 1.2
+    tag: 1.2-auth-392-final
   rbac:
     create: false
   keycloak:
@@ -94,7 +94,7 @@ keycloak:
         mountPath: "/realm/"
         readOnly: true
       - name: theme
-        mountPath: /opt/jboss/keycloak/themes/alfresco
+        mountPath: /opt/alfresco/alfresco-identity-service/themes/alfresco
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
     persistence:
       deployPostgres: true
