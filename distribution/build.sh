@@ -97,6 +97,6 @@ echo "\$JAVA_OPTS += \"-Dkeycloak.import=\$pwd\\\..\\\realm\\\alfresco-realm.jso
 zip -r $DISTRIBUTION_NAME.zip $DISTRIBUTION_NAME
 openssl md5 $DISTRIBUTION_NAME.zip > $DISTRIBUTION_NAME.md5
 rm -rf $DISTRIBUTION_NAME
-rm -rf alfresco
+sudo rm -rf alfresco
 
 ls -la
