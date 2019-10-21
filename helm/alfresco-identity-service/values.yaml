@@ -62,11 +62,21 @@ keycloak:
   rbac:
     create: false
   keycloak:
+    extraEnv: |
+      - name: PROXY_ADDRESS_FORWARDING
+        value: "true"
+    extraPorts: |
+      - containerPort: 8443
+        name: https
+        protocol: TCP
     username: admin
     password: admin
     image:
       repository: quay.io/alfresco/alfresco-identity-service
       tag: 1.2-AUTH-356
+      pullPolicy: Always
+      pullSecrets:
+        - quay-registry-secret
     service:
       port: 80
     extraInitContainers: |
@@ -94,7 +104,7 @@ keycloak:
         mountPath: "/realm/"
         readOnly: true
       - name: theme
-        mountPath: /opt/jboss/keycloak/themes/alfresco
+        mountPath: /opt/alfresco/alfresco-identity-service/themes/alfresco
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
     persistence:
       deployPostgres: true
