@@ -31,7 +31,7 @@ file_env 'KEYCLOAK_USER'
 file_env 'KEYCLOAK_PASSWORD'
 
 if [ $KEYCLOAK_USER ] && [ $KEYCLOAK_PASSWORD ]; then
-    $AIMS_HOME/bin/add-user-keycloak.sh --user $KEYCLOAK_USER --password $KEYCLOAK_PASSWORD
+    $JBOSS_HOME/bin/add-user-keycloak.sh --user $KEYCLOAK_USER --password $KEYCLOAK_PASSWORD
 fi
 
 ############
@@ -170,12 +170,12 @@ echo "========================================================================="
 echo ""
 
 
-$ALFRESCO_HOME/scripts/x509.sh
-$ALFRESCO_HOME/scripts/jgroups.sh $JGROUPS_DISCOVERY_PROTOCOL $JGROUPS_DISCOVERY_PROPERTIES
+/opt/jboss/tools/x509.sh
+/opt/jboss/tools/jgroups.sh $JGROUPS_DISCOVERY_PROTOCOL $JGROUPS_DISCOVERY_PROPERTIES
 
 ##################
 # Start Keycloak #
 ##################
 
-exec $AIMS_HOME/bin/standalone.sh $SYS_PROPS $@
+exec $JBOSS_HOME/bin/standalone.sh $SYS_PROPS $@
 exit $?
