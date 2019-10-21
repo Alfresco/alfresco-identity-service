@@ -1,6 +1,6 @@
 embed-server --server-config=standalone-ha.xml --std-out=echo
-run-batch --file=../docker/cli/loglevel.cli
-run-batch --file=../docker/cli/proxy.cli
-run-batch --file=../docker/cli/hostname.cli
-run-batch --file=../docker/cli/theme.cli
+run-batch --file=/opt/alfresco/scripts/cli/loglevel.cli
+run-batch --file=/opt/alfresco/scripts/cli/proxy.cli
+run-batch --file=/opt/alfresco/scripts/cli/hostname.cli
+run-batch --file=/opt/alfresco/scripts/cli/theme.cli
 stop-embedded-server

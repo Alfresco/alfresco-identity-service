@@ -1,4 +1,5 @@
 #!/bin/bash
+
 # usage: file_env VAR [DEFAULT]
 #    ie: file_env 'XYZ_DB_PASSWORD' 'example'
 # (will allow for "$XYZ_DB_PASSWORD_FILE" to fill in the value of
@@ -30,7 +31,7 @@ file_env 'KEYCLOAK_USER'
 file_env 'KEYCLOAK_PASSWORD'
 
 if [ $KEYCLOAK_USER ] && [ $KEYCLOAK_PASSWORD ]; then
-    $JBOSS_HOME/bin/add-user-keycloak.sh --user $KEYCLOAK_USER --password $KEYCLOAK_PASSWORD
+    $AIMS_HOME/bin/add-user-keycloak.sh --user $KEYCLOAK_USER --password $KEYCLOAK_PASSWORD
 fi
 
 ############
@@ -47,6 +48,10 @@ if [ "$KEYCLOAK_HOSTNAME" != "" ]; then
     if [ "$KEYCLOAK_HTTPS_PORT" != "" ]; then
         SYS_PROPS+=" -Dkeycloak.hostname.fixed.httpsPort=$KEYCLOAK_HTTPS_PORT"
     fi
+
+    if [ "$KEYCLOAK_ALWAYS_HTTPS" != "" ]; then
+            SYS_PROPS+=" -Dkeycloak.hostname.fixed.alwaysHttps=$KEYCLOAK_ALWAYS_HTTPS"
+    fi
 fi
 
 ################
@@ -62,7 +67,7 @@ fi
 ########################
 
 if [ -z "$BIND" ]; then
-    BIND=$(hostname -i)
+    BIND=$(hostname --all-ip-addresses)
 fi
 if [ -z "$BIND_OPTS" ]; then
     for BIND_IP in $BIND
@@ -99,6 +104,8 @@ if [ "$DB_VENDOR" == "" ]; then
         export DB_VENDOR="mysql"
     elif (getent hosts mariadb &>/dev/null); then
         export DB_VENDOR="mariadb"
+    elif (getent hosts oracle &>/dev/null); then
+        export DB_VENDOR="oracle"
     fi
 fi
 
@@ -110,6 +117,8 @@ if [ "$DB_VENDOR" == "" ]; then
         export DB_VENDOR="mysql"
     elif (printenv | grep '^MARIADB_ADDR=' &>/dev/null); then
         export DB_VENDOR="mariadb"
+    elif (printenv | grep '^ORACLE_ADDR=' &>/dev/null); then
+        export DB_VENDOR="oracle"
     fi
 fi
 
@@ -126,6 +135,8 @@ case "$DB_VENDOR" in
         DB_NAME="MySQL";;
     mariadb)
         DB_NAME="MariaDB";;
+    oracle)
+        DB_NAME="Oracle";;
     h2)
         DB_NAME="Embedded H2";;
     *)
@@ -158,17 +169,13 @@ echo ""
 echo "========================================================================="
 echo ""
 
-if [ "$DB_VENDOR" != "h2" ]; then
-    /bin/sh /opt/jboss/tools/databases/change-database.sh $DB_VENDOR
-fi
 
-/opt/jboss/tools/x509.sh
-/opt/jboss/tools/jgroups.sh $JGROUPS_DISCOVERY_PROTOCOL $JGROUPS_DISCOVERY_PROPERTIES
-/opt/jboss/tools/autorun.sh
+$ALFRESCO_HOME/scripts/x509.sh
+$ALFRESCO_HOME/scripts/jgroups.sh $JGROUPS_DISCOVERY_PROTOCOL $JGROUPS_DISCOVERY_PROPERTIES
 
 ##################
 # Start Keycloak #
 ##################
 
-exec $JBOSS_HOME/bin/standalone.sh $SYS_PROPS $@
+exec $AIMS_HOME/bin/standalone.sh $SYS_PROPS $@
 exit $?

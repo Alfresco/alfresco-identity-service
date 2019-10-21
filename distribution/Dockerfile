@@ -3,33 +3,29 @@ LABEL version="1.0"
 LABEL maintainer="Platform Services Team"
 
 ARG IDENTITY_VERSION=1.2-Cristina
+ENV KEYCLOAK_USER=admin
+ENV KEYCLOAK_PASSWORD=admin
 ENV DB_VENDOR=H2
 ENV LANG en_US.UTF-8
 
-ENV JDBC_POSTGRES_VERSION 42.2.5
-ENV JDBC_MYSQL_VERSION 5.1.46
-ENV JDBC_MARIADB_VERSION 2.2.3
-
-ENV PROXY_ADDRESS_FORWARDING true
-
-ENV IDENTITY_SERVICE_NAME alfresco-identity-service-$IDENTITY_VERSION.zip
-ENV JBOSS_HOME /alfresco-identity-service-$IDENTITY_VERSION
-
-COPY $IDENTITY_SERVICE_NAME .
-RUN yum install -y unzip && yum clean all && \
-    unzip -oq $IDENTITY_SERVICE_NAME && \
-    rm -rf $IDENTITY_SERVICE_NAME && \
-    chmod 777 -R $JBOSS_HOME
+ENV IDENTITY_SERVICE_NAME alfresco-identity-service-$IDENTITY_VERSION
+ENV ALFRESCO_HOME /opt/alfresco
+ENV AIMS_HOME $ALFRESCO_HOME/alfresco-identity-service
+WORKDIR $ALFRESCO_HOME
 
 USER root
 
-RUN yum update -y && yum install -y epel-release git && yum install -y jq openssl which && yum clean all
+RUN yum update -y && yum install -y jq openssl which && yum clean all
+
+COPY $IDENTITY_SERVICE_NAME $AIMS_HOME
+
+COPY ./docker/ scripts
+RUN chmod +x scripts/config-keycloak.sh && \
+    scripts/config-keycloak.sh
 
 USER 1000
 
-COPY ./docker/ /opt/jboss/tools/
-
 EXPOSE 8080
 
-ENTRYPOINT [ "/opt/jboss/tools/docker-entrypoint.sh" ]
+ENTRYPOINT [ "scripts/docker-entrypoint.sh" ]
 CMD ["-b", "0.0.0.0"]
