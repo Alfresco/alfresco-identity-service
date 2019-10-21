@@ -65,6 +65,7 @@ keycloak:
     image:
       repository: quay.io/alfresco/alfresco-identity-service
       tag: 1.2-auth-392-final
+      pullPolicy: Always
       pullSecrets:
         - quay-registry-secret
     username: admin
