@@ -3,7 +3,7 @@ function autogenerate_keystores() {
   # Keystore infix notation as used in templates to keystore name mapping
   declare -A KEYSTORES=( ["https"]="HTTPS" )
 
-  local KEYSTORES_STORAGE="${AIMS_HOME}/standalone/configuration/keystores"
+  local KEYSTORES_STORAGE="${JBOSS_HOME}/standalone/configuration/keystores"
   if [ ! -d "${KEYSTORES_STORAGE}" ]; then
     mkdir -p "${KEYSTORES_STORAGE}"
   fi
@@ -42,14 +42,14 @@ function autogenerate_keystores() {
         echo "${KEYSTORES[$KEYSTORE_TYPE]} keystore successfully created at: ${KEYSTORES_STORAGE}/${JKS_KEYSTORE_FILE}"
       fi
 
-      echo "set keycloak_tls_keystore_password=${PASSWORD}" >> "$AIMS_HOME/bin/.jbossclirc"
-      echo "set keycloak_tls_keystore_file=${KEYSTORES_STORAGE}/${JKS_KEYSTORE_FILE}" >> "$AIMS_HOME/bin/.jbossclirc"
-      echo "set configuration_file=standalone.xml" >> "$AIMS_HOME/bin/.jbossclirc"
-      $AIMS_HOME/bin/jboss-cli.sh --file=$ALFRESCO_HOME/scripts/cli/x509-keystore.cli >& /dev/null
-      sed -i '$ d' "$AIMS_HOME/bin/.jbossclirc"
-      echo "set configuration_file=standalone-ha.xml" >> "$AIMS_HOME/bin/.jbossclirc"
-      $AIMS_HOME/bin/jboss-cli.sh --file=$ALFRESCO_HOME/scripts/cli/x509-keystore.cli >& /dev/null
-      sed -i '$ d' "$AIMS_HOME/bin/.jbossclirc"
+      echo "set keycloak_tls_keystore_password=${PASSWORD}" >> "$JBOSS_HOME/bin/.jbossclirc"
+      echo "set keycloak_tls_keystore_file=${KEYSTORES_STORAGE}/${JKS_KEYSTORE_FILE}" >> "$JBOSS_HOME/bin/.jbossclirc"
+      echo "set configuration_file=standalone.xml" >> "$JBOSS_HOME/bin/.jbossclirc"
+      $JBOSS_HOME/bin/jboss-cli.sh --file=/opt/jboss/tools/cli/x509-keystore.cli >& /dev/null
+      sed -i '$ d' "$JBOSS_HOME/bin/.jbossclirc"
+      echo "set configuration_file=standalone-ha.xml" >> "$JBOSS_HOME/bin/.jbossclirc"
+      $JBOSS_HOME/bin/jboss-cli.sh --file=/opt/jboss/tools/cli/x509-keystore.cli >& /dev/null
+      sed -i '$ d' "$JBOSS_HOME/bin/.jbossclirc"
     fi
 
   done
@@ -88,14 +88,14 @@ function autogenerate_keystores() {
       fi
     fi
 
-    echo "set keycloak_tls_truststore_password=${PASSWORD}" >> "$AIMS_HOME/bin/.jbossclirc"
-    echo "set keycloak_tls_truststore_file=${KEYSTORES_STORAGE}/${JKS_TRUSTSTORE_FILE}" >> "$AIMS_HOME/bin/.jbossclirc"
-    echo "set configuration_file=standalone.xml" >> "$AIMS_HOME/bin/.jbossclirc"
-    $AIMS_HOME/bin/jboss-cli.sh --file=$ALFRESCO_HOME/scripts/cli/x509-truststore.cli >& /dev/null
-    sed -i '$ d' "$AIMS_HOME/bin/.jbossclirc"
-    echo "set configuration_file=standalone-ha.xml" >> "$AIMS_HOME/bin/.jbossclirc"
-    $AIMS_HOME/bin/jboss-cli.sh --file=$ALFRESCO_HOME/scripts/cli/x509-truststore.cli >& /dev/null
-    sed -i '$ d' "$AIMS_HOME/bin/.jbossclirc"
+    echo "set keycloak_tls_truststore_password=${PASSWORD}" >> "$JBOSS_HOME/bin/.jbossclirc"
+    echo "set keycloak_tls_truststore_file=${KEYSTORES_STORAGE}/${JKS_TRUSTSTORE_FILE}" >> "$JBOSS_HOME/bin/.jbossclirc"
+    echo "set configuration_file=standalone.xml" >> "$JBOSS_HOME/bin/.jbossclirc"
+    $JBOSS_HOME/bin/jboss-cli.sh --file=/opt/jboss/tools/cli/x509-truststore.cli >& /dev/null
+    sed -i '$ d' "$JBOSS_HOME/bin/.jbossclirc"
+    echo "set configuration_file=standalone-ha.xml" >> "$JBOSS_HOME/bin/.jbossclirc"
+    $JBOSS_HOME/bin/jboss-cli.sh --file=/opt/jboss/tools/cli/x509-truststore.cli >& /dev/null
+    sed -i '$ d' "$JBOSS_HOME/bin/.jbossclirc"
 
     popd >& /dev/null
   fi

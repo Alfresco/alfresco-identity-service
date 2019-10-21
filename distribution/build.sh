@@ -84,7 +84,7 @@ cp -rf alfresco $DISTRIBUTION_NAME/themes/
 
 # unix settings
 echo '# Alfresco realm import ' >> $DISTRIBUTION_NAME/bin/standalone.conf
-echo 'JAVA_OPTS="$JAVA_OPTS -Dkeycloak.import=$AIMS_HOME/realm/alfresco-realm.json"' >> $DISTRIBUTION_NAME/bin/standalone.conf
+echo 'JAVA_OPTS="$JAVA_OPTS -Dkeycloak.import=$JBOSS_HOME/realm/alfresco-realm.json"' >> $DISTRIBUTION_NAME/bin/standalone.conf
 
 # windows settings
 echo 'rem # Alfresco realm import ' >> $DISTRIBUTION_NAME/bin/standalone.conf.bat
