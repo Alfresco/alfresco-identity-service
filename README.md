@@ -11,7 +11,7 @@ For installing the Identity Service you can choose Kubernetes or the distributio
 ### Standalone Distribution
 
 #### Overview
-This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs/latest/) .
+This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs/) .
 
 #### Installing and booting
 
@@ -227,13 +227,13 @@ In addition, for high availability, Keycloak supports clustering.  For more info
 [Keycloak Stable chart Readme](https://github.com/helm/charts/tree/master/stable/keycloak#high-availability-and-clustering)
 
 
-[Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/4.5/server_installation/#standalone-clustered-configuration)
+[Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/4.8/server_installation/#standalone-clustered-configuration)
 
 
 [Keycloak Clustering](https://www.keycloak.org/docs/4.5/server_installation/#_clustering)
 
 
-**_NOTE:_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/4.5/server_installation/#sticky-sessions) are used so keep that in mind if you choose to use a different ingress type than nginx.
+**_NOTE:_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/4.8/server_installation/#sticky-sessions) are used so keep that in mind if you choose to use a different ingress type than nginx.
 
 ## Customizing the Realm
 
@@ -270,21 +270,21 @@ helm install alfresco-stable/alfresco-infrastructure \
   --namespace $DESIREDNAMESPACE
 ```
 
-Once Keycloak is up and running, login to the [Management Console](http://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console) to configure the required realm.
+Once Keycloak is up and running, login to the [Management Console](http://www.keycloak.org/docs/4.8/server_admin/index.html#admin-console) to configure the required realm.
 
 #### Manually
 
-1. [Add a realm](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm) named "Alfresco"
+1. [Add a realm](http://www.keycloak.org/docs/4.8/server_admin/index.html#_create-realm) named "Alfresco"
 
-2. [Create an OIDC client](http://www.keycloak.org/docs/3.4/server_admin/index.html#oidc-clients) named "alfresco" within the Alfresco realm
+2. [Create an OIDC client](http://www.keycloak.org/docs/4.8/server_admin/index.html#oidc-clients) named "alfresco" within the Alfresco realm
 
-3. [Create a group](http://www.keycloak.org/docs/3.4/server_admin/index.html#groups) named "admin"
+3. [Create a group](http://www.keycloak.org/docs/4.8/server_admin/index.html#groups) named "admin"
 
-4. [Add a new user](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-new-user) with a username of "testuser", email of "test@test.com" and first and last name of "test"
+4. [Add a new user](http://www.keycloak.org/docs/4.8/server_admin/index.html#_create-new-user) with a username of "testuser", email of "test@test.com" and first and last name of "test"
 
 #### Using the Sample Realm File
 
-1. Go to the [Add Realm](http://www.keycloak.org/docs/3.4/server_admin/index.html#_create-realm) page and click the "Select File" button next to the **Import** label.
+1. Go to the [Add Realm](http://www.keycloak.org/docs/4.8/server_admin/index.html#_create-realm) page and click the "Select File" button next to the **Import** label.
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
 
