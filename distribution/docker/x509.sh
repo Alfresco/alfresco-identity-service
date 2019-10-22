@@ -1,5 +1,4 @@
 #!/bin/bash
-set -ex
 function autogenerate_keystores() {
   # Keystore infix notation as used in templates to keystore name mapping
   declare -A KEYSTORES=( ["https"]="HTTPS" )
