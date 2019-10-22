@@ -59,12 +59,15 @@ realm:
           - "/testgroup"
 
 keycloak:
-  image:
-    repository: quay.io/alfresco/alfresco-identity-service
-    tag: 1.2
   rbac:
     create: false
   keycloak:
+    image:
+      repository: quay.io/alfresco/alfresco-identity-service
+      tag: 1.2-auth-392-final
+      pullPolicy: Always
+      pullSecrets:
+        - quay-registry-secret
     username: admin
     password: admin
     service:
@@ -94,7 +97,7 @@ keycloak:
         mountPath: "/realm/"
         readOnly: true
       - name: theme
-        mountPath: /opt/jboss/keycloak/themes/alfresco
+        mountPath: /opt/jboss/alfresco-identity-service/themes/alfresco
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
     persistence:
       deployPostgres: true
