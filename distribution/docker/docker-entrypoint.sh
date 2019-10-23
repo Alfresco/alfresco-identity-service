@@ -160,6 +160,22 @@ function set_legacy_vars() {
 }
 set_legacy_vars `echo $DB_VENDOR | tr a-z A-Z`
 
+# if the DB_VENDOR is postgres then append port to the DB_ADDR
+function append_port_db_addr() {
+  local db_host_regex='^[a-zA-Z0-9]([a-zA-Z0-9]|-|.)*:[0-9]{4,5}$'
+  IFS=',' read -ra addresses <<< "$DB_ADDR"
+  DB_ADDR=""
+  for i in "${addresses[@]}"; do
+    if [[ $i =~ $db_host_regex ]]; then
+        DB_ADDR+=$i;
+     else
+        DB_ADDR+="${i}:${DB_PORT}";
+     fi
+        DB_ADDR+=","
+  done
+  DB_ADDR=$(echo $DB_ADDR | sed 's/.$//') # remove the last comma
+}
+
 # Configure DB
 
 echo "========================================================================="
@@ -168,6 +184,10 @@ echo "  Using $DB_NAME database"
 echo ""
 echo "========================================================================="
 echo ""
+
+if [ "$DB_VENDOR" != "h2" ]; then
+    /bin/sh /opt/jboss/tools/databases/change-database.sh $DB_VENDOR
+fi
 
 
 /opt/jboss/tools/x509.sh
