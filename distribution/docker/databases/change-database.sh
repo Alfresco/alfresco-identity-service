@@ -2,10 +2,10 @@
 
 DB_VENDOR=$1
 
-cd /opt/jboss/keycloak
+cd $JBOSS_HOME
 
 bin/jboss-cli.sh --file=/opt/jboss/tools/cli/databases/$DB_VENDOR/standalone-configuration.cli
-rm -rf /opt/jboss/keycloak/standalone/configuration/standalone_xml_history
+rm -rf $JBOSS_HOME/standalone/configuration/standalone_xml_history
 
 bin/jboss-cli.sh --file=/opt/jboss/tools/cli/databases/$DB_VENDOR/standalone-ha-configuration.cli
-rm -rf standalone/configuration/standalone_xml_history/current/*
+rm -rf $JBOSS_HOME/standalone/configuration/standalone_xml_history/current/*

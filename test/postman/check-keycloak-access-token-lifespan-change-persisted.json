@@ -28,7 +28,7 @@
 							"});",
 							"",
 							"var tokens = JSON.parse(responseBody); ",
-							"pm.environment.set(\"kcAdminAccessToken\", tokens.access_token);",
+							"pm.globals.set(\"kcAdminAccessToken\", tokens.access_token);",
 							""
 						],
 						"type": "text/javascript"
