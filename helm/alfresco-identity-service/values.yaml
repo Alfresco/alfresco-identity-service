@@ -7,7 +7,6 @@ ingress:
     nginx.ingress.kubernetes.io/affinity: "cookie"
     nginx.ingress.kubernetes.io/session-cookie-name: "identity_affinity_route"
     nginx.ingress.kubernetes.io/session-cookie-hash: "sha1"
-
 realm:
   alfresco:
     client:
@@ -57,11 +56,15 @@ realm:
         groups:
           - "/admin"
           - "/testgroup"
-
 keycloak:
   rbac:
     create: false
   keycloak:
+    extraEnv: |
+      - name: KEYCLOAK_DEFAULT_THEME
+        value: "alfresco"
+      - name: KEYCLOAK_WELCOME_THEME
+        value: "alfresco"
     image:
       repository: quay.io/alfresco/alfresco-identity-service
       tag: 1.2-AUTH-356
@@ -74,7 +77,7 @@ keycloak:
       port: 80
     extraInitContainers: |
       - name: theme-provider
-        image: alfresco/alfresco-keycloak-theme:0.1
+        image: alfresco/alfresco-keycloak-theme:0.2-auth-363
         imagePullPolicy: Always
         command:
           - sh
