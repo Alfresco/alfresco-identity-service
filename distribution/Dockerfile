@@ -2,7 +2,7 @@ FROM quay.io/alfresco/alfresco-base-java:8
 LABEL version="1.0"
 LABEL maintainer="Platform Services Team"
 
-ARG IDENTITY_VERSION=1.2-AUTH-356
+ARG IDENTITY_VERSION=1.2
 
 ENV JDBC_POSTGRES_VERSION 42.2.5
 ENV JDBC_MYSQL_VERSION 5.1.46
