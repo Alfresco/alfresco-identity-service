@@ -34,17 +34,17 @@ This guide helps you get started with the Identity Service. It covers simple sta
   Linux/Unix
   ```bash
   $ cd alfresco-identity-service-1.2.0/bin
-  $ ./standalone.sh
+  $ ./standalone.sh -b <IP_ADDRESS>
   ```
-
   Windows bat
   ```bash
-  > ...\alfresco-identity-service-1.2.0\bin\standalone.bat
+  > ...\alfresco-identity-service-1.2.0\bin\standalone.bat -b <IP_ADDRESS>
   ```
   Windows powershell
   ```bash
-  > ...\alfresco-identity-service-1.2.0\bin\standalone.ps1
+  > ...\alfresco-identity-service-1.2.0\bin\standalone.ps1 -b <IP_ADDRESS>
   ```
+  **_NOTE:_** To bind to all public interfaces use `0.0.0.0` as the value of IP_ADDRESS otherwise specify the the address of the specific interface you want to use.
 
 This is deployed with the **default example realm applied** which results in default values of:
 
