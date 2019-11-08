@@ -62,6 +62,11 @@ keycloak:
   rbac:
     create: false
   keycloak:
+    extraEnv: |
+      - name: KEYCLOAK_DEFAULT_THEME
+        value: "alfresco"
+      - name: KEYCLOAK_WELCOME_THEME
+        value: "alfresco"
     image:
       repository: quay.io/alfresco/alfresco-identity-service
       tag: 1.2
@@ -74,7 +79,7 @@ keycloak:
       port: 80
     extraInitContainers: |
       - name: theme-provider
-        image: alfresco/alfresco-keycloak-theme:0.1
+        image: alfresco/alfresco-keycloak-theme:0.2-auth-363
         imagePullPolicy: Always
         command:
           - sh
