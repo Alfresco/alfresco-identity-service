@@ -15,36 +15,36 @@ This guide helps you get started with the Identity Service. It covers simple sta
 
 #### Installing and booting
 
-  1. Download the Identity Service zip alfresco-identity-service-1.1.0.zip from the Support Portal at http://support.alfresco.com
+  1. Download the Identity Service zip alfresco-identity-service-1.2.0.zip from the Support Portal at http://support.alfresco.com
 
   2. Place the file in a directory you choose and use the unzip utility to extract it.
 
   Linux/Unix
   ```bash
-  $ unzip alfresco-identity-service-1.1.0.zip
+  $ unzip alfresco-identity-service-1.2.0.zip
   ```
 
   Windows
   ```bash
-  > unzip alfresco-identity-service-1.1.0.zip
+  > unzip alfresco-identity-service-1.2.0.zip
   ```
 
   3. Cd to the bin directory of the server distribution and run the standalone boot script.
 
   Linux/Unix
   ```bash
-  $ cd alfresco-identity-service-1.1.0/bin
-  $ ./standalone.sh
+  $ cd alfresco-identity-service-1.2.0/bin
+  $ ./standalone.sh -b <IP_ADDRESS>
   ```
-
   Windows bat
   ```bash
-  > ...\alfresco-identity-service-1.1.0\bin\standalone.bat
+  > ...\alfresco-identity-service-1.2.0\bin\standalone.bat -b <IP_ADDRESS>
   ```
   Windows powershell
   ```bash
-  > ...\alfresco-identity-service-1.1.0\bin\standalone.ps1
+  > ...\alfresco-identity-service-1.2.0\bin\standalone.ps1 -b <IP_ADDRESS>
   ```
+  **_NOTE:_** To bind to all public interfaces use `0.0.0.0` as the value of IP_ADDRESS otherwise specify the the address of the specific interface you want to use.
 
 This is deployed with the **default example realm applied** which results in default values of:
 
@@ -79,7 +79,7 @@ http://localhost:8080/auth/admin/alfresco/console/
 
 These instructions illustrate deployment to a Kubernetes cluster on AWS.
 
-Please check the Anaxes Shipyard documentation on [running a cluster](https://github.com/Alfresco/alfresco-anaxes-shipyard/blob/master/SECRETS.md).
+Please check the Anaxes Shipyard documentation on [running a cluster](https://github.com/Alfresco/alfresco-anaxes-shipyard/blob/master/docs/running-a-cluster.md).
 
 If you are deploying the Identity Service into a cluster with other Alfresco components such as Content Services and Process Services, a VPC and cluster with 5 nodes is recommended. Each node should be a m4.xlarge EC2 instance.
 
@@ -224,16 +224,16 @@ For added resilience, we rely on support in the Keycloak chart for specifying mu
 In addition, for high availability, Keycloak supports clustering.  For more information on how to configure high availability and clustering, you can consult this additional documentation.  
 
 
-[Keycloak Stable chart Readme](https://github.com/helm/charts/tree/master/stable/keycloak#high-availability-and-clustering)
+[Keycloak Stable chart Readme](https://github.com/codecentric/helm-charts/tree/master/charts/keycloak#high-availability-and-clustering)
 
 
-[Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/4.8/server_installation/#standalone-clustered-configuration)
+[Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/7.0/server_installation/#standalone-clustered-configuration)
 
 
-[Keycloak Clustering](https://www.keycloak.org/docs/4.5/server_installation/#_clustering)
+[Keycloak Clustering](https://www.keycloak.org/docs/7.0/server_installation/#_clustering)
 
 
-**_NOTE:_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/4.8/server_installation/#sticky-sessions) are used so keep that in mind if you choose to use a different ingress type than nginx.
+**_NOTE:_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/7.0/server_installation/#sticky-sessions) are used so keep that in mind if you choose to use a different ingress type than nginx.
 
 ## Customizing the Realm
 
@@ -270,21 +270,21 @@ helm install alfresco-stable/alfresco-infrastructure \
   --namespace $DESIREDNAMESPACE
 ```
 
-Once Keycloak is up and running, login to the [Management Console](http://www.keycloak.org/docs/4.8/server_admin/index.html#admin-console) to configure the required realm.
+Once Keycloak is up and running, login to the [Management Console](http://www.keycloak.org/docs/7.0/server_admin/index.html#admin-console) to configure the required realm.
 
 #### Manually
 
-1. [Add a realm](http://www.keycloak.org/docs/4.8/server_admin/index.html#_create-realm) named "Alfresco"
+1. [Add a realm](http://www.keycloak.org/docs/7.0/server_admin/index.html#_create-realm) named "Alfresco"
 
-2. [Create an OIDC client](http://www.keycloak.org/docs/4.8/server_admin/index.html#oidc-clients) named "alfresco" within the Alfresco realm
+2. [Create an OIDC client](http://www.keycloak.org/docs/7.0/server_admin/index.html#oidc-clients) named "alfresco" within the Alfresco realm
 
-3. [Create a group](http://www.keycloak.org/docs/4.8/server_admin/index.html#groups) named "admin"
+3. [Create a group](http://www.keycloak.org/docs/7.0/server_admin/index.html#groups) named "admin"
 
-4. [Add a new user](http://www.keycloak.org/docs/4.8/server_admin/index.html#_create-new-user) with a username of "testuser", email of "test@test.com" and first and last name of "test"
+4. [Add a new user](http://www.keycloak.org/docs/7.0/server_admin/index.html#_create-new-user) with a username of "testuser", email of "test@test.com" and first and last name of "test"
 
 #### Using the Sample Realm File
 
-1. Go to the [Add Realm](http://www.keycloak.org/docs/4.8/server_admin/index.html#_create-realm) page and click the "Select File" button next to the **Import** label.
+1. Go to the [Add Realm](http://www.keycloak.org/docs/7.0/server_admin/index.html#_create-realm) page and click the "Select File" button next to the **Import** label.
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
 

@@ -89,9 +89,9 @@ See the [config directory](config) for details on common configurations.
 
 ### Performance Considerations
 
-The Keycloak chart supports specifying [multiple replicas](https://github.com/helm/charts/tree/master/stable/keycloak#high-availability-and-clustering).
+The Keycloak chart supports specifying [multiple replicas](https://github.com/codecentric/helm-charts/blob/master/charts/keycloak#high-availability-and-clustering).
 
-See Keycloak's documentation on configuring [high availability and clustering](https://www.keycloak.org/docs/4.8/server_installation/index.html#_clustering).
+See Keycloak's documentation on configuring [high availability and clustering](https://www.keycloak.org/docs/7.0/server_installation/index.html#_clustering).
 
 Also see the Identity Service [README](https://github.com/Alfresco/alfresco-identity-service#multiple-replicas-high-availability-and-clustering).
 
@@ -99,7 +99,7 @@ Also see the Identity Service [README](https://github.com/Alfresco/alfresco-iden
 
 ### Security Considerations
 
-See Keycloak's [Server Admin documentation](https://www.keycloak.org/docs/4.8/server_admin/index.html).
+See Keycloak's [Server Admin documentation](https://www.keycloak.org/docs/7.0/server_admin/index.html).
 
 *** 
 
