@@ -59,11 +59,9 @@ realm:
           - "/testgroup"
 
 keycloak:
-  replicas: 0
   rbac:
     create: false
   keycloak:
-    replicas: 0
     image:
       repository: quay.io/alfresco/alfresco-identity-service
       tag: 1.2
