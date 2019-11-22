@@ -59,9 +59,11 @@ realm:
           - "/testgroup"
 
 keycloak:
+  replicas: 0
   rbac:
     create: false
   keycloak:
+    replicas: 0
     image:
       repository: quay.io/alfresco/alfresco-identity-service
       tag: 1.2
@@ -118,3 +120,9 @@ keycloak:
       limits:
         memory: "500Mi"
 
+## Used to run 'kubectl' in an init container in order to wait for keycloak to start up and install the alfresco realm.
+hyperkube:
+  image:
+    repository: quay.io/coreos/hyperkube
+    tag: v1.9.6_coreos.2
+    pullPolicy: IfNotPresent
