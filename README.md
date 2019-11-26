@@ -288,6 +288,37 @@ Once Keycloak is up and running, login to the [Management Console](http://www.ke
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
 
+## Upgrading from Identity Service 1.1
+
+  **_NOTE:_** The upgrade of the Alfresco Identity Management Service requires downtime. 
+  This means that no person will be able to connect to any of the Alfresco applications while the upgrade or rollback is being done.
+  
+### Kubernetes Upgrade
+
+1. Identify your infrastructure chart deployment and save it in a variable.
+
+```bash
+export RELEASENAME=knobby-wolf
+```
+
+2. Run the helm upgrade command using the new version of the infrastructure chart that contains Alfresco Identity Management Service 1.2
+
+```bash
+helm upgrade $RELEASENAME alfresco-stable/alfresco-infrastructure
+```
+
+3. A series of jobs will be running to do the upgrade after which you will be able to access the AIMS server at the same location. The AIMS service should be back up in a few minutes.
+
+### Kubernetes Rollback
+
+1. If for any reason the upgrade to 1.2 failed or you just want to rollback to 1.1 issue the following command:
+
+```bash
+helm rollback $RELEASENAME 1
+```
+
+The AIMS service should be back up in a few minutes.
+
 ## Contributing to Identity Service
 
 We encourage and welcome contributions to this project. For further details please check the [contributing](./CONTRIBUTING.md) file.
