@@ -15,8 +15,9 @@ if [ "$bamboo_helm_repo_location" == "" ]; then
     bamboo_helm_repo_location=https://kubernetes-charts.alfresco.com/incubator
 fi
 
-echo "Downloading Keycloak"
-curl --silent --show-error -O https://downloads.jboss.org/keycloak/$KEYCLOAK_VERSION/$KEYCLOAK_DISTRO
+echo "Downloading $KEYCLOAK_NAME"
+
+curl -sSLO https://github.com/Alfresco/keycloak/releases/download/$KEYCLOAK_VERSION/$KEYCLOAK_DISTRO
 
 echo "Unzipping Keycloak"
 unzip -oq $KEYCLOAK_DISTRO
@@ -31,16 +32,6 @@ rm -rf $KEYCLOAK_DISTRO
 rm -f $DISTRIBUTION_NAME.zip
 rm -f $DISTRIBUTION_NAME.md5
 
-# Manipulate any jar file here...
-
-######################
-# Build Docker Image #
-######################
-echo "#####################################################################"
-echo "# Building and configuring 'alfresco-identity-service' docker image #"
-echo "#####################################################################"
-
-docker build --force-rm=true --no-cache=true --build-arg IDENTITY_VERSION=$IDENTITY_VERSION -t quay.io/$IMAGE_NAME_WITH_BASE_OS_AND_SHA -f Dockerfile .
 
 #############################
 # Configure AIMS zip distro #
@@ -77,11 +68,6 @@ helm template ${CHART_DIR} \
 
 cp -rf README.html $DISTRIBUTION_NAME/
 
-echo "adding themes"
-
-docker run --rm -v "$PWD/alfresco:/tmp" alfresco/alfresco-keycloak-theme:$THEME_VERSION sh -c "rm -rf /tmp/* && cp -rf /alfresco/* /tmp/"
-cp -rf alfresco $DISTRIBUTION_NAME/themes/
-
 # unix settings
 echo '# Alfresco realm import ' >> $DISTRIBUTION_NAME/bin/standalone.conf
 echo 'JAVA_OPTS="$JAVA_OPTS -Dkeycloak.import=$JBOSS_HOME/realm/alfresco-realm.json"' >> $DISTRIBUTION_NAME/bin/standalone.conf
@@ -94,8 +80,7 @@ echo '# Alfresco realm import ' >> $DISTRIBUTION_NAME/bin/standalone.conf.ps1
 echo "\$JAVA_OPTS += \"-Dkeycloak.import=\$pwd\\\..\\\realm\\\alfresco-realm.json\"" >> $DISTRIBUTION_NAME/bin/standalone.conf.ps1
 
 # zip the confiured distro
-zip -r $DISTRIBUTION_NAME.zip $DISTRIBUTION_NAME
+zip -rq $DISTRIBUTION_NAME.zip $DISTRIBUTION_NAME
 openssl md5 $DISTRIBUTION_NAME.zip > $DISTRIBUTION_NAME.md5
-sudo rm -rf alfresco
 
 ls -la

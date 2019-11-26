@@ -72,32 +72,14 @@ keycloak:
     password: admin
     service:
       port: 80
-    extraInitContainers: |
-      - name: theme-provider
-        image: alfresco/alfresco-keycloak-theme:0.1
-        imagePullPolicy: Always
-        command:
-          - sh
-        args:
-          - -c
-          - |
-            echo "Copying theme..."
-            cp -R /alfresco/* /theme
-        volumeMounts:
-          - name: theme
-            mountPath: /theme
     extraVolumes: |
       - name: realm-secret
         secret:
           secretName: realm-secret
-      - name: theme
-        emptyDir: {}
     extraVolumeMounts: |
       - name: realm-secret
         mountPath: "/realm/"
         readOnly: true
-      - name: theme
-        mountPath: /opt/jboss/alfresco-identity-service/themes/alfresco
     extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
     persistence:
       deployPostgres: true
