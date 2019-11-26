@@ -118,7 +118,7 @@ keycloak:
       limits:
         memory: "500Mi"
 
-## Used to run 'kubectl' in an init container in order to wait for keycloak to start up and install the alfresco realm.
+## Used to run 'kubectl' in kubernetes jobs for backup and restoration purposes
 hyperkube:
   image:
     repository: quay.io/coreos/hyperkube

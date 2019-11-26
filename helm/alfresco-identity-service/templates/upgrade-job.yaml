@@ -1,7 +1,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: upg-cleanup-job-{{ template "alfresco-identity.fullname" . }}
+  name: up-cleanup-{{ template "alfresco-identity.fullname" . }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -15,7 +15,7 @@ metadata:
 spec:
   template:
     metadata:
-      name: upg-cleanup-job-{{ template "alfresco-identity.fullname" . }}
+      name: up-cleanup-{{ template "alfresco-identity.fullname" . }}
       labels:
         heritage: {{.Release.Service | quote }}
         release: {{.Release.Name | quote }}
@@ -23,7 +23,7 @@ spec:
     spec:
       restartPolicy: "OnFailure"
       containers:
-        - name: upg-cleanup-job
+        - name: up-cleanup
           image: "{{ .Values.hyperkube.image.repository }}:{{ .Values.hyperkube.image.tag }}"
           imagePullPolicy: "{{ .Values.hyperkube.image.pullPolicy }}"
           command:
@@ -37,7 +37,7 @@ spec:
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
-  name: aims-pgbackup-volume
+  name: backup-{{ template "alfresco-identity.fullname" . }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -60,7 +60,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: upg-backup-job-{{ template "alfresco-identity.fullname" . }}
+  name: up-backup-{{ template "alfresco-identity.fullname" . }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -70,11 +70,11 @@ metadata:
     # job is considered part of the release.
     "helm.sh/hook": pre-upgrade #Determines time of deploy
     "helm.sh/hook-weight": "1" #Determines the order if multiple hooks are deffined
-    "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded #Determines when is the object deleted
 spec:
   template:
     metadata:
-      name: upg-backup-job-{{ template "alfresco-identity.fullname" . }}
+      name: up-backup-{{ template "alfresco-identity.fullname" . }}
       labels:
         heritage: {{.Release.Service | quote }}
         release: {{.Release.Name | quote }}
@@ -82,7 +82,7 @@ spec:
     spec:
       restartPolicy: "OnFailure"
       containers:
-        - name: upg-backup-job
+        - name: up-backup
           image: "postgres:10.1"
           imagePullPolicy: "IfNotPresent"
           env:
@@ -90,14 +90,14 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }}
-                  key: postgres-password
+                  key: postgresql-password
           command:
             - bash
             - -c
             - |
-              pg_dump -Fc -b -h {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }} \
+              pg_dump --clean --no-owner --no-acl -h {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }} \
               -p {{ .Values.keycloak.postgresql.service.port }} \
-              -U {{ .Values.keycloak.keycloak.persistence.dbUser }} {{ .Values.keycloak.keycloak.persistence.dbName }} > /backup/backup.dump
+              -U {{ .Values.keycloak.keycloak.persistence.dbUser }} {{ .Values.keycloak.keycloak.persistence.dbName }} | grep -v -E '(DROP\ SCHEMA\ public|CREATE\ SCHEMA\ public|COMMENT\ ON\ SCHEMA\ public|DROP\ EXTENSION\ plpgsql|CREATE\ EXTENSION\ IF\ NOT\ EXISTS\ plpgsql|COMMENT\ ON\ EXTENSION\ plpgsql)' > /backup/backup.sql
           volumeMounts:
           - name: data
             mountPath: "/backup"
@@ -105,14 +105,14 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: aims-pgbackup-volume
+          claimName: backup-{{ template "alfresco-identity.fullname" . }}
 
 ---
 
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: upg-dbcleanup-{{ template "alfresco-identity.fullname" . }}
+  name: up-dbcleanup-{{ template "alfresco-identity.fullname" . }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -126,7 +126,7 @@ metadata:
 spec:
   template:
     metadata:
-      name: upg-dbcleanup-{{ template "alfresco-identity.fullname" . }}
+      name: up-dbcleanup-{{ template "alfresco-identity.fullname" . }}
       labels:
         heritage: {{.Release.Service | quote }}
         release: {{.Release.Name | quote }}
@@ -134,7 +134,7 @@ spec:
     spec:
       restartPolicy: "OnFailure"
       containers:
-        - name: upg-dbcleanup
+        - name: up-dbcleanup
           image: "{{ .Values.hyperkube.image.repository }}:{{ .Values.hyperkube.image.tag }}"
           imagePullPolicy: "{{ .Values.hyperkube.image.pullPolicy }}"
           command:
@@ -149,7 +149,7 @@ spec:
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: stopkc-job-{{ template "alfresco-identity.fullname" . }}
+  name: up-stopkc-{{ template "alfresco-identity.fullname" . }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -157,13 +157,13 @@ metadata:
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
-    "helm.sh/hook": post-upgrade,post-install #Determines time of deploy
+    "helm.sh/hook": post-upgrade #Determines time of deploy
     "helm.sh/hook-weight": "1" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
 spec:
   template:
     metadata:
-      name: stopkc-job-{{ template "alfresco-identity.fullname" . }}
+      name: up-stopkc-{{ template "alfresco-identity.fullname" . }}
       labels:
         heritage: {{.Release.Service | quote }}
         release: {{.Release.Name | quote }}
@@ -171,22 +171,22 @@ spec:
     spec:
       restartPolicy: "OnFailure"
       containers:
-        - name: stopkc-job
+        - name: up-stopkc
           image: "{{ .Values.hyperkube.image.repository }}:{{ .Values.hyperkube.image.tag }}"
           imagePullPolicy: "{{ .Values.hyperkube.image.pullPolicy }}"
           command:
             - bash
             - -c
             - |
-              kubectl get sts
-              kubectl patch sts {{ template "keycloak.fullname" . }} --patch '{"spec": {"replicas":0}}'
+              kubectl scale --replicas=0 statefulset/{{ template "keycloak.fullname" . }}
+              kubectl delete --ignore-not-found pod {{ template "keycloak.fullname" . }}-0
 
 ---
 
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: restore-job-{{ template "alfresco-identity.fullname" . }}
+  name: up-restore-{{ template "alfresco-identity.fullname" . }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -200,7 +200,7 @@ metadata:
 spec:
   template:
     metadata:
-      name: restore-job-{{ template "alfresco-identity.fullname" . }}
+      name: up-restore-{{ template "alfresco-identity.fullname" . }}
       labels:
         heritage: {{.Release.Service | quote }}
         release: {{.Release.Name | quote }}
@@ -208,7 +208,7 @@ spec:
     spec:
       restartPolicy: "OnFailure"
       containers:
-        - name: restore-job
+        - name: up-restore
           image: "postgres:11.1"
           imagePullPolicy: "IfNotPresent"
           env:
@@ -217,7 +217,14 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }}
                   key: postgresql-password
-          command: ["bash","-c","pg_restore -c -h {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }} -p {{ .Values.keycloak.postgresql.service.port }} -U {{ .Values.keycloak.keycloak.persistence.dbUser }} /backup/backup.dump"]
+          command:
+            - bash
+            - -c
+            - |
+              psql -h {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }} \
+              -p {{ .Values.keycloak.postgresql.service.port }} \
+              -d keycloak \
+              -U {{ .Values.keycloak.keycloak.persistence.dbUser }} -f /backup/backup.sql
           volumeMounts:
           - name: data
             mountPath: "/backup"
@@ -225,14 +232,14 @@ spec:
       volumes:
       - name: data
         persistentVolumeClaim:
-          claimName: aims-pgbackup-volume
+          claimName: backup-{{ template "alfresco-identity.fullname" . }}
 
 ---
 
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: startkc-job-{{ template "alfresco-identity.fullname" . }}
+  name: up-startkc-{{ template "alfresco-identity.fullname" . }}
   labels:
     heritage: {{.Release.Service | quote }}
     release: {{.Release.Name | quote }}
@@ -240,13 +247,13 @@ metadata:
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
-    "helm.sh/hook": post-upgrade,post-install #Determines time of deploy
+    "helm.sh/hook": post-upgrade #Determines time of deploy
     "helm.sh/hook-weight": "3" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
 spec:
   template:
     metadata:
-      name: startkc-job-{{ template "alfresco-identity.fullname" . }}
+      name: up-startkc-{{ template "alfresco-identity.fullname" . }}
       labels:
         heritage: {{.Release.Service | quote }}
         release: {{.Release.Name | quote }}
@@ -254,12 +261,49 @@ spec:
     spec:
       restartPolicy: "OnFailure"
       containers:
-        - name: startkc-job
+        - name: up-startkc
           image: "{{ .Values.hyperkube.image.repository }}:{{ .Values.hyperkube.image.tag }}"
           imagePullPolicy: "{{ .Values.hyperkube.image.pullPolicy }}"
           command:
             - bash
             - -c
             - |
-              kubectl get sts
-              kubectl patch sts {{ template "keycloak.fullname" . }} --patch '{"spec": {"replicas":1}}'
+              kubectl scale --replicas=1 statefulset/{{ template "keycloak.fullname" . }}
+              sleep 3
+              kubectl delete --ignore-not-found pod {{ template "keycloak.fullname" . }}-0
+
+---
+
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: vol-clean-{{ template "alfresco-identity.fullname" . }}
+  labels:
+    heritage: {{.Release.Service | quote }}
+    release: {{.Release.Name | quote }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+  annotations:
+    # This is what defines this resource as a hook. Without this line, the
+    # job is considered part of the release.
+    "helm.sh/hook": post-delete #Determines time of deploy
+    "helm.sh/hook-weight": "1" #Determines the order if multiple hooks are deffined
+    "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
+spec:
+  template:
+    metadata:
+      name: vol-clean-{{ template "alfresco-identity.fullname" . }}
+      labels:
+        heritage: {{.Release.Service | quote }}
+        release: {{.Release.Name | quote }}
+        chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    spec:
+      restartPolicy: "OnFailure"
+      containers:
+        - name: vol-clean
+          image: "{{ .Values.hyperkube.image.repository }}:{{ .Values.hyperkube.image.tag }}"
+          imagePullPolicy: "{{ .Values.hyperkube.image.pullPolicy }}"
+          command:
+            - bash
+            - -c
+            - |
+              kubectl delete --ignore-not-found pvc backup-{{ template "alfresco-identity.fullname" . }}
