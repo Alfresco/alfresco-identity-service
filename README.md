@@ -349,6 +349,8 @@ For the rollback process we are using the following jobs:
 
 #### How to upgrade
 
+  **_NOTE:_** This upgrade works only from 1.1 to 1.2 version of the Alfresco Identity Management Service .
+
 1. Identify your infrastructure chart deployment and save it in a variable.
 
 ```bash
