@@ -292,8 +292,62 @@ Once Keycloak is up and running, login to the [Management Console](http://www.ke
 
   **_NOTE:_** The upgrade of the Alfresco Identity Management Service requires downtime. 
   This means that no person will be able to connect to any of the Alfresco applications while the upgrade or rollback is being done.
-  
-### Kubernetes Upgrade
+
+### General upgrade procedure
+
+For upgrading Alfresco Identity Management Service we are mainly following the keycloak upgrade procedure.
+We will be explaining how to do it if you are using the our distribution and kubernetes deployment out of the box.
+However depending on the enviroment You are using you should follow the next steps:
+
+1. Prior to applying the upgrade, handle any open transactions and delete the data/tx-object-store/ transaction directory.
+
+2. Back up the old installation (configuration, themes, and so on).
+
+3. Back up the database. For detailed information on how to back up the database, see the documentation for the relational database you are using.
+
+4. Upgrade Keycloak server.
+
+   - Testing the upgrade in a non-production environment first, to prevent any installation issues from being exposed in production, is a best practice.
+
+   - Be aware that after the upgrade the database will no longer be compatible with the old server
+
+   - Ensure the upgraded server is functional before upgrading adapters in production.
+
+5. If you need to revert the upgrade, first restore the old installation, and then restore the database from the backup copy.
+
+6. Upgrade the adapters.
+
+Within the next sections we will go trough a simple distribution and kubernetes upgrade plus rollback.
+
+  **_NOTE:_** In depth documentation on keycloak upgrade can be found here -> https://www.keycloak.org/docs/7.0/upgrading/index.html#_upgrading.
+
+### Kubernetes
+
+#### Generic Information
+
+To do the upgrade in kubernetes we are taking advantage of kubernetes jobs and helm hooks.
+
+These are the steps we are following for a smooth upgrade transition without any manual intervention:
+
+1. Pre-Upgrade job is running to remove the keycloak statefulset, thus killing of any existent user session.
+2. Pre-Upgrade job is running to create an extra volume for backing up the postgres db.
+3. Pre-Upgrade job to do the backup of the db.
+4. Pre-Upgrade job do delete the db deployment so that it does not clash with the new db
+5. Post-Upgrade job to scale the new keycloak to 0 replicas so we can restore the db initially.
+6. Post-Upgrade job to restore the db data
+7. Post-Upgrade job to re-scale keycloak back to 1 replica so that it can start using the new data.
+
+This process leaves us with an additional volume containing the db backup.
+That volume will be used in the case a rollback is done but will be deleted when the entire release is being deleted.
+
+For the rollback process we are using the following jobs:
+
+1. Pre-rollback job to kill off the current statefulsets.
+2. Post-rollback job to scale keycloak to 0 replicas.
+3. Post-rollback job to restore the db from backup.
+4. Post-rollback job to scale keycloak to 1 replica.
+
+#### How to upgrade
 
 1. Identify your infrastructure chart deployment and save it in a variable.
 
@@ -309,7 +363,7 @@ helm upgrade $RELEASENAME alfresco-stable/alfresco-infrastructure
 
 3. A series of jobs will be running to do the upgrade after which you will be able to access the AIMS server at the same location. The AIMS service should be back up in a few minutes.
 
-### Kubernetes Rollback
+#### How to Rollback
 
 1. If for any reason the upgrade to 1.2 failed or you just want to rollback to 1.1 issue the following command:
 
@@ -317,7 +371,7 @@ helm upgrade $RELEASENAME alfresco-stable/alfresco-infrastructure
 helm rollback $RELEASENAME 1
 ```
 
-The AIMS service should be back up in a few minutes.
+The AIMS service should be back to it's original state in a few minutes.
 
 ## Contributing to Identity Service
 
