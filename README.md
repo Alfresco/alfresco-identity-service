@@ -6,7 +6,7 @@ Check [prerequisites section](https://github.com/Alfresco/alfresco-dbp-deploymen
 
 Any variation from these technologies and versions may affect the end result. If you do experience any issues please let us know through our [Gitter channel](https://gitter.im/Alfresco/platform-services?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
 
-For installing the Identity Service you can choose Kubernetes or the distribution zip. Both methods are described in the following paragraphs.
+For installing and upgrading the Identity Service you can choose Kubernetes or the distribution zip. Both methods are described in the following paragraphs.
 
 ### Standalone Distribution
 
@@ -73,6 +73,60 @@ http://localhost:8080/auth/admin/alfresco/console/
   2. Choose the Afresco client from the client list.
   3. In the client settings window you will have to fill in your appropiate redirect URI's for the Content and Process applications.
 
+#### Upgrading from Identity Service 1.1 ZIP to 1.2
+      
+    **_NOTE:_** The upgrade of the Alfresco Identity Management Service requires downtime. 
+    This means that no user will be able to connect to any of the Digital Business Platform components while the upgrade or rollback is being done.
+  
+  ### General upgrade procedure
+  
+  For upgrading Alfresco Identity Management Service zip distribution we are mainly following the Keycloak upgrade procedure.
+  However depending on the environment you are using you should follow the next steps:
+  
+  1. Prior to applying the upgrade, handle any open transactions and delete the data/tx-object-store/ transaction directory.
+  
+  2. Back up the old installation (configuration, themes, and so on).
+  
+  3. Back up the database. For detailed information on how to back up the database, follow the [example](#upgrade-example-for-identity-service-with-postgres-db). 
+  
+  4. Upgrade Keycloak server.
+  
+     - Testing the upgrade in a non-production environment first, to prevent any installation issues from being exposed in production, is a best practice.
+  
+     - Be aware that after the upgrade the database will no longer be compatible with the old server
+  
+     - Ensure the upgraded server is functional before upgrading adapters in production.
+  
+  5. If you need to revert the upgrade, first restore the old installation, and then restore the database from the backup copy.
+  
+  6. Upgrade the adapters.
+  
+  
+  ### Upgrade example for Identity Service with Postgres DB
+  
+  1. Backup the old installation performing:
+  
+		```bash
+		pg_dump --clean --no-owner --no-acl -h ${POSTGRES_HOST} -p ${POSTGRES_PORT}  -U ${POSTGRES_USER} ${POSTGRES_DATABASE} | grep -v -E '(DROP\ SCHEMA\ public|CREATE\ SCHEMA\ public|COMMENT\ ON\ SCHEMA\ public|DROP\ EXTENSION\ plpgsql|CREATE\ EXTENSION\ IF\ NOT\ EXISTS\ plpgsql|COMMENT\ ON\ EXTENSION\ plpgsql)' > /backup/backup.sql
+		```
+		
+  2. Remove old data and stop the postgres instance.
+  
+  3. Stop the Identity Service 1.1 server.
+  
+  4. Open the 1.2 Identity Service distribution zip and configure accordingly to the database that will be used (for this example Postgres).
+     For detailed information on how to set up the desired database this visit the official documentation of Keycloak [here](https://www.keycloak.org/docs/4.8/server_installation/#_database).
+     
+  5. Start the database and restore data by executing the following command:
+  
+   ```bash
+    psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -d ${POSTGRES_DATABASE} -U ${POSTGRES_USER} -f /backup/backup.sql
+   ``` 
+  
+  6. Start Identity Service 1.2.
+
+	
+	
 ### Kubernetes Deployment
 
 ### Kubernetes Cluster
