@@ -11,7 +11,7 @@ For installing the Identity Service you can choose Kubernetes or the distributio
 ### Standalone Distribution
 
 #### Overview
-This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs/) .
+This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of Keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs/) .
 
 #### Installing and booting
 
@@ -288,16 +288,16 @@ Once Keycloak is up and running, login to the [Management Console](http://www.ke
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
 
-## Upgrading from Identity Service 1.1
+## Upgrading from Identity Service 1.1 to 1.2
 
   **_NOTE:_** The upgrade of the Alfresco Identity Management Service requires downtime. 
-  This means that no person will be able to connect to any of the Alfresco applications while the upgrade or rollback is being done.
+  This means that no user will be able to connect to any of the Digital Business Platform components while the upgrade or rollback is being done.
 
 ### General upgrade procedure
 
-For upgrading Alfresco Identity Management Service we are mainly following the keycloak upgrade procedure.
-We will be explaining how to do it if you are using the our distribution and kubernetes deployment out of the box.
-However depending on the enviroment You are using you should follow the next steps:
+For upgrading Alfresco Identity Management Service we are mainly following the Keycloak upgrade procedure.
+We will be explaining how to do it if you are using our out of the box distribution or Kubernetes deployment.
+However depending on the environment you are using you should follow the next steps:
 
 1. Prior to applying the upgrade, handle any open transactions and delete the data/tx-object-store/ transaction directory.
 
@@ -319,33 +319,33 @@ However depending on the enviroment You are using you should follow the next ste
 
 Within the next sections we will go trough a simple distribution and kubernetes upgrade plus rollback.
 
-  **_NOTE:_** In depth documentation on keycloak upgrade can be found here -> https://www.keycloak.org/docs/7.0/upgrading/index.html#_upgrading.
+  **_NOTE:_** In depth documentation on keycloak upgrade can be found [here](https://www.keycloak.org/docs/7.0/upgrading/index.html#_upgrading).
 
 ### Kubernetes
 
 #### Generic Information
 
-To do the upgrade in kubernetes we are taking advantage of kubernetes jobs and helm hooks.
+To do the upgrade in Kubernetes we are taking advantage of Kubernetes jobs and Helm hooks.
 
 These are the steps we are following for a smooth upgrade transition without any manual intervention:
 
-1. Pre-Upgrade job is running to remove the keycloak statefulset, thus killing of any existent user session.
-2. Pre-Upgrade job is running to create an extra volume for backing up the postgres db.
-3. Pre-Upgrade job to do the backup of the db.
-4. Pre-Upgrade job do delete the db deployment so that it does not clash with the new db
-5. Post-Upgrade job to scale the new keycloak to 0 replicas so we can restore the db initially.
-6. Post-Upgrade job to restore the db data
-7. Post-Upgrade job to re-scale keycloak back to 1 replica so that it can start using the new data.
+1. Pre-Upgrade job is running to remove the Keycloak statefulset, thus killing of any existent user session.
+2. Pre-Upgrade job is running to create an extra volume for backing up the PostgreSQL database.
+3. Pre-Upgrade job to do the backup of the database.
+4. Pre-Upgrade job to delete the database deployment so that it does not clash with the new PostgreSQL deployment.
+5. Post-Upgrade job to scale the new Keycloak to 0 replicas so we can restore the database initially.
+6. Post-Upgrade job to restore the database data.
+7. Post-Upgrade job to re-scale Keycloak back to 1 replica so that it can start using the new data.
 
-This process leaves us with an additional volume containing the db backup.
+This process leaves us with an additional volume containing the database backup.
 That volume will be used in the case a rollback is done but will be deleted when the entire release is being deleted.
 
 For the rollback process we are using the following jobs:
 
 1. Pre-rollback job to kill off the current statefulsets.
-2. Post-rollback job to scale keycloak to 0 replicas.
-3. Post-rollback job to restore the db from backup.
-4. Post-rollback job to scale keycloak to 1 replica.
+2. Post-rollback job to scale Keycloak to 0 replicas.
+3. Post-rollback job to restore the database from backup.
+4. Post-rollback job to scale Keycloak to 1 replica.
 
 #### How to upgrade
 
