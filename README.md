@@ -297,8 +297,8 @@ Once Keycloak is up and running, login to the [Management Console](http://www.ke
 ### General upgrade procedure
 
 For upgrading Alfresco Identity Management Service we are mainly following the Keycloak upgrade procedure.
-We will be explaining how to do it if you are using our out of the box distribution or Kubernetes deployment.
-However depending on the environment you are using you should follow the next steps:
+We will be explaining how to do it if you are using our zip distribution or Kubernetes deployment.
+However depending on the environment you are using you should follow these high-level steps:
 
 1. Prior to applying the upgrade, handle any open transactions and delete the data/tx-object-store/ transaction directory.
 
@@ -324,19 +324,19 @@ Within the next sections we will go trough a simple distribution and kubernetes 
 
 ### ZIP Distribution
 
-#### Upgrade example for Identity Service with Postgres DB
+#### Upgrade example for Identity Service with PostgreSQL database
 
-1. Backup the old installation performing:
+1. Backup the old installation by performing:
 
 	```bash
 	pg_dump --clean --no-owner --no-acl -h ${POSTGRES_HOST} -p ${POSTGRES_PORT}  -U ${POSTGRES_USER} ${POSTGRES_DATABASE} | grep -v -E '(DROP\ SCHEMA\ public|CREATE\ SCHEMA\ public|COMMENT\ ON\ SCHEMA\ public|DROP\ EXTENSION\ plpgsql|CREATE\ EXTENSION\ IF\ NOT\ EXISTS\ plpgsql|COMMENT\ ON\ EXTENSION\ plpgsql)' > /backup/backup.sql
 	```
 	
-2. Remove old data and stop the postgres instance.
+2. Remove old data and stop the PostgreSQL instance.
 
 3. Stop the Identity Service 1.1 server.
 
-4. Open the 1.2 Identity Service distribution zip and configure accordingly to the database that will be used (for this example Postgres).
+4. Open Identity Service 1.2 distribution zip and configure accordingly to the database that will be used (for this example PostgreSQL).
    For detailed information on how to set up the desired database this visit the official documentation of Keycloak [here](https://www.keycloak.org/docs/4.8/server_installation/#_database).
    
 5. Start the database and restore data by executing the following command:
@@ -345,7 +345,7 @@ Within the next sections we will go trough a simple distribution and kubernetes 
   psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -d ${POSTGRES_DATABASE} -U ${POSTGRES_USER} -f /backup/backup.sql
  ``` 
 
-6. Start Identity Service 1.2.
+6. Start Identity Service 1.2 as described [above](installing-and-booting).
 
 ## Contributing to Identity Service
 
