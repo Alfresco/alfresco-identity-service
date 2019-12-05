@@ -90,7 +90,7 @@ spec:
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }}
-                  key: postgresql-password
+                  key: postgres-password
           command:
             - bash
             - -c

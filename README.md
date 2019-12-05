@@ -297,9 +297,9 @@ Once Keycloak is up and running, login to the [Management Console](http://www.ke
 
 For upgrading Alfresco Identity Management Service we are mainly following the Keycloak upgrade procedure.
 We will be explaining how to do it if you are using our out of the box distribution or Kubernetes deployment.
-However depending on the environment you are using you should follow the next steps:
+However depending on the environment you are using you should follow these high-level steps:
 
-1. Prior to applying the upgrade, handle any open transactions and delete the data/tx-object-store/ transaction directory.
+1. Prior to applying the upgrade, [handle any open transactions](https://www.keycloak.org/docs/7.0/server_admin/#user-session-management) and delete the data/tx-object-store/ transaction directory.
 
 2. Back up the old installation (configuration, themes, and so on).
 
@@ -317,9 +317,9 @@ However depending on the environment you are using you should follow the next st
 
 6. Upgrade the adapters.
 
-Within the next sections we will go trough a simple distribution and kubernetes upgrade plus rollback.
+Within the next sections we will go trough a simple distribution and Kubernetes upgrade plus rollback.
 
-  **_NOTE:_** In depth documentation on keycloak upgrade can be found [here](https://www.keycloak.org/docs/7.0/upgrading/index.html#_upgrading).
+  **_NOTE:_** In depth documentation on Keycloak upgrade can be found [here](https://www.keycloak.org/docs/7.0/upgrading/index.html#_upgrading).
 
 ### Kubernetes
 
@@ -357,10 +357,11 @@ For the rollback process we are using the following jobs:
 export RELEASENAME=knobby-wolf
 ```
 
-2. Run the helm upgrade command using the new version of the infrastructure chart that contains Alfresco Identity Management Service 1.2
+2. Run the helm upgrade command using the new version of the infrastructure chart that contains Alfresco Identity Management Service 1.2.
+If you however have the Digital Business Platform Helm Chart installed you will need to upgrade to a newer DBP chart which containes Alfresco Identity Management Service 1.2.
 
 ```bash
-helm upgrade $RELEASENAME alfresco-stable/alfresco-infrastructure
+helm upgrade $RELEASENAME alfresco-incubator/alfresco-infrastructure --version 5.2.0
 ```
 
 3. A series of jobs will be running to do the upgrade after which you will be able to access the AIMS server at the same location. The AIMS service should be back up in a few minutes.
@@ -370,10 +371,10 @@ helm upgrade $RELEASENAME alfresco-stable/alfresco-infrastructure
 1. If for any reason the upgrade to 1.2 failed or you just want to rollback to 1.1 issue the following command:
 
 ```bash
-helm rollback $RELEASENAME 1
+helm rollback --force --recreate-pods --cleanup-on-fail $RELEASENAME 1
 ```
 
-The AIMS service should be back to it's original state in a few minutes.
+The AIMS service will be back to it's original state in a few minutes.
 
 ## Contributing to Identity Service
 

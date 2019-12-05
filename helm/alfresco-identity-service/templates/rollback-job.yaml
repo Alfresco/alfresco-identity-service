@@ -103,14 +103,14 @@ spec:
       restartPolicy: "OnFailure"
       containers:
         - name: rb-restore
-          image: "postgres:11.1"
+          image: "postgres:10.1"
           imagePullPolicy: "IfNotPresent"
           env:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }}
-                  key: postgresql-password
+                  key: postgres-password
           command:
             - bash
             - -c
