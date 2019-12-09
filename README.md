@@ -6,7 +6,7 @@ Check [prerequisites section](https://github.com/Alfresco/alfresco-dbp-deploymen
 
 Any variation from these technologies and versions may affect the end result. If you do experience any issues please let us know through our [Gitter channel](https://gitter.im/Alfresco/platform-services?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
 
-For installing the Identity Service you can choose Kubernetes or the distribution zip. Both methods are described in the following paragraphs.
+For installing and upgrading the Identity Service you can choose Kubernetes or the distribution zip. Both methods are described in the following paragraphs.
 
 ### Standalone Distribution
 
@@ -375,6 +375,31 @@ helm rollback --force --recreate-pods --cleanup-on-fail $RELEASENAME 1
 ```
 
 The AIMS service will be back to it's original state in a few minutes.
+
+### ZIP Distribution
+
+#### Upgrade example for Identity Service with PostgreSQL database
+
+1. Backup the old installation by performing:
+
+```bash
+pg_dump --clean --no-owner --no-acl -h ${POSTGRES_HOST} -p ${POSTGRES_PORT}  -U ${POSTGRES_USER} ${POSTGRES_DATABASE} | grep -v -E '(DROP\ SCHEMA\ public|CREATE\ SCHEMA\ public|COMMENT\ ON\ SCHEMA\ public|DROP\ EXTENSION\ plpgsql|CREATE\ EXTENSION\ IF\ NOT\ EXISTS\ plpgsql|COMMENT\ ON\ EXTENSION\ plpgsql)' > /backup/backup.sql
+```
+	
+2. Remove old data and stop the PostgreSQL instance.
+
+3. Stop the Identity Service 1.1 server.
+
+4. Open Identity Service 1.2 distribution zip and configure accordingly to the database that will be used (for this example PostgreSQL).
+   For detailed information on how to set up the desired database this visit the official documentation of Keycloak [here](https://www.keycloak.org/docs/4.8/server_installation/#_database).
+   
+5. Start the database and restore data by executing the following command:
+
+```bash
+psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -d ${POSTGRES_DATABASE} -U ${POSTGRES_USER} -f /backup/backup.sql
+``` 
+
+6. Start Identity Service 1.2 as described [above](installing-and-booting).
 
 ## Contributing to Identity Service
 
