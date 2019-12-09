@@ -100,3 +100,9 @@ keycloak:
       limits:
         memory: "500Mi"
 
+## Used to run 'kubectl' in kubernetes jobs for backup and restoration purposes
+hyperkube:
+  image:
+    repository: quay.io/coreos/hyperkube
+    tag: v1.9.6_coreos.2
+    pullPolicy: IfNotPresent
