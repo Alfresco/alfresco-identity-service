@@ -1,4 +1,4 @@
-#Upgrading Identity Service
+# Upgrading Identity Service
 
 ## Upgrading from Identity Service 1.1 to 1.2
 
