@@ -6,7 +6,7 @@ Check [prerequisites section](https://github.com/Alfresco/alfresco-dbp-deploymen
 
 Any variation from these technologies and versions may affect the end result. If you do experience any issues please let us know through our [Gitter channel](https://gitter.im/Alfresco/platform-services?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
 
-For installing the Identity Service you can choose Kubernetes or the distribution zip. Both methods are described in the following paragraphs.
+For installing and [upgrading](https://github.com/Alfresco/alfresco-dbp-deployment/blob/master/upgrade.md) the Identity Service you can choose Kubernetes or the distribution zip. Both methods are described in the following paragraphs.
 
 ### Standalone Distribution
 
@@ -287,94 +287,6 @@ Once Keycloak is up and running, login to the [Management Console](http://www.ke
 1. Go to the [Add Realm](http://www.keycloak.org/docs/7.0/server_admin/index.html#_create-realm) page and click the "Select File" button next to the **Import** label.
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
-
-## Upgrading from Identity Service 1.1 to 1.2
-
-  **_NOTE:_** The upgrade of the Alfresco Identity Management Service requires downtime. 
-  This means that no user will be able to connect to any of the Digital Business Platform components while the upgrade or rollback is being done.
-
-### General upgrade procedure
-
-For upgrading Alfresco Identity Management Service we are mainly following the Keycloak upgrade procedure.
-We will be explaining how to do it if you are using our out of the box distribution or Kubernetes deployment.
-However depending on the environment you are using you should follow these high-level steps:
-
-1. Prior to applying the upgrade, [handle any open transactions](https://www.keycloak.org/docs/4.8/server_admin/#user-session-management) and delete the data/tx-object-store/ transaction directory.
-
-2. Back up the old installation (configuration, themes, and so on).
-
-3. Back up the database. For detailed information on how to back up the database, see the documentation for the relational database you are using.
-
-4. Upgrade Keycloak server.
-
-   - Testing the upgrade in a non-production environment first, to prevent any installation issues from being exposed in production, is a best practice.
-
-   - Be aware that after the upgrade the database will no longer be compatible with the old server
-
-   - Ensure the upgraded server is functional before upgrading adapters in production.
-
-5. If you need to revert the upgrade, first restore the old installation, and then restore the database from the backup copy.
-
-6. Upgrade the adapters.
-
-Within the next sections we will go trough a simple distribution and Kubernetes upgrade plus rollback.
-
-  **_NOTE:_** In depth documentation on Keycloak upgrade can be found [here](https://www.keycloak.org/docs/7.0/upgrading/index.html#_upgrading).
-
-### Kubernetes
-
-#### Generic Information
-
-To do the upgrade in Kubernetes we are taking advantage of Kubernetes jobs and Helm hooks.
-
-These are the steps we are following for a smooth upgrade transition without any manual intervention:
-
-1. Pre-Upgrade job is running to remove the Keycloak statefulset, thus killing of any existent user session.
-2. Pre-Upgrade job is running to create an extra volume for backing up the PostgreSQL database.
-3. Pre-Upgrade job to do the backup of the database.
-4. Pre-Upgrade job to delete the database deployment so that it does not clash with the new PostgreSQL deployment.
-5. Post-Upgrade job to scale the new Keycloak to 0 replicas so we can restore the database initially.
-6. Post-Upgrade job to restore the database data.
-7. Post-Upgrade job to re-scale Keycloak back to 1 replica so that it can start using the new data.
-
-This process leaves us with an additional volume containing the database backup.
-That volume will be used in the case a rollback is done but will be deleted when the entire release is being deleted.
-
-For the rollback process we are using the following jobs:
-
-1. Pre-rollback job to kill off the current statefulsets.
-2. Post-rollback job to scale Keycloak to 0 replicas.
-3. Post-rollback job to restore the database from backup.
-4. Post-rollback job to scale Keycloak to 1 replica.
-
-#### How to upgrade
-
-  **_NOTE:_** This upgrade works only from 1.1 to 1.2 version of the Alfresco Identity Management Service .
-
-1. Identify your infrastructure chart deployment and save it in a variable.
-
-```bash
-export RELEASENAME=knobby-wolf
-```
-
-2. Run the helm upgrade command using the new version of the infrastructure chart that contains Alfresco Identity Management Service 1.2.
-If you however have the Digital Business Platform Helm Chart installed you will need to upgrade to a newer DBP chart which containes Alfresco Identity Management Service 1.2.
-
-```bash
-helm upgrade $RELEASENAME alfresco-incubator/alfresco-infrastructure --version 5.2.0
-```
-
-3. A series of jobs will be running to do the upgrade after which you will be able to access the AIMS server at the same location. The AIMS service should be back up in a few minutes.
-
-#### How to Rollback
-
-1. If for any reason the upgrade to 1.2 failed or you just want to rollback to 1.1 issue the following command:
-
-```bash
-helm rollback --force --recreate-pods --cleanup-on-fail $RELEASENAME 1
-```
-
-The AIMS service will be back to it's original state in a few minutes.
 
 ## Contributing to Identity Service
 
