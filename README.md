@@ -6,12 +6,12 @@ Check [prerequisites section](https://github.com/Alfresco/alfresco-dbp-deploymen
 
 Any variation from these technologies and versions may affect the end result. If you do experience any issues please let us know through our [Gitter channel](https://gitter.im/Alfresco/platform-services?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
 
-For installing the Identity Service you can choose Kubernetes or the distribution zip. Both methods are described in the following paragraphs.
+For installing and [upgrading](https://github.com/Alfresco/alfresco-dbp-deployment/blob/master/upgrade.md) the Identity Service you can choose Kubernetes or the distribution zip. Both methods are described in the following paragraphs.
 
 ### Standalone Distribution
 
 #### Overview
-This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs/) .
+This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of Keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs/) .
 
 #### Installing and booting
 
