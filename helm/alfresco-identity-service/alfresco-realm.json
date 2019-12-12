@@ -982,7 +982,7 @@
     },
     {
       "id": "da2b61de-bd1d-47d1-8106-2fb93cd6b0f2",
-      "clientId": "desktop-sync",
+      "clientId": "alfresco-desktop-sync",
       "surrogateAuthRequired": false,
       "enabled": true,
       "clientAuthenticatorType": "client-secret",
