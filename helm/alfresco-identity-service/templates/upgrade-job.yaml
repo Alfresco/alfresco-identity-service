@@ -145,7 +145,7 @@ spec:
             - -c
             - |
               kubectl delete --ingnore-not-found deployment {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }}
-              sleep 10
+              sleep 3
 
 ---
 
