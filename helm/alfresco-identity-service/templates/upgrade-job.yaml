@@ -13,6 +13,7 @@ metadata:
     "helm.sh/hook-weight": "-1" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded,hook-failed #Determines when is the object deleted
 spec:
+  backoffLimit: 15
   template:
     metadata:
       name: up-cleanup-{{ template "alfresco-identity.fullname" . }}
@@ -72,6 +73,7 @@ metadata:
     "helm.sh/hook-weight": "1" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded #Determines when is the object deleted
 spec:
+  backoffLimit: 15
   template:
     metadata:
       name: up-backup-{{ template "alfresco-identity.fullname" . }}
@@ -124,6 +126,7 @@ metadata:
     "helm.sh/hook-weight": "2" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
 spec:
+  backoffLimit: 15
   template:
     metadata:
       name: up-dbcleanup-{{ template "alfresco-identity.fullname" . }}
@@ -161,6 +164,7 @@ metadata:
     "helm.sh/hook-weight": "1" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
 spec:
+  backoffLimit: 15
   template:
     metadata:
       name: up-stopkc-{{ template "alfresco-identity.fullname" . }}
@@ -198,6 +202,7 @@ metadata:
     "helm.sh/hook-weight": "2" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
 spec:
+  backoffLimit: 15
   template:
     metadata:
       name: up-restore-{{ template "alfresco-identity.fullname" . }}
@@ -221,6 +226,10 @@ spec:
             - bash
             - -c
             - |
+              until printf "." && pg_isready -h {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }} -p {{ .Values.keycloak.postgresql.service.port }}; do
+                  sleep 2;
+              done;
+              echo 'PostgreSQL OK ✓'
               psql -h {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }} \
               -p {{ .Values.keycloak.postgresql.service.port }} \
               -d keycloak \
@@ -251,6 +260,7 @@ metadata:
     "helm.sh/hook-weight": "3" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
 spec:
+  backoffLimit: 15
   template:
     metadata:
       name: up-startkc-{{ template "alfresco-identity.fullname" . }}
@@ -289,6 +299,7 @@ metadata:
     "helm.sh/hook-weight": "1" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
 spec:
+  backoffLimit: 15
   template:
     metadata:
       name: vol-clean-{{ template "alfresco-identity.fullname" . }}
