@@ -2,7 +2,7 @@
 
 The *Alfresco Identity Service* will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication. This project contains the open-source core of this service.
 
-Check [prerequisites section](https://github.com/Alfresco/alfresco-dbp-deployment/blob/master/README-prerequisite.md) before you start.
+Check the [deployment prerequisites section](https://github.com/Alfresco/alfresco-dbp-deployment/blob/master/README-prerequisite.md) and [standalone prerequisites](#prerequisites) before you start.
 
 Any variation from these technologies and versions may affect the end result. If you do experience any issues please let us know through our [Gitter channel](https://gitter.im/Alfresco/platform-services?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
 
@@ -12,6 +12,9 @@ For installing the Identity Service you can choose Kubernetes or the distributio
 
 #### Overview
 This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs/) .
+
+#### Prerequisites
+  1. Java 8 JDK.
 
 #### Installing and booting
 
