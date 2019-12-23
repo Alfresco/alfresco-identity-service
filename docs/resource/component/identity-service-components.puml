@@ -22,7 +22,7 @@ node "External IdP" as EXT {
 }
 
 node "Alfresco DBP" {
-    frame "Identity Service" as IDS {
+    frame "Identity Service" as AIMS {
         component "Theme" as THEME #white
         component "Keycloak" as KEY
         database "Realm Secret" as SEC #lightgrey
