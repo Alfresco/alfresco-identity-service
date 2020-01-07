@@ -9,4 +9,4 @@ adheres to [Alfresco Content Services Coding Standards](https://community.alfres
 wherever possible.
 
 As a contributor you must sign a [contribution agreement](https://cla-assistant.io/Alfresco/alfresco-identity-service). Please review the guidelines for [submitting contributions](https://community.alfresco.com/docs/DOC-6269-submitting-contributions). 
-After reviewing the guidelines, if you have any questions about making a contribution you can contact us on the [Platform Services](https://gitter.im/Alfresco/identity-service) gitter channel.
+After reviewing the guidelines, if you have any questions about making a contribution you can contact us on the [Identity Service](https://gitter.im/Alfresco/identity-service) gitter channel.
