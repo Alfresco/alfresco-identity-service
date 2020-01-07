@@ -29,7 +29,7 @@ However depending on the environment you are using you should follow these high-
 
 6. Upgrade the adapters.
 
-Within the next sections we will go trough a simple distribution and Kubernetes upgrade plus rollback.
+Within the next sections we will go through a simple distribution and Kubernetes upgrade plus rollback.
 
   **_NOTE:_** In depth documentation on Keycloak upgrade can be found [here](https://www.keycloak.org/docs/7.0/upgrading/index.html#_upgrading).
 
