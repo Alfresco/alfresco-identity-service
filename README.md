@@ -4,7 +4,7 @@ The *Alfresco Identity Service* will become the central component responsible fo
 
 Check [prerequisites section](https://github.com/Alfresco/alfresco-dbp-deployment/blob/master/README-prerequisite.md) before you start.
 
-Any variation from these technologies and versions may affect the end result. If you do experience any issues please let us know through our [Gitter channel](https://gitter.im/Alfresco/platform-services?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
+Any variation from these technologies and versions may affect the end result. If you do experience any issues please let us know through our [Gitter channel](https://gitter.im/Alfresco/identity-service?utm_source=share-link&utm_medium=link&utm_campaign=share-link).
 
 For installing and [upgrading](https://github.com/Alfresco/alfresco-dbp-deployment/blob/master/upgrade.md) the Identity Service you can choose Kubernetes or the distribution zip. Both methods are described in the following paragraphs.
 
