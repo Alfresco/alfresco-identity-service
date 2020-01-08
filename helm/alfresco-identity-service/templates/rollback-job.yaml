@@ -31,14 +31,11 @@ spec:
             - bash
             - -c
             - |
-              kubectl get sts
               kubectl delete --ignore-not-found sts {{ template "keycloak.fullname" . }}
               kubectl delete --ignore-not-found sts {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }}
               sleep 5
-              kubectl get sts
-
 ---
-
+{{- if .Values.keycloak.persistence.deployPostgres }}
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -174,3 +171,4 @@ spec:
               kubectl scale --replicas=1 statefulset/{{ template "keycloak.fullname" . }}
               sleep 3
               kubectl delete --ignore-not-found pod {{ template "keycloak.fullname" . }}-0
+{{- end }}

@@ -31,10 +31,10 @@ spec:
             - bash
             - -c
             - |
-              kubectl delete --ignore-not-found sts {{ template "keycloak.fullname" . }} --cascade=false && kubectl delete --ignore-not-found secret realm-secret 
-
+              kubectl delete --ignore-not-found sts {{ template "keycloak.fullname" . }} && kubectl delete --ignore-not-found secret realm-secret 
+              sleep 5
 ---
-
+{{- if .Values.keycloak.persistence.deployPostgres }}
 kind: PersistentVolumeClaim
 apiVersion: v1
 metadata:
@@ -318,3 +318,4 @@ spec:
             - -c
             - |
               kubectl delete --ignore-not-found pvc backup-{{ template "alfresco-identity.fullname" . }}
+{{- end}}
