@@ -2,6 +2,63 @@
 ## Release Notes - Identity Service
 
 ---
+### *Alfresco Identity Service 1.2*
+
+#### Stories
+
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-258'>AUTH-258</a>] - Upgrade from Alfresco Identity Service 1.1 to 1.2
+
+
+#### Bugs
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-348'>AUTH-348</a>] - IDS Login Page - Sign In Button	
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-349'>AUTH-349</a>]	- IDS Login Page - Responsiveness	
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-401'>AUTH-401</a>]	- Delete Keycloak pods scripts doesn't work on plan branches
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-402'>AUTH-402</a>]	- Identity Service doesn't persist data in Postgres	
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-421'>AUTH-421</a>]	- Set AdminUrl in realm in Identity Service for SSO envs	
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-457'>AUTH-457</a>]	- Bamboo build is failing on whitesource scan of Identity Service	
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-458'>AUTH-458</a>]	- Analyse ruby gems vulnerabilites ignored in Whitesource	
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-463'>AUTH-463</a>]	- Sometimes upgrade from 1.1 to 1.2 fails because the db pvc not being created fast enough
+	
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-469'>AUTH-469</a>] - DB password not being preserved on a parent helm chart upgrade containing identity 
+	
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-474'>AUTH-474</a>]	- Upgrade and Rollback Jobs Should Only Run When Postgres is Enabled	
+
+* [<a href='https://issues.alfresco.com/jira/browse/DEPLOY-854'>DEPLOY-854</a>] - Fix DBP Deployment Build
+
+* [<a href='https://issues.alfresco.com/jira/browse/DEPLOY-869'>DEPLOY-869</a>] - Document setting bind address when starting Identity Service standalone	
+
+#### Tasks
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-328'>AUTH-328</a>] - Resolve Whitesource Report issues found in IDS 1.2
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-356'>AUTH-356</a>] - Spike - Upgrade to Keycloak 7.0.1
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-408'>AUTH-408</a>] - Create Identity Service 1.2 Docker Image from Fork of Keycloak
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-423'>AUTH-423</a>] - cleanup test projects from whitesource
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-424'>AUTH-424</a>] - SHADOW of MNT-20935 (Identity Service prerequisites are wrong/missing)
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-461'>AUTH-461</a>] - Update Identity Service 1.2 to use Keycloak 8.0.1
+
+* [<a href='https://issues.alfresco.com/jira/browse/AUTH-475'>AUTH-475</a>] - Resolve Security Vulnerabilities with bootstrap-3.2.0-3.3.0.min.js in Identity Service 1.2
+
+* [<a href='https://issues.alfresco.com/jira/browse/DEPLOY-906'>DEPLOY-906</a>] - kerberos: Add hostname as prefix when you create the route53 address in terraform 
+
+* [<a href='https://issues.alfresco.com/jira/browse/DEPLOY-907'>DEPLOY-907</a>] - kerberos: client os: Install automatically tools
+
+* [<a href='https://issues.alfresco.com/jira/browse/DEPLOY-908'>DEPLOY-908</a>] - kerberos: client os: add more Chrome client configuration for kerberos testing
+
+---
 ### *Alfresco Identity Service 1.1*
 
 #### Stories
