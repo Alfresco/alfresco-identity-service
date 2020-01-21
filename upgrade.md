@@ -27,8 +27,6 @@ However depending on the environment you are using you should follow these high-
 
 5. If you need to revert the upgrade, first restore the old installation, and then restore the database from the backup copy.
 
-6. Upgrade the adapters.
-
 Within the next sections we will go through a simple distribution and Kubernetes upgrade plus rollback.
 
   **_NOTE:_** In depth documentation on Keycloak upgrade can be found [here](https://www.keycloak.org/docs/7.0/upgrading/index.html#_upgrading).
