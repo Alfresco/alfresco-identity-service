@@ -105,6 +105,12 @@ kubectl create namespace $DESIREDNAMESPACE
 
 This environment variable will be used in the deployment steps.
 
+Grant admin cluster role to the default service account in the newly created namespace:
+
+```bash
+kubectl create rolebinding admin --clusterrole=admin --user=system:serviceaccount:$DESIREDNAMESPACE:default --namespace $DESIREDNAMESPACE
+```
+
 ## Deploying the Identity Services Chart
 
 1. In order to deploy this chart you have to deploy the [Alfresco Infrastructure chart](https://github.com/Alfresco/alfresco-infrastructure-deployment#1-deploy-the-infrastructure-charts) which will deploy the Identity Service too.
