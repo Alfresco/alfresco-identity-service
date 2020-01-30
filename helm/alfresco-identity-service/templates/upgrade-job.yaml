@@ -31,7 +31,7 @@ spec:
             - bash
             - -c
             - |
-              kubectl delete --ignore-not-found sts {{ template "keycloak.fullname" . }} && kubectl delete --ignore-not-found secret realm-secret 
+              kubectl delete --ignore-not-found sts {{ template "keycloak.fullname" . }} && kubectl delete --ignore-not-found secret realm-secret
               sleep 5
 ---
 {{- if .Values.keycloak.persistence.deployPostgres }}
@@ -47,7 +47,7 @@ metadata:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
     "helm.sh/hook": pre-upgrade #Determines time of deploy
-    "helm.sh/hook-weight": "0" #Determines the order if multiple hooks are deffined    
+    "helm.sh/hook-weight": "0" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": before-hook-creation
 spec:
   accessModes:
@@ -295,7 +295,7 @@ metadata:
   annotations:
     # This is what defines this resource as a hook. Without this line, the
     # job is considered part of the release.
-    "helm.sh/hook": post-delete #Determines time of deploy
+    "helm.sh/hook": pre-delete #Determines time of deploy
     "helm.sh/hook-weight": "1" #Determines the order if multiple hooks are deffined
     "helm.sh/hook-delete-policy": hook-succeeded #Determines when is the object deleted
 spec:
@@ -309,6 +309,7 @@ spec:
         chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     spec:
       restartPolicy: "OnFailure"
+      serviceAccountName: {{ .Release.Name }}-keycloak
       containers:
         - name: vol-clean
           image: "{{ .Values.hyperkube.image.repository }}:{{ .Values.hyperkube.image.tag }}"
