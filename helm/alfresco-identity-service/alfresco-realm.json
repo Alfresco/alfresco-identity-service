@@ -1315,8 +1315,32 @@
           "autheticatorFlow": false
         },
         {
+          "requirement": "CONDITIONAL",
+          "priority": 20,
+          "flowAlias": "Verify Existing Account by Re-authentication - auth-otp-form - Conditional",
+          "userSetupAllowed": false,
+          "autheticatorFlow": true
+        }
+      ]
+    },
+    {
+      "id": "98c97ddd-7411-4bb9-afaa-25a6dc1fc4cb",
+      "alias": "Verify Existing Account by Re-authentication - auth-otp-form - Conditional",
+      "description": "Flow to determine if the auth-otp-form authenticator should be used or not.",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": true,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-configured",
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        },
+        {
           "authenticator": "auth-otp-form",
-          "requirement": "OPTIONAL",
+          "requirement": "REQUIRED",
           "priority": 20,
           "userSetupAllowed": false,
           "autheticatorFlow": false
@@ -1408,14 +1432,38 @@
           "autheticatorFlow": false
         },
         {
-          "authenticator": "direct-grant-validate-otp",
-          "requirement": "OPTIONAL",
+          "requirement": "CONDITIONAL",
           "priority": 30,
+          "flowAlias": "direct grant - direct-grant-validate-otp - Conditional",
           "userSetupAllowed": false,
-          "autheticatorFlow": false
+          "autheticatorFlow": true
         }
       ]
     },
+    {
+      "id":"e5c2a3bc-d1a9-4a79-998c-69848279a44a",
+      "alias":"direct grant - direct-grant-validate-otp - Conditional",
+      "description":"Flow to determine if the direct-grant-validate-otp authenticator should be used or not.",
+      "providerId":"basic-flow",
+      "topLevel":false,
+      "builtIn":true,
+      "authenticationExecutions":[
+        {
+          "authenticator":"conditional-user-configured",
+          "requirement":"REQUIRED",
+          "priority":10,
+          "userSetupAllowed":false,
+          "autheticatorFlow":false
+        },
+        {
+          "authenticator":"direct-grant-validate-otp",
+          "requirement":"REQUIRED",
+          "priority":20,
+          "userSetupAllowed":false,
+          "autheticatorFlow":false
+        }
+      ]
+    }
     {
       "id": "34c91e7e-dc6c-495a-889f-f033c9311911",
       "alias": "docker auth",
@@ -1482,13 +1530,38 @@
           "autheticatorFlow": false
         },
         {
+          "requirement": "CONDITIONAL",
+          "priority": 20,
+          "flowAlias": "forms - auth-otp-form - Conditional",
+          "userSetupAllowed": false,
+          "autheticatorFlow": true
+        }
+      ]
+    },
+    {
+      "id": "057ace6a-d486-43d0-a1e4-5a11bb1eb8f5",
+      "alias": "forms - auth-otp-form - Conditional",
+      "description": "Flow to determine if the auth-otp-form authenticator should be used or not.",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": true,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-configured",
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        },
+        {
           "authenticator": "auth-otp-form",
-          "requirement": "OPTIONAL",
+          "requirement": "REQUIRED",
           "priority": 20,
           "userSetupAllowed": false,
           "autheticatorFlow": false
         }
       ]
+    }
     },
     {
       "id": "2d8d3a79-2e44-4d52-9aa2-919a400e0ab0",
@@ -1576,9 +1649,33 @@
           "autheticatorFlow": false
         },
         {
-          "authenticator": "reset-otp",
-          "requirement": "OPTIONAL",
+          "requirement": "CONDITIONAL",
           "priority": 40,
+          "flowAlias": "reset credentials - reset-otp - Conditional",
+          "userSetupAllowed": false,
+          "autheticatorFlow": true
+        }
+      ]
+    },
+    {
+      "id": "5bfa4139-fdee-4985-84b5-754b071d3938",
+      "alias": "reset credentials - reset-otp - Conditional",
+      "description": "Flow to determine if the reset-otp authenticator should be used or not.",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": true,
+      "authenticationExecutions": [
+        {
+          "authenticator": "conditional-user-configured",
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
+        },
+        {
+          "authenticator": "reset-otp",
+          "requirement": "REQUIRED",
+          "priority": 20,
           "userSetupAllowed": false,
           "autheticatorFlow": false
         }
