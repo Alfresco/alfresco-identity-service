@@ -309,7 +309,7 @@ spec:
         chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
     spec:
       restartPolicy: "OnFailure"
-      serviceAccountName: {{ .Release.Name }}-keycloak
+      serviceAccountName: {{ include "keycloak.fullname" . }}
       containers:
         - name: vol-clean
           image: "{{ .Values.hyperkube.image.repository }}:{{ .Values.hyperkube.image.tag }}"
