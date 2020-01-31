@@ -1824,5 +1824,6 @@
     {{- end }}
     {{- end }}
   ],
-  "keycloakVersion": "4.8.3.Final"
+  "keycloakVersion": "8.0.1",
+  "userManagedAccessAllowed": false
 }
