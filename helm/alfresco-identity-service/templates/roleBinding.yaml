@@ -22,5 +22,5 @@ roleRef:
   name: {{ .Release.Name }}-delete-pvc-role
 subjects:
   - kind: ServiceAccount
-    name: {{ template "keycloak.fullname" . }}
+    name: {{ include "keycloak.fullname" . }}
     namespace: {{ .Release.Namespace }}
