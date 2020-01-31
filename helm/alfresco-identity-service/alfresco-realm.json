@@ -1316,7 +1316,7 @@
         },
         {
           "authenticator": "auth-otp-form",
-          "requirement": "CONDITIONAL",
+          "requirement": "OPTIONAL",
           "priority": 20,
           "userSetupAllowed": false,
           "autheticatorFlow": false
@@ -1409,7 +1409,7 @@
         },
         {
           "authenticator": "direct-grant-validate-otp",
-          "requirement": "CONDITIONAL",
+          "requirement": "OPTIONAL",
           "priority": 30,
           "userSetupAllowed": false,
           "autheticatorFlow": false
@@ -1483,7 +1483,7 @@
         },
         {
           "authenticator": "auth-otp-form",
-          "requirement": "CONDITIONAL",
+          "requirement": "OPTIONAL",
           "priority": 20,
           "userSetupAllowed": false,
           "autheticatorFlow": false
@@ -1577,7 +1577,7 @@
         },
         {
           "authenticator": "reset-otp",
-          "requirement": "CONDITIONAL",
+          "requirement": "OPTIONAL",
           "priority": 40,
           "userSetupAllowed": false,
           "autheticatorFlow": false
