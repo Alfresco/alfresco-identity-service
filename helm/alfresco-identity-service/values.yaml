@@ -68,6 +68,8 @@ keycloak:
       pullPolicy: Always
       pullSecrets:
         - quay-registry-secret
+    serviceAccount:
+      create: true
     username: admin
     password: admin
     service:
@@ -85,7 +87,7 @@ keycloak:
       deployPostgres: true
       dbVendor: postgres
       dbPassword: keycloak
-  ### Since conditions in the requirements file are global values 
+  ### Since conditions in the requirements file are global values
   ### the next entry actually decides if the postgress chart is being installed or not.
   persistence:
     deployPostgres: true
