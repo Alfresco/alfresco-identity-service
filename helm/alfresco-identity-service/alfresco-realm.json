@@ -1463,7 +1463,7 @@
           "autheticatorFlow": false
         }
       ]
-    }
+    },
     {
       "id": "34c91e7e-dc6c-495a-889f-f033c9311911",
       "alias": "docker auth",
