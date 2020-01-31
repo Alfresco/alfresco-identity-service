@@ -1441,26 +1441,26 @@
       ]
     },
     {
-      "id":"e5c2a3bc-d1a9-4a79-998c-69848279a44a",
-      "alias":"direct grant - direct-grant-validate-otp - Conditional",
-      "description":"Flow to determine if the direct-grant-validate-otp authenticator should be used or not.",
-      "providerId":"basic-flow",
-      "topLevel":false,
-      "builtIn":true,
-      "authenticationExecutions":[
+      "id": "e5c2a3bc-d1a9-4a79-998c-69848279a44a",
+      "alias": "direct grant - direct-grant-validate-otp - Conditional",
+      "description": "Flow to determine if the direct-grant-validate-otp authenticator should be used or not.",
+      "providerId": "basic-flow",
+      "topLevel": false,
+      "builtIn": true,
+      "authenticationExecutions": [
         {
-          "authenticator":"conditional-user-configured",
-          "requirement":"REQUIRED",
-          "priority":10,
-          "userSetupAllowed":false,
-          "autheticatorFlow":false
+          "authenticator": "conditional-user-configured",
+          "requirement": "REQUIRED",
+          "priority": 10,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
         },
         {
-          "authenticator":"direct-grant-validate-otp",
-          "requirement":"REQUIRED",
-          "priority":20,
-          "userSetupAllowed":false,
-          "autheticatorFlow":false
+          "authenticator": "direct-grant-validate-otp",
+          "requirement": "REQUIRED",
+          "priority": 20,
+          "userSetupAllowed": false,
+          "autheticatorFlow": false
         }
       ]
     }
