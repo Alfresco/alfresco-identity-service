@@ -66,6 +66,9 @@ helm template ${CHART_DIR} \
     grep  '\"alfresco-realm.json\"' | awk '{ print $2}' | \
     sed -e 's/\"$//' -e 's/^\"//' | base64 --decode | jq '.' > $DISTRIBUTION_NAME/realm/alfresco-realm.json
 
+echo "Recreate Distro Readme file"
+sed -ie "s/IDVERSION/$IDENTITY_VERSION/" README.html
+sed -ie "s/KVERSION/$KEYCLOAK_VERSION/" README.html
 cp -rf README.html $DISTRIBUTION_NAME/
 
 # unix settings
