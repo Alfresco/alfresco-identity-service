@@ -63,9 +63,11 @@ keycloak:
     create: false
   keycloak:
     image:
-      repository: alfresco/alfresco-identity-service
-      tag: 1.2
+      repository: quay.io/alfresco/alfresco-identity-service
+      tag: 1.3-A1
       pullPolicy: Always
+      pullSecrets:
+        - quay-registry-secret
     serviceAccount:
       create: true
     username: admin
