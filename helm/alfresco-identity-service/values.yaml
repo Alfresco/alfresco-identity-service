@@ -105,7 +105,6 @@ keycloak:
       limits:
         memory: "500Mi"
     ### Following values are used for backing up and restoring postgres db along with the helm chart
-    ### This is currently setup to adapt to 1.1 to 1.2 upgrades only when the db is in k8s
     restore:
       image: "postgres:11.1"
       password_key: "postgresql-password"
