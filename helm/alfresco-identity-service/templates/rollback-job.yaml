@@ -103,14 +103,14 @@ spec:
       restartPolicy: "OnFailure"
       containers:
         - name: rb-restore
-          image: {{ .Values.keycloak.postgresql.rollback.image }}
+          image: {{ .Values.keycloak.postgresql.restore.image }}
           imagePullPolicy: "IfNotPresent"
           env:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }}
-                  key: {{ .Values.keycloak.postgresql.rollback.password_key }}
+                  key: {{ .Values.keycloak.postgresql.restore.password_key }}
           command:
             - bash
             - -c
