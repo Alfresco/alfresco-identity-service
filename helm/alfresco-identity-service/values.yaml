@@ -104,6 +104,17 @@ keycloak:
         memory: "250Mi"
       limits:
         memory: "500Mi"
+    ### Following rollback and upgrade values are used for backing up and restoring postgres db along with the helm chart
+    ### This is currently setup to adapt to 1.1 to 1.2 upgrades only when the db is in k8s
+    rollback:
+      image: "postgres:10.1"
+      password_key: "postgres-password"
+    restore:
+      image: "postgres:11.1"
+      password_key: "postgresql-password"
+    backup:
+      image: "postgres:10.1"
+      password_key: "postgres-password"
 
 ## Used to run 'kubectl' in kubernetes jobs for backup and restoration purposes
 hyperkube:
