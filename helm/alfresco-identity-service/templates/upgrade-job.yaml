@@ -85,14 +85,14 @@ spec:
       restartPolicy: "OnFailure"
       containers:
         - name: up-backup
-          image: "postgres:10.1"
+          image: {{ .Values.keycloak.postgresql.backup.image }}
           imagePullPolicy: "IfNotPresent"
           env:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }}
-                  key: postgres-password
+                  key: {{ .Values.keycloak.postgresql.backup.password_key }}
           command:
             - bash
             - -c
@@ -214,14 +214,14 @@ spec:
       restartPolicy: "OnFailure"
       containers:
         - name: up-restore
-          image: "postgres:11.1"
+          image: {{ .Values.keycloak.postgresql.restore.image }}
           imagePullPolicy: "IfNotPresent"
           env:
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
                   name: {{ .Release.Name }}-{{ .Values.keycloak.postgresql.nameOverride }}
-                  key: postgresql-password
+                  key: {{ .Values.keycloak.postgresql.restore.password_key }}
           command:
             - bash
             - -c
