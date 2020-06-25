@@ -1500,7 +1500,7 @@
         {
           "authenticatorConfig": "create unique user config",
           "authenticator": "idp-create-user-if-unique",
-          "requirement": "REQUIRED",
+          "requirement": "ALTERNATIVE",
           "priority": 20,
           "userSetupAllowed": false,
           "autheticatorFlow": false
