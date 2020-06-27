@@ -2,6 +2,16 @@
 ## Release Notes - Identity Service
 
 ---
+
+### *Alfresco Identity Service 1.3*
+
+#### Bugs
+
+* [<a href='https://issues.alfresco.com/jira/browse/ACS-301'>ACS-301</a>] - Upgrade to Keycloak 11.0.0 alfresco patch
+* [<a href='https://issues.alfresco.com/jira/browse/MNT-21445'>MNT-21445</a>] - Auto user creation
+* [<a href='https://issues.alfresco.com/jira/browse/ACA-2959'>ACA-2959</a>] - New login theme
+
+
 ### *Alfresco Identity Service 1.2*
 
 #### Stories

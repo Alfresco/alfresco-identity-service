@@ -1,6 +1,6 @@
 # Upgrading Identity Service
 
-## Upgrading from Identity Service 1.1 to 1.2
+## Upgrading from Identity Service 1.2 to 1.3
 
   **_NOTE:_** The upgrade of the Alfresco Identity Management Service requires downtime. 
   This means that no user will be able to connect to any of the Digital Business Platform components while the upgrade or rollback is being done.
@@ -59,7 +59,7 @@ For the rollback process we are using the following jobs:
 
 #### How to upgrade
 
-  **_NOTE:_** This upgrade works only from 1.1 to 1.2 version of the Alfresco Identity Management Service .
+  **_NOTE:_** This upgrade works only from 1.2 to 1.3 version of the Alfresco Identity Management Service .
 
 1. Identify your infrastructure chart deployment and save it in a variable.
 
@@ -67,8 +67,8 @@ For the rollback process we are using the following jobs:
 export RELEASENAME=knobby-wolf
 ```
 
-2. Run the helm upgrade command using the new version of the infrastructure chart that contains Alfresco Identity Management Service 1.2.
-If you however have the Digital Business Platform Helm Chart installed you will need to upgrade to a newer DBP chart which containes Alfresco Identity Management Service 1.2.
+2. Run the helm upgrade command using the new version of the infrastructure chart that contains Alfresco Identity Management Service 1.3.
+If you however have the Digital Business Platform Helm Chart installed you will need to upgrade to a newer DBP chart which contains Alfresco Identity Management Service 1.3.
 
 ```bash
 helm upgrade $RELEASENAME alfresco-incubator/alfresco-infrastructure --version 5.2.0
@@ -78,13 +78,13 @@ helm upgrade $RELEASENAME alfresco-incubator/alfresco-infrastructure --version 5
 
 #### How to Rollback
 
-1. If for any reason the upgrade to 1.2 failed or you just want to rollback to 1.1 issue the following command:
+1. If for any reason the upgrade to 1.3 failed, or you just want to rollback to 1.2 issue the following command:
 
 ```bash
 helm rollback --force --recreate-pods --cleanup-on-fail $RELEASENAME 1
 ```
 
-The AIMS service will be back to it's original state in a few minutes.
+The AIMS service will be back to its original state in a few minutes.
 
 ### ZIP Distribution
 
@@ -98,10 +98,10 @@ pg_dump --clean --no-owner --no-acl -h ${POSTGRES_HOST} -p ${POSTGRES_PORT}  -U 
 	
 2. Remove old data and stop the PostgreSQL instance.
 
-3. Stop the Identity Service 1.1 server.
+3. Stop the Identity Service 1.2 server.
 
-4. Open Identity Service 1.2 distribution zip and configure accordingly to the database that will be used (for this example PostgreSQL).
-   For detailed information on how to set up the desired database this visit the official documentation of Keycloak [here](https://www.keycloak.org/docs/7.0/server_installation/#_database).
+4. Open Identity Service 1.3 distribution zip and configure accordingly to the database that will be used (for this example PostgreSQL).
+   For detailed information on how to set up the desired database this visit the official documentation of Keycloak [here](https://www.keycloak.org/docs/10.0/server_installation/#_database).
    
 5. Start the database and restore data by executing the following command:
 
@@ -109,4 +109,4 @@ pg_dump --clean --no-owner --no-acl -h ${POSTGRES_HOST} -p ${POSTGRES_PORT}  -U 
 psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -d ${POSTGRES_DATABASE} -U ${POSTGRES_USER} -f /backup/backup.sql
 ``` 
 
-6. Start Identity Service 1.2 as described [here](https://github.com/Alfresco/alfresco-identity-service/blob/master/README.md#installing-and-booting).
+6. Start Identity Service 1.3 as described [here](https://github.com/Alfresco/alfresco-identity-service/blob/master/README.md#installing-and-booting).
