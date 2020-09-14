@@ -1,0 +1,217 @@
+version: "2.4"
+
+# The acs-deployment project contains the product version of docker-compose.
+#
+# This version is for testing and development use. For testing and debug we need to have a more open version.
+# For remote debug we need the CATALINA_OPTS and to expose port 8000.
+# 
+# Add the following environment variable to CATALINA_OPTS to activate YourKit profiling agent on tomcat
+#-agentpath:/usr/local/YourKit-JavaProfiler-2018.04/bin/linux-x86-64/libyjpagent.so=delay=200000,listen=all,sessionname=$$HOSTNAME,dir=/tmp/Alfresco/yourkit,onexit=snapshot,periodicperf=600,periodicmem=600,probe_off=*
+#
+# The identity service address should be the same as the origin of the request ( eg localhost ) for testing
+# So identity-service.auth-server-url=http://<IP>:8999 should point to the right address
+# Otherwise, the requests to authenticate will fail
+# 
+# use 'export HOST_IP=xxx' for specifying the host ip before starting docker compose
+# the following line will produce the result using 'ifconfig'
+# export HOST_IP=$(ifconfig | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
+# the following 2 lines will produce the result using 'ip address show'
+# The first line's output is "11.222.11.222/23"
+# export HOST_IP=$(ip address show | grep -E "([0-9]{1,3}\.){3}[0-9]{1,3}" | grep -v 127.0.0.1 | awk '{ print $2 }' | head -n 1 )
+# export HOST_IP=$(echo ${HOST_IP%/*})
+
+services:
+  alfresco:
+    image: alfresco/alfresco-content-repository:7.0.0-M1
+    mem_limit: 1700m
+    depends_on:
+      alfresco-identity-service:
+        condition: service_healthy
+    links:
+      - alfresco-identity-service
+    environment:
+      JAVA_TOOL_OPTIONS: "
+        -Dmetadata-keystore.password=mp6yc0UD9e
+        -Dmetadata-keystore.aliases=metadata
+        -Dmetadata-keystore.metadata.password=mp6yc0UD9e
+        -Dmetadata-keystore.metadata.algorithm=AES
+      "
+      JAVA_OPTS: "
+        -Ddb.driver=org.postgresql.Driver
+        -Ddb.username=alfresco
+        -Ddb.password=alfresco
+        -Ddb.url=jdbc:postgresql://postgres:5432/alfresco
+        -Dsolr.host=solr6
+        -Dsolr.port=8983
+        -Dsolr.secureComms=none
+        -Dsolr.base.url=/solr
+        -Dindex.subsystem.name=solr6
+        -Dalfresco.host=${HOST_IP}
+        -Dshare.host=${HOST_IP}
+        -Dshare.port=8080
+        -Dalfresco.port=8080
+        -Daos.baseUrlOverwrite=http://${HOST_IP}:8080/alfresco/aos
+        -Dmessaging.broker.url=\"failover:(nio://activemq:61616)?timeout=3000&jms.useCompression=true\"
+        -Ddeployment.method=DOCKER_COMPOSE
+        -Dtransform.service.enabled=true
+        -Dtransform.service.url=http://transform-router:8095
+        -Dsfs.url=http://shared-file-store:8099/
+        -DlocalTransform.core-aio.url=http://transform-core-aio:8090/
+        -Dalfresco-pdf-renderer.url=http://transform-core-aio:8090/
+        -Djodconverter.url=http://transform-core-aio:8090/
+        -Dimg.url=http://transform-core-aio:8090/
+        -Dtika.url=http://transform-core-aio:8090/
+        -Dtransform.misc.url=http://transform-core-aio:8090/
+        -Dcsrf.filter.enabled=false
+        -Dauthentication.chain=identity-service1:identity-service,alfrescoNtlm1:alfrescoNtlm
+        -Didentity-service.authentication.validation.failure.silent=false
+        -Didentity-service.enable-basic-auth=true
+        -Didentity-service.auth-server-url=http://${HOST_IP}:8999/auth
+        -Didentity-service.realm=alfresco
+        -Didentity-service.resource=alfresco
+        -Xms1500m -Xmx1500m
+        "
+
+  transform-router:
+    mem_limit: 512m
+    image: quay.io/alfresco/alfresco-transform-router:1.3.1
+    environment:
+      JAVA_OPTS: " -Xms256m -Xmx512m"
+      ACTIVEMQ_URL: "nio://activemq:61616"
+
+      CORE_AIO_URL : "http://transform-core-aio:8090"
+
+      FILE_STORE_URL: "http://shared-file-store:8099/alfresco/api/-default-/private/sfs/versions/1/file"
+    ports:
+        - 8095:8095
+    links:
+      - activemq
+
+  transform-core-aio:
+    image: alfresco/alfresco-transform-core-aio:2.3.4
+    mem_limit: 1536m
+    environment:
+      JAVA_OPTS: " -Xms256m -Xmx1536m"
+      ACTIVEMQ_URL: "nio://activemq:61616"
+      FILE_STORE_URL: "http://shared-file-store:8099/alfresco/api/-default-/private/sfs/versions/1/file"
+    ports:
+        - 8090:8090
+    links:
+    - activemq
+
+  shared-file-store:
+    image: alfresco/alfresco-shared-file-store:0.10.0
+    mem_limit: 512m
+    environment:
+      JAVA_OPTS: " -Xms256m -Xmx512m"
+      scheduler.content.age.millis: 86400000
+      scheduler.cleanup.interval: 86400000
+    ports:
+        - 8099:8099
+    volumes:
+        - shared-file-store-volume:/tmp/Alfresco/sfs
+
+  share:
+    image: alfresco/alfresco-share:7.0.0-M2
+    mem_limit: 1g
+    environment:
+      REPO_HOST: "alfresco"
+      REPO_PORT: "8080"
+      JAVA_OPTS: "
+        -Xms500m
+        -Xmx500m
+        -Daims.enabled=true
+        -Daims.realm=alfresco
+        -Daims.resource=alfresco
+        -Daims.publicClient=true
+        -Daims.authServerUrl=\"http://${HOST_IP}:8999/auth\"
+        "
+
+  postgres:
+    image: postgres:11.7
+    mem_limit: 512m
+    environment:
+      - POSTGRES_PASSWORD=alfresco
+      - POSTGRES_USER=alfresco
+      - POSTGRES_DB=alfresco
+    command: postgres -c max_connections=300 -c log_min_messages=LOG
+    ports:
+      - 5432:5432
+
+  solr6:
+    image: alfresco/alfresco-search-services:2.0.0
+    mem_limit: 2g
+    environment:
+      #Solr needs to know how to register itself with Alfresco
+      - SOLR_ALFRESCO_HOST=alfresco
+      - SOLR_ALFRESCO_PORT=8080
+      #Alfresco needs to know how to call solr
+      - SOLR_SOLR_HOST=solr6
+      - SOLR_SOLR_PORT=8983
+      #Create the default alfresco and archive cores
+      - SOLR_CREATE_ALFRESCO_DEFAULTS=alfresco,archive
+      #HTTP by default
+      - ALFRESCO_SECURE_COMMS=none
+      - "SOLR_JAVA_MEM=-Xms2g -Xmx2g"
+    ports:
+      - 8083:8983 #Browser port
+
+  activemq:
+    image: alfresco/alfresco-activemq:5.15.8
+    mem_limit: 1g
+    ports:
+      - 8161:8161 # Web Console
+      - 5672:5672 # AMQP
+      - 61616:61616 # OpenWire
+      - 61613:61613 # STOMP
+
+  digital-workspace:
+    image: quay.io/alfresco/alfresco-digital-workspace:1.6.0
+    mem_limit: 128m
+    environment:
+      BASE_PATH: ./
+      API_URL: "http://${HOST_IP}:8080"
+      APP_CONFIG_AUTH_TYPE: "OAUTH"
+      APP_CONFIG_OAUTH2_HOST: "http://${HOST_IP}:8999/auth/realms/alfresco"
+      APP_CONFIG_OAUTH2_CLIENTID: "alfresco"
+      APP_CONFIG_OAUTH2_IMPLICIT_FLOW: "\"true\""
+      APP_CONFIG_OAUTH2_SILENT_LOGIN: "\"true\""
+      APP_CONFIG_OAUTH2_REDIRECT_LOGIN: "/workspace/"
+      APP_CONFIG_OAUTH2_REDIRECT_LOGOUT: "/workspace/logout"
+      APP_CONFIG_OAUTH2_REDIRECT_SILENT_IFRAME_URI: "http://${HOST_IP}:8080/workspace/assets/silent-refresh.html"
+
+  alfresco-identity-service:
+    image: quay.io/alfresco/alfresco-identity-service:1.3
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/auth/realms/alfresco/.well-known/uma2-configuration"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+    environment:
+      - KEYCLOAK_USER=admin
+      - KEYCLOAK_PASSWORD=admin
+      - KEYCLOAK_IMPORT=/tmp/alfresco-realm.json
+      - DB_VENDOR=h2
+    volumes:
+      - ./realms/alfresco-realm.json:/tmp/alfresco-realm.json
+    ports:
+      - 8999:8080
+
+  proxy:
+    image: alfresco/alfresco-acs-nginx:3.0.1
+    mem_limit: 128m
+    depends_on:
+      - alfresco
+      - digital-workspace
+    ports:
+      - 8080:8080
+    links:
+      - digital-workspace
+      - alfresco
+      - share
+
+volumes:
+    shared-file-store-volume:
+        driver_opts:
+            type: tmpfs
+            device: tmpfs
