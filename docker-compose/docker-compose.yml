@@ -198,7 +198,7 @@ services:
       - 8999:8080
 
   proxy:
-    image: alfresco/alfresco-acs-nginx:3.0.1
+    image: quay.io/alfresco/alfresco-acs-nginx:3.0.0
     mem_limit: 128m
     depends_on:
       - alfresco
