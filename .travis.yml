@@ -14,12 +14,12 @@ stages:
   - name: lint
   - name: build
   - name: publish
-  #   if: branch = master OR commit_message = "[publish]"
+    if: branch = master OR commit_message = "[publish]"
 
-import:
-  - source: Alfresco/alfresco-process-tools:.travis.helm.yml@master
-  - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
-  - source: Alfresco/alfresco-process-tools:.travis.docker_login.yml@master
+# import:
+#   - source: Alfresco/alfresco-process-tools:.travis.helm.yml@master
+#   - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
+#   - source: Alfresco/alfresco-process-tools:.travis.docker_login.yml@master
 
 env:
   global:
@@ -29,6 +29,9 @@ env:
     - HELM_REPO=incubator
     - KUBERNETES_VERSION=1.18.4
     - HELM_VERSION=${HELM_VERSION:-3.2.4}
+    - DEV_BUILD=true
+    - KEYCLOAK_VERSION=11.0.0-alfresco-001
+    - IDENTITY_VERSION=1.4.0-SNAPSHOT
 
 branches:
   only:
@@ -73,4 +76,7 @@ jobs:
         helm lint helm/${PROJECT_NAME}
     - name: Build
       stage: build
-      script: build.sh
+      script: |
+        cd distribution
+        make
+        ls
