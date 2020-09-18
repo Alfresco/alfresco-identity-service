@@ -69,11 +69,11 @@ branches:
 
 jobs:
   include:
-    - name: Lint chart
-      stage: lint
-      script: |
-        helm dep up helm/${PROJECT_NAME}
-        helm lint helm/${PROJECT_NAME}
+    # - name: Lint chart
+    #   stage: lint
+    #   script: |
+    #     helm dep up helm/${PROJECT_NAME}
+    #     helm lint helm/${PROJECT_NAME}
     - name: Build
       stage: build
       script: |
