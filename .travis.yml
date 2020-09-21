@@ -60,7 +60,7 @@ before_install:
 before_script:
   - |
     REPO_NAME=${TRAVIS_REPO_SLUG##*/}
-    PROJECT_NAME=alfresco-identity-services
+    PROJECT_NAME=alfresco-identity-service
     helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
     helm repo add stable https://kubernetes-charts.storage.googleapis.com
     helm repo add alfresco-incubator ${HELM_REPO_BASE_URL}/${HELM_REPO}
