@@ -51,7 +51,7 @@ before_install:
       curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
       sudo mv linux-amd64/helm /usr/local/bin
       helm version --client
-      helm init
+      helm init --client-only
     else
       curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
       sudo mv linux-amd64/helm /usr/local/bin
