@@ -29,9 +29,13 @@ env:
     - HELM_REPO=incubator
     - KUBERNETES_VERSION=1.18.4
     - HELM_VERSION=${HELM_VERSION:-3.2.4}
-    - DEV_BUILD=true
-    - KEYCLOAK_VERSION=11.0.0-alfresco-001
-    - IDENTITY_VERSION=1.4.0-SNAPSHOT
+    # - KEYCLOAK_VERSION=11.0.0-alfresco-001
+    # - IDENTITY_VERSION=1.4.0-SNAPSHOT
+
+cache:
+  directories:
+    - ${HOME}/.m2
+    - ${HOME}/.m2/repository
 
 branches:
   only:
@@ -39,44 +43,43 @@ branches:
     - /AUTH-.*/
     - /OPSEXP-.*/
 
-# before_install:
-#   - |
-#     pip install --upgrade awscli
-#     curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
-#     sudo mv linux-amd64/helm /usr/local/bin
-#     helm version --client
-#     curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
-#     curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator.sha256
-#     openssl sha1 -sha256 aws-iam-authenticator
-#     chmod +x ./aws-iam-authenticator
-#     mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-#     export PATH=$PATH:$HOME/bin
-#     aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
+before_install:
+  - |
+    pip install --upgrade awscli
+    curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
+    sudo mv linux-amd64/helm /usr/local/bin
+    helm version --client
+    # curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
+    # curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator.sha256
+    # openssl sha1 -sha256 aws-iam-authenticator
+    # chmod +x ./aws-iam-authenticator
+    # mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+    # export PATH=$PATH:$HOME/bin
+    # aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
 
-# before_script:
-#   - |
-#     REPO_NAME=${TRAVIS_REPO_SLUG##*/}
-#     PROJECT_NAME=alfresco-identity-services
-#     helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
-#     helm repo add stable https://kubernetes-charts.storage.googleapis.com
-#     helm repo add alfresco-incubator ${HELM_REPO_BASE_URL}/${HELM_REPO}
-#     if [[ "${TRAVIS_BRANCH}" == "master" ]] && [[ "${TRAVIS_COMMIT_MESSAGE}" == *"[release]"* ]]
-#     then
-#       export HELM_REPO=stable
-#     fi
-#     helm repo update
-#     echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
+before_script:
+  - |
+    REPO_NAME=${TRAVIS_REPO_SLUG##*/}
+    PROJECT_NAME=alfresco-identity-services
+    helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
+    helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    helm repo add alfresco-incubator ${HELM_REPO_BASE_URL}/${HELM_REPO}
+    if [[ "${TRAVIS_BRANCH}" == "master" ]] && [[ "${TRAVIS_COMMIT_MESSAGE}" == *"[release]"* ]]
+    then
+      export HELM_REPO=stable
+    fi
+    helm repo update
+    echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
 
 jobs:
   include:
-    # - name: Lint chart
-    #   stage: lint
-    #   script: |
-    #     helm dep up helm/${PROJECT_NAME}
-    #     helm lint helm/${PROJECT_NAME}
+    - name: Lint chart
+      stage: lint
+      script: |
+        helm dep up helm/${PROJECT_NAME}
+        helm lint helm/${PROJECT_NAME}
     - name: Build
       stage: build
       script: |
         cd distribution
         make
-        ls
