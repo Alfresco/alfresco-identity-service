@@ -96,13 +96,13 @@ jobs:
         source build.properties
         # make SCAN_FOLDER=alfresco-identity-service-${IDENTITY_VERSION} scan
         # upload ZIP file to S3 bucket
-        aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/${TRAVIS_BUILD_NUMBER}/
+        aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
     - name: Test ZIP on Linux
       stage: Test
       script: |
-        aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
         source distribution/build.properties
         echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
+        aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
         chmod +x distribution/tests/endpoints.sh
         distribution/tests/endpoints.sh
     - name: Test ZIP on Windows
