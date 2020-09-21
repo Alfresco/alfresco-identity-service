@@ -15,7 +15,7 @@ log_test_passed() {
   log_info "Test-$TEST_NUM: Passed."
 }
 
-WORK_DIR=$(PWD)
+WORK_DIR=$(pwd)
 
 unzip -oq alfresco-identity-service-"$IDENTITY_VERSION".zip
 

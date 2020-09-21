@@ -101,15 +101,16 @@ jobs:
       stage: Test
       script: |
         source distribution/build.properties
+        export IDENTITY_VERSION=${IDENTITY_VERSION}
         echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
         aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
         chmod +x distribution/tests/endpoints.sh
         distribution/tests/endpoints.sh
-    - name: Test ZIP on Windows
-      stage: Test
-      script: |
-        echo "TODO"
-    - name: Test Helm Chart
-      stage: Test
-      script: |
-        echo "TODO"
+    # - name: Test ZIP on Windows
+    #   stage: Test
+    #   script: |
+    #     echo "TODO"
+    # - name: Test Helm Chart
+    #   stage: Test
+    #   script: |
+    #     echo "TODO"
