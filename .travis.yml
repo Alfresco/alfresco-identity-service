@@ -11,9 +11,10 @@ services:
   - docker
 
 stages:
-  - name: lint
-  - name: build
-  - name: publish
+  - name: Lint
+  - name: Build
+  - name: Test
+  - name: Publish
     if: branch = master OR commit_message = "[publish]"
 
 # import:
@@ -75,24 +76,34 @@ before_script:
 jobs:
   include:
     - name: Lint chart
-      stage: lint
+      stage: Lint
       script: |
         helm dep up helm/${PROJECT_NAME}
         helm lint helm/${PROJECT_NAME}
     - name: Build
-      stage: build
+      stage: Build
       script: |
         cd distribution
-        make
-    - name: Scan
-      stage: build
-      script: |
-        ls -al
+        # build and package
+        make || { echo "Command failed with error code $?"; sleep 1; exit 1; }
+        # security scan the build
+        source build.properties
         echo "make SCAN_FOLDER=alfresco-identity-service-${IDENTITY_VERSION} scan"
-    - name: Test
-      stage: build
+        # upload ZIP file to S3 bucket
+        aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/${TRAVIS_BUILD_NUMBER}/
+    - name: Test ZIP on Linux
+      stage: Test
       script: |
+        aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
         source distribution/build.properties
         echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
         chmod +x distribution/tests/endpoints.sh
         distribution/tests/endpoints.sh
+    - name: Test ZIP on Windows
+      stage: Test
+      script: |
+        echo "TODO"
+    - name: Test Helm Chart
+      stage: Test
+      script: |
+        echo "TODO"
