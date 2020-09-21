@@ -48,6 +48,9 @@ before_install:
   - |
     # cp .travis.settings.xml $HOME/.m2/settings.xml
     pip install --upgrade awscli
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Build" ]]; then
+      HELM_VERSION=2.16.7
+    fi
     curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
     sudo mv linux-amd64/helm /usr/local/bin
     helm version --client
@@ -88,7 +91,7 @@ jobs:
         make || { echo "Command failed with error code $?"; sleep 1; exit 1; }
         # security scan the build
         source build.properties
-        echo "make SCAN_FOLDER=alfresco-identity-service-${IDENTITY_VERSION} scan"
+        # make SCAN_FOLDER=alfresco-identity-service-${IDENTITY_VERSION} scan
         # upload ZIP file to S3 bucket
         aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/${TRAVIS_BUILD_NUMBER}/
     - name: Test ZIP on Linux
