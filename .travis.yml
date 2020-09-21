@@ -106,6 +106,9 @@ jobs:
         aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
         chmod +x distribution/tests/endpoints.sh
         distribution/tests/endpoints.sh
+      after_script: |
+        # empty the artifacts bucket (in case there were previous failed builds)
+        aws s3 rm s3://${S3_ARTIFACTS_BUCKET} --recursive
     # - name: Test ZIP on Windows
     #   stage: Test
     #   script: |
