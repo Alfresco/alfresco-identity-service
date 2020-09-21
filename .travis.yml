@@ -45,6 +45,7 @@ branches:
 
 before_install:
   - |
+    # cp .travis.settings.xml $HOME/.m2/settings.xml
     pip install --upgrade awscli
     curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
     sudo mv linux-amd64/helm /usr/local/bin
@@ -83,3 +84,15 @@ jobs:
       script: |
         cd distribution
         make
+    - name: Scan
+      stage: build
+      script: |
+        ls -al
+        echo "make SCAN_FOLDER=alfresco-identity-service-${IDENTITY_VERSION} scan"
+    - name: Test
+      stage: build
+      script: |
+        source distribution/build.properties
+        echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
+        chmod +x distribution/tests/endpoints.sh
+        distribution/tests/endpoints.sh
