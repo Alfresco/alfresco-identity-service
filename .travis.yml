@@ -18,7 +18,6 @@ stages:
     if: branch = master OR commit_message = "[publish]"
 
 # import:
-#   - source: Alfresco/alfresco-process-tools:.travis.helm.yml@master
 #   - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
 #   - source: Alfresco/alfresco-process-tools:.travis.docker_login.yml@master
 
@@ -30,8 +29,6 @@ env:
     - HELM_REPO=incubator
     - KUBERNETES_VERSION=1.18.4
     - HELM_VERSION=${HELM_VERSION:-3.2.4}
-    # - KEYCLOAK_VERSION=11.0.0-alfresco-001
-    # - IDENTITY_VERSION=1.4.0-SNAPSHOT
 
 cache:
   directories:
@@ -48,12 +45,18 @@ before_install:
   - |
     # cp .travis.settings.xml $HOME/.m2/settings.xml
     pip install --upgrade awscli
-    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Build" ]]; then
+    # use helm 2 for the Build stage
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build" ]]; then
       HELM_VERSION=2.16.7
+      curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
+      sudo mv linux-amd64/helm /usr/local/bin
+      helm version --client
+      helm init
+    else
+      curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
+      sudo mv linux-amd64/helm /usr/local/bin
+      helm version
     fi
-    curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
-    sudo mv linux-amd64/helm /usr/local/bin
-    helm version --client
     # curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
     # curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator.sha256
     # openssl sha1 -sha256 aws-iam-authenticator
