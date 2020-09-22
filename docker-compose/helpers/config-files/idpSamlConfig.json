@@ -1,0 +1,31 @@
+{
+"alias": "saml",
+"displayName": "saml",
+"providerId": "saml",
+"enabled": true,
+"trustEmail": false,
+"storeToken": false,
+"addReadTokenRoleOnCreate": true,
+"linkOnly": false,
+"firstBrokerLoginFlowAlias": "first broker login",
+"config": {
+   "hideOnLoginPage": "",
+   "validateSignature": "true",
+   "samlXmlKeyNameTransformer": "KEY_ID",
+   "signingCertificate": "MIIDDTCCAfWgAwIBAgIJbDKEk63wO8c5MA0GCSqGSIb3DQEBCwUAMCQxIjAgBgNVBAMTGWRldi1wcy1hbGZyZXNjby5hdXRoMC5jb20wHhcNMjAwMTIzMTY0MDI4WhcNMzMxMDAxMTY0MDI4WjAkMSIwIAYDVQQDExlkZXYtcHMtYWxmcmVzY28uYXV0aDAuY29tMIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA8Qx+gC4RCDeX7ttZZPfsH8U/lmbkU8QLxCaug7RaY4VQJn++MSewPssAGaaxajuxmFl2An3I5hTCmxNhgbuaMZ1tbj+X3H+cmXebkwwwRYD/pTpQsMU6JnJ/rJv1JZmlyU6ca50TQgtGq5gas0qqHX7rY2LTR9LcNSh7u3uScDWL3eE4bHn5upJl9Jb16ah5CDLaaAVqVLXIRFm62jXwyOyS5kBOZ4UtOlmqntm8/1m6VTKffXVV9lDJKFp63YYt4cOMWHZfCYxrOWNOjUnq/PDe8iN3zOekPHJ+5dEeeLUZB+CrbiLQ1EgJ1I8/6X+H3oovXMxzQzn9HJgt40M13QIDAQABo0IwQDAPBgNVHRMBAf8EBTADAQH/MB0GA1UdDgQWBBT8ZbpQrTCwSWFX6D258DNiYQmc1DAOBgNVHQ8BAf8EBAMCAoQwDQYJKoZIhvcNAQELBQADggEBAK291PW3+V6LvJCkSqzFCBO0sH3E4qGi/HN9YpLXkjwuDf4CGvZRPiw/3pNH67LCwwgboVNHR97T22RG0Lv6R4TWauScjobPpqI6Tpy7mYoieDhLfcb+31/io8ARqxdP6EuUcnBlDpqkpuG40ceU9KD2ix59r2JT0qXZukQ6jz5ubHPnu+7vJ8sCTDyPfdxgzBEKkq92p3InUSsbC8eMXxP+WBuzcSqj9GH3mq71/uJYNeZmU0tzykg+CLTSvkYrBi1QVF40V5tWPObxRx7Ym9CbLUroMTO2dwR1+4Nd6zMkvZj6pm2ge/dd8BeDy8HitmXexv+onnCbFnVuvXscs9E=",
+   "postBindingLogout": "true",
+   "nameIDPolicyFormat": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
+   "postBindingResponse": "true",
+   "singleLogoutServiceUrl": "https://dev-ps-alfresco.auth0.com/samlp/yawGxts95GpuUOrIdCN9bxzHI7MWa6Qi/logout",
+   "backchannelSupported": "",
+   "signatureAlgorithm": "RSA_SHA256",
+   "wantAssertionsEncrypted": "",
+   "useJwksUrl": "true",
+   "wantAssertionsSigned": "",
+   "postBindingAuthnRequest": "true",
+   "forceAuthn": "",
+   "wantAuthnRequestsSigned": "true",
+   "singleSignOnServiceUrl": "https://dev-ps-alfresco.auth0.com/samlp/yawGxts95GpuUOrIdCN9bxzHI7MWa6Qi",
+   "addExtensionsElementWithKeyInfo": "false"
+   }
+}

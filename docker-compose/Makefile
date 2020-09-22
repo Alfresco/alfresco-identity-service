@@ -2,7 +2,7 @@ HOST_IP := $(shell sh -c "ifconfig | grep -E '([0-9]{1,3}\.){3}[0-9]{1,3}' | gre
 
 export HOST_IP
 
-build: show-ip up
+build: show-ip up configure-acs configure-ids
 
 show-ip:
 	@echo "HOST_IP environment variable has been set as: $(HOST_IP)"
@@ -22,6 +22,12 @@ wait: ## wait for stack to start
 
 up: ## start acs
 	@docker-compose up -d && make wait
+
+configure-acs:
+	@sh helpers/configure_acs.sh
+
+configure-ids:
+	@sh helpers/configure_saml_ids.sh
 
 show-logs: ## show logs
 	docker-compose logs

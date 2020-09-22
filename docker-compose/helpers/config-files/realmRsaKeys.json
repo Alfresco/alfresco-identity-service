@@ -1,0 +1,26 @@
+{
+    "name": "dbp-sso-rsa",
+    "providerId": "rsa",
+    "providerType": "org.keycloak.keys.KeyProvider",
+    "parentId": "alfresco",
+    "config": {
+        "priority": [
+            "200"
+        ],
+        "enabled": [
+            "true"
+        ],
+        "active": [
+            "true"
+        ],
+        "algorithm": [
+            "RS256"
+        ],
+        "privateKey": [
+            "-----BEGIN RSA PRIVATE KEY-----\nMIIEpQIBAAKCAQEA1I/rN+l0lglRIrRaHRA8TZK3U+CFRf9NNCG/As63HZcnVe5E\nYt/jqdHubI52rzyAINJi7T42wWSvK4nosq1Ry2NG9ID30UFL6RFNK1O4YHBi0RD1\ng4aO59FylzO+bxJ2iqIOmbDYggACEgoc0h+8msUWm3mouH4RQ7GYm0DeBgp2Ypd9\n+yTfsBUYEzDDVogxKpi8eTFfZVoAz2DLOot30QvvhCwBPZm7VB7oEJm0a97EvxOr\nFhNO0Ue9IM3FErRDeDfkPqe650ZBwTa8jutqZssq+qg28rvBQLXj/KFe11CnkcOz\nFOr0Qgn9S3jbgadYZ/DGiEi/eo53ohXPu9hIUwIDAQABAoIBAGyWuUtu8ChVyiU4\njXCbgrL+aLlo0azYp9AiDTqZ7+Il/epgNn9scRmoLW03uln7Rll+IRuh1McncHWF\nlmLxN//3T6BI4lD8UpNWS13+/woFX/X9++6dJxQ2Y5vqyzZi8DwSXfMV7QU8i9I7\naE3P+MH4PXxfwlm9zYQPji6CDOp4LwdjDGcWI38qh8I6qbLjfQIQRBeD/X8ZW3f6\nSA/+2uJdBS5S1L23PU9cIwsR4nt4QSLOeJu+gpBFV/fM/wt0tkcLRyGMCIBRuk63\nY7OsfPu3mNfDdtr3bC4soIkJKG7n8S3aX5mLdv1edCayYWiVzwq8kvkiBY5nuMJ2\nL+51swECgYEA+BavMlgLxhNE2nW6lWJ7x4bCS/ib0cjSF5uVnelt8POHsfW1lU+g\nqzHA2Z7XNuH2LJ0Xo0bhTFvokGzLmW+cm1SqPdDa2W61aUZDYcS85dwMNeZC5brZ\nLtq4HCBG9w82x5O5xfrCqbdjdOx0/5TUUNKH86Gty3g4WokP8x5JmLECgYEA21c1\nR9QD6klz4YQ9oKrZNqRototpKn21pajUqH9eaDWacu7eJNhJuWeaC/FDZWV9sY5x\ng3rY9TGYXhcBkUywwRFfqeD1+M4Qy4I3iqnCfCj1u0cyILjJAkxaxS/mSrmZyFYJ\nVX2or0ibBV1vlIQbF3vfopfmwP1HrwjhwK+e8kMCgYEA1n0eSYNv4neEXu/MOh1k\ncPQkhfRSG4TphzmfmGBaCiky13xc2tN2UKx6VGwNG8kuwhGrfyHn5dHMdxloyaaC\nmpUPftRUcgpSU8tItH2Y545hDDSg/+eUn/q/lKmfUTjZHqGsyutrY7pHBa7t1I6D\nJcFvgwb0sGanKjc4D/TOonECgYEAqdTEdHE89tMY3qy96wFeXmi+i1k2fKgJVdN7\nlVvJhXa7t/IsHus5ak1Fgam1PXVv9WMNkXg1NOTJzVCS7iYrVdJV9/sveQ5VAr44\nsyzuYaR1YCSoM53gRd9JCRUlgwZihDPZ1lANpGrbXTQTiTMgpvZLGmHzUcrLDkQa\nSE+zCnECgYEA04tOx758atlrIzqdropHvzgaUFv/rt3ZijEyB9Kic/RQT9zdvN4o\nT17uOV7uQ9MLsy4FKt2JwwSc0XwV7p8yuMp6ayuKC8hhy0FpC//ZSN3G2EK9l/Ek\nKrE8FpSaYb9WtXvkaKMXUMW/2IeMyWKwtWmtAdBiVKalD9iLA62Qe0A=\n-----END RSA PRIVATE KEY-----\n"
+        ],
+        "certificate": [
+            "-----BEGIN CERTIFICATE-----\nMIIDKDCCAhACCQDOzewLMfhp2jANBgkqhkiG9w0BAQsFADBWMQswCQYDVQQGEwJH\nQjETMBEGA1UEBwwKTWFpZGVuaGVhZDERMA8GA1UECgwIQWxmcmVzY28xCzAJBgNV\nBAsMAlBTMRIwEAYDVQQDDAlsb2NhbGhvc3QwHhcNMTkwODE0MTExNzE1WhcNMjkw\nODE0MTExNzE1WjBWMQswCQYDVQQGEwJHQjETMBEGA1UEBwwKTWFpZGVuaGVhZDER\nMA8GA1UECgwIQWxmcmVzY28xCzAJBgNVBAsMAlBTMRIwEAYDVQQDDAlsb2NhbGhv\nc3QwggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDUj+s36XSWCVEitFod\nEDxNkrdT4IVF/000Ib8CzrcdlydV7kRi3+Op0e5sjnavPIAg0mLtPjbBZK8rieiy\nrVHLY0b0gPfRQUvpEU0rU7hgcGLREPWDho7n0XKXM75vEnaKog6ZsNiCAAISChzS\nH7yaxRabeai4fhFDsZibQN4GCnZil337JN+wFRgTMMNWiDEqmLx5MV9lWgDPYMs6\ni3fRC++ELAE9mbtUHugQmbRr3sS/E6sWE07RR70gzcUStEN4N+Q+p7rnRkHBNryO\n62pmyyr6qDbyu8FAteP8oV7XUKeRw7MU6vRCCf1LeNuBp1hn8MaISL96jneiFc+7\n2EhTAgMBAAEwDQYJKoZIhvcNAQELBQADggEBAFQinkXktko9eoq0+wkeZWys2HRl\n6k6hkUNdun0qsvMN0bv3676+xWxL5iILO5BkIN9d2qV1Hupt82iBxWPyZaAIwOy2\nhDA+rMDrQBImDR4D+T9rGxFl3rIo5wHj6/yhgPQr+AAOnwHFoKzSLVSAMUjtUiKJ\nrg8cdkFIoxZhNApM+ytu8u6ekPPa/WQUwn5yheK/BsVqo8OgEj8YdT3sfb5aMVgC\nWIA2cEOjyzO5Nel+V7l7vXr2JZcwWuu42JMsqQJJjf8HRsGdcIgk8R2QVL/w1SYb\neU5w8+YjM/WRCmBvMkytoFQSdzxw8zu75mYm4cXJK9yYJoS/jflA9tb3mzc=\n-----END CERTIFICATE-----\n"
+        ]
+    }
+}

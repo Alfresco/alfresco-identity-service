@@ -1,0 +1,6 @@
+{
+   "alias": "saml",
+   "config": {
+      "defaultProvider": "saml"
+   }
+}

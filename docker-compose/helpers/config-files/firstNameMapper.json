@@ -1,0 +1,10 @@
+{
+   "name": "FirstName",
+   "identityProviderAlias": "saml",
+   "identityProviderMapper": "saml-user-attribute-idp-mapper",
+   "config": {
+      "user.attribute": "FirstName",
+      "attribute.friendly.name": "FirstName",
+      "attribute.name": "FirstName"
+   }
+}
