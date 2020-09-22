@@ -108,7 +108,7 @@ jobs:
         distribution/tests/endpoints.sh
       after_script: |
         # empty the artifacts bucket (in case there were previous failed builds)
-        aws s3 rm s3://${S3_ARTIFACTS_BUCKET} --recursive
+        aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
     # - name: Test ZIP on Windows
     #   stage: Test
     #   script: |
