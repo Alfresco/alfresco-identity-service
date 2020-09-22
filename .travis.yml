@@ -14,6 +14,7 @@ stages:
   - name: Lint
   - name: Build
   - name: Test
+  - name: Test Windows
   - name: Publish
     if: branch = master OR commit_message = "[publish]"
 
@@ -110,7 +111,7 @@ jobs:
       after_script: |
         # empty the artifacts bucket (in case there were previous failed builds)
         aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
-    # - name: Test ZIP on Windows
+    - name: Test ZIP on Windows
       stage: Test Windows
       os: windows
       env: OS=Windows    
