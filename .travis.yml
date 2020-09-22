@@ -94,6 +94,7 @@ jobs:
         make || { echo "Command failed with error code $?"; sleep 1; exit 1; }
         # security scan the build
         source build.properties
+        # curl -sSL https://srcclr.com/install | sh
         # make SCAN_FOLDER=alfresco-identity-service-${IDENTITY_VERSION} scan
         # upload ZIP file to S3 bucket
         aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
@@ -110,8 +111,23 @@ jobs:
         # empty the artifacts bucket (in case there were previous failed builds)
         aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
     # - name: Test ZIP on Windows
-    #   stage: Test
-    #   script: |
+      stage: Test Windows
+      os: windows
+      env: OS=Windows    
+      powershell: |
+        ls
+        Add-Type -AssemblyName System.IO.Compression.FileSystem
+        function unzip {
+        param( [string]$ziparchive, [string]$extractpath )
+        [System.IO.Compression.ZipFile]::ExtractToDirectory( $ziparchive, $extractpath )
+        }
+        echo ${bamboo.prop.IDENTITY_VERSION}
+        echo ${bamboo.build.working.directory}
+        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'"
+        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'" | select-object -Property ProcessId
+        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'" | foreach { kill $_.ProcessId }
+        unzip '${bamboo.build.working.directory}\alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}.zip' '${bamboo.build.working.directory}'
+        ls
     #     echo "TODO"
     # - name: Test Helm Chart
     #   stage: Test
