@@ -11,10 +11,10 @@ services:
   - docker
 
 stages:
+  - name: Test Windows
   - name: Lint
   - name: Build
   - name: Test
-  - name: Test Windows
   - name: Publish
     if: branch = master OR commit_message = "[publish]"
 
