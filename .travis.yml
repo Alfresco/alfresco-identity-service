@@ -1,4 +1,4 @@
-#language: java
+language: java
 jdk:
   - openjdk11
 
@@ -44,6 +44,7 @@ branches:
 
 before_install:
   - |
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]]; then
     # cp .travis.settings.xml $HOME/.m2/settings.xml
     pip install --upgrade awscli
     # use helm 2 for the Build stage
@@ -65,9 +66,11 @@ before_install:
     # mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
     # export PATH=$PATH:$HOME/bin
     # aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
+    fi
 
 before_script:
   - |
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]]; then
     REPO_NAME=${TRAVIS_REPO_SLUG##*/}
     PROJECT_NAME=alfresco-identity-service
     helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
@@ -79,6 +82,7 @@ before_script:
     fi
     helm repo update
     echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
+    fi
 
 jobs:
   include:
@@ -114,6 +118,7 @@ jobs:
     - name: Test ZIP on Windows
       stage: Test Windows
       os: windows
+      language: shell
       env: OS=Windows
       powershell: |
         powershell -Command ls
