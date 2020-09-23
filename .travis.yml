@@ -118,7 +118,7 @@ jobs:
     - name: Test Windows
       stage: Test Windows
       os: windows
-      language: cpp
+      language: shell
       env: 
         - OS=Windows
         - AWSCLI_PATH="C:\Program Files\Amazon\AWSCLIV2"
@@ -127,13 +127,11 @@ jobs:
         - choco install awscli
         - cd "C:\Program Files\Amazon\AWSCLIV2"
         - echo $PATH
-        - ls
+      script:
         - aws.exe configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
         - aws.exe configure set aws_secret_access_key ${AWS_ACCESS_KEY_ID}
         - aws.exe configure set default.region ${AWS_DEFAULT_REGION}
         - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip "C:\Users\travis\build\Alfresco\alfresco-identity-service\"
-      script:
-        - ls
         - distribution/tests/endpoints_ps.ps1
     #     echo "TODO"
     # - name: Test Helm Chart
