@@ -125,9 +125,10 @@ jobs:
         - IDENTITY_VERSION=${IDENTITY_VERSION}
       install:
         - choco install awscli
+      script:
         - cd "C:\Program Files\Amazon\AWSCLIV2"
         - echo $PATH
-      script:
+        - aws.exe version
         - aws.exe configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
         - aws.exe configure set aws_secret_access_key ${AWS_ACCESS_KEY_ID}
         - aws.exe configure set default.region ${AWS_DEFAULT_REGION}
