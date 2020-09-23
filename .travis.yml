@@ -125,6 +125,7 @@ jobs:
         - IDENTITY_VERSION=${IDENTITY_VERSION}
       install:
         - choco install awscli
+        - refreshenv
         - cd "C:\Program Files\Amazon\AWSCLIV2"
         - ls
         - aws.exe configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
