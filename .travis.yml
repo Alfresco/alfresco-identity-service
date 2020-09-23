@@ -118,7 +118,7 @@ jobs:
     - name: Test Windows
       stage: Test Windows
       os: windows
-      language: shell
+      language: cpp
       env: 
         - OS=Windows
         - AWSCLI_PATH="C:\Program Files\Amazon\AWSCLIV2"
