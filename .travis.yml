@@ -42,6 +42,47 @@ branches:
     - /AUTH-.*/
     - /OPSEXP-.*/
 
+before_install:
+  - |
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]]; then
+    # cp .travis.settings.xml $HOME/.m2/settings.xml
+    pip install --upgrade awscli
+    # use helm 2 for the Build stage
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build" ]]; then
+      HELM_VERSION=2.16.7
+      curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
+      sudo mv linux-amd64/helm /usr/local/bin
+      helm version --client
+      helm init --client-only
+    else
+      curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
+      sudo mv linux-amd64/helm /usr/local/bin
+      helm version
+    fi
+    # curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
+    # curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator.sha256
+    # openssl sha1 -sha256 aws-iam-authenticator
+    # chmod +x ./aws-iam-authenticator
+    # mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+    # export PATH=$PATH:$HOME/bin
+    # aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
+    fi
+
+before_script:
+  - |
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]]; then
+    REPO_NAME=${TRAVIS_REPO_SLUG##*/}
+    PROJECT_NAME=alfresco-identity-service
+    helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
+    helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    helm repo add alfresco-incubator ${HELM_REPO_BASE_URL}/${HELM_REPO}
+    if [[ "${TRAVIS_BRANCH}" == "master" ]] && [[ "${TRAVIS_COMMIT_MESSAGE}" == *"[release]"* ]]
+    then
+      export HELM_REPO=stable
+    fi
+    helm repo update
+    echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
+    fi
 
 jobs:
   include:
@@ -78,14 +119,15 @@ jobs:
       stage: Test Windows
       os: windows
       language: shell
-      env: OS=Windows
+      env: 
+        - OS=Windows
+        - AWSCLI_PATH="C:\Program Files\Amazon\AWSCLIV2"
+        - IDENTITY_VERSION=${IDENTITY_VERSION}
       powershell: |
-        powershell -Command Add-Type -AssemblyName System.IO.Compression.FileSystem
-        powershell -Command function unzip { param( [string]$ziparchive, [string]$extractpath ); [System.IO.Compression.ZipFile]::ExtractToDirectory( $ziparchive, $extractpath )}
-        powershell -Command IDENTITY_VERSION=${IDENTITY_VERSION}
-        powershell -Command aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
-        powershell -Command unzip '${bamboo.build.working.directory}\alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}.zip' '${bamboo.build.working.directory}'
-        powershell -Command distribution/tests/endpoints_ps.ps1
+        choco install awscli
+        aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+        ls
+        distribution/tests/endpoints_ps.ps1
     #     echo "TODO"
     # - name: Test Helm Chart
     #   stage: Test
