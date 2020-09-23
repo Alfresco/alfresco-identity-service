@@ -1,7 +1,6 @@
 language: java
 jdk:
   - openjdk11
-os: windows
 
 #sudo: required
 
@@ -124,8 +123,10 @@ jobs:
         - OS=Windows
         - AWSCLI_PATH="C:\Program Files\Amazon\AWSCLIV2"
         - IDENTITY_VERSION=${IDENTITY_VERSION}
+      install:
         - choco install awscli
         - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+      script:
         - ls
         - distribution/tests/endpoints_ps.ps1
     #     echo "TODO"
