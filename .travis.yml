@@ -114,21 +114,20 @@ jobs:
     - name: Test ZIP on Windows
       stage: Test Windows
       os: windows
-      env: OS=Windows    
+      env: OS=Windows
+      language: shell
       powershell: |
-        ls
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        function unzip {
-        param( [string]$ziparchive, [string]$extractpath )
-        [System.IO.Compression.ZipFile]::ExtractToDirectory( $ziparchive, $extractpath )
-        }
-        echo ${bamboo.prop.IDENTITY_VERSION}
-        echo ${bamboo.build.working.directory}
-        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'"
-        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'" | select-object -Property ProcessId
-        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'" | foreach { kill $_.ProcessId }
-        unzip '${bamboo.build.working.directory}\alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}.zip' '${bamboo.build.working.directory}'
-        ls
+        powershell -Command ls
+        powershell -Command Add-Type -AssemblyName System.IO.Compression.FileSystem
+        powershell -Command function unzip {
+        powershell -Command param( [string]$ziparchive, [string]$extractpath )
+        powershell -Command [System.IO.Compression.ZipFile]::ExtractToDirectory( $ziparchive, $extractpath )}
+        powershell -Command echo ${bamboo.prop.IDENTITY_VERSION}
+        powershell -Command echo ${bamboo.build.working.directory}
+        powershell -Command Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'"
+        powershell -Command Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'" | select-object -Property ProcessId
+        powershell -Command Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'" | foreach { kill $_.ProcessId }
+        powershell -Command unzip '${bamboo.build.working.directory}\alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}.zip' '${bamboo.build.working.directory}'
     #     echo "TODO"
     # - name: Test Helm Chart
     #   stage: Test
