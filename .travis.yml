@@ -3,7 +3,7 @@ jdk:
   - openjdk11
 os: windows
 
-# sudo: required
+#sudo: required
 
 os: linux
 dist: xenial
