@@ -121,17 +121,8 @@ jobs:
       language: shell
       env: OS=Windows
       powershell: |
-        powershell -Command ls
-        powershell -Command Add-Type -AssemblyName System.IO.Compression.FileSystem
-        powershell -Command function unzip {
-        powershell -Command param( [string]$ziparchive, [string]$extractpath )
-        powershell -Command [System.IO.Compression.ZipFile]::ExtractToDirectory( $ziparchive, $extractpath )}
-        powershell -Command echo ${bamboo.prop.IDENTITY_VERSION}
-        powershell -Command echo ${bamboo.build.working.directory}
-        powershell -Command Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'"
-        powershell -Command Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'" | select-object -Property ProcessId
-        powershell -Command Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}%'" | foreach { kill $_.ProcessId }
-        powershell -Command unzip '${bamboo.build.working.directory}\alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}.zip' '${bamboo.build.working.directory}'
+        powershell -Command IDENTITY_VERSION=${IDENTITY_VERSION}
+        powershell -Command distribution/tests/endpoints_ps.ps1
     #     echo "TODO"
     # - name: Test Helm Chart
     #   stage: Test
