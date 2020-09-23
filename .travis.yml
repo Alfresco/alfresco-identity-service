@@ -121,7 +121,11 @@ jobs:
       language: shell
       env: OS=Windows
       powershell: |
+        powershell -Command Add-Type -AssemblyName System.IO.Compression.FileSystem
+        powershell -Command function unzip { param( [string]$ziparchive, [string]$extractpath ); [System.IO.Compression.ZipFile]::ExtractToDirectory( $ziparchive, $extractpath )}
         powershell -Command IDENTITY_VERSION=${IDENTITY_VERSION}
+        powershell -Command aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+        powershell -Command unzip '${bamboo.build.working.directory}\alfresco-identity-service-${bamboo.prop.IDENTITY_VERSION}.zip' '${bamboo.build.working.directory}'
         powershell -Command distribution/tests/endpoints_ps.ps1
     #     echo "TODO"
     # - name: Test Helm Chart
