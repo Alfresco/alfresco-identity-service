@@ -32,7 +32,7 @@ if ($SERVICEUP -ne 1) {
 
 checkStatus (curl -UseBasicParsing -v http://localhost:8080/auth/).StatusCode "200"
 checkStatus (curl -UseBasicParsing -v http://localhost:8080/auth/admin/alfresco/console/).StatusCode "200"
-checkStatus (curl -UseBasicParsing -SslProtocol "http://localhost:8080/auth/realms/alfresco/account").Content "Identity"
+checkStatus (curl -UseBasicParsing -v "http://localhost:8080/auth/realms/alfresco/account").Content "Identity"
 $Body = @{
    client_id = "alfresco"
    username = "admin"
