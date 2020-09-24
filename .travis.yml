@@ -144,7 +144,7 @@ jobs:
         - dir
         - export JAVA_HOME=${JAVA_HOME:-/c/jdk}
         - export PATH=${JAVA_HOME}/bin:${PATH}
-        - choco install jdk11 -params 'installdir=c:\\jdk' -y        
+        - choco install jdk8 -params 'installdir=c:\\jdk' -y        
         - powershell -Command Get-ExecutionPolicy
         - powershell -Command 'Set-ExecutionPolicy unrestricted'
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
