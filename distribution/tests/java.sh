@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 set -e
 
 export TOOLS_PATH=${TOOLS_PATH:-/c/portapps_opt}
