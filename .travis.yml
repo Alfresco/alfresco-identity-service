@@ -138,7 +138,7 @@ jobs:
         - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-39/
         - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip
         - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip .
-        - cd "C:\Users\travis\build\Alfresco\alfresco-identity-service\"
+        - unzip alfresco-identity-service-${IDENTITY_VERSION}.zip
         - pwd
         - dir
         - powershell distribution/tests/endpoints_ps.ps1
