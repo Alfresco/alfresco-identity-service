@@ -126,6 +126,9 @@ jobs:
       install:
         - choco install awscli
       script:
+        - powershell -Command Get-ExecutionPolicy
+        - powershell -Command 'Set-ExecutionPolicy unrestricted'
+        - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
         - echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
