@@ -130,14 +130,16 @@ jobs:
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
         - echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
         - export PATH=$AWSCLI_PATH:$PATH
+        - echo $PATH
         - aws.exe version
         - aws.exe configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
         - aws.exe configure set aws_secret_access_key ${AWS_ACCESS_KEY_ID}
         - aws.exe configure set default.region ${AWS_DEFAULT_REGION}
         - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-39/
         - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip
-        - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip "C:\Users\travis\build\Alfresco\alfresco-identity-service\"
+        - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip .
         - cd "C:\Users\travis\build\Alfresco\alfresco-identity-service\"
+        - pwd
         - dir
         - powershell distribution/tests/endpoints_ps.ps1
     #     echo "TODO"
