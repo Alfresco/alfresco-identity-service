@@ -1,4 +1,3 @@
-Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
 Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'"
 
 ./standalone.ps1 --background
