@@ -144,6 +144,7 @@ jobs:
         - dir
         - powershell -Command 'Set-ExecutionPolicy -ExecutionPolicy AllSigned'
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
+
     #     echo "TODO"
     # - name: Test Helm Chart
     #   stage: Test
