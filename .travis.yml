@@ -126,6 +126,7 @@ jobs:
       install:
         - choco install awscli
       script:
+        - export PATH=$AWSCLI_PATH:$PATH
         - cd "C:\Program Files\Amazon\AWSCLIV2"
         - echo $PATH
         - aws.exe version
