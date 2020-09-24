@@ -142,6 +142,7 @@ jobs:
         - cd alfresco-identity-service-${IDENTITY_VERSION}/bin
         - pwd
         - dir
+        - ./distribution/tests/endpoints_ps.ps1
         - powershell -Command Get-ExecutionPolicy
         - powershell -Command 'Set-ExecutionPolicy unrestricted'
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
