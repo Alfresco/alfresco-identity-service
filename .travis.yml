@@ -142,7 +142,8 @@ jobs:
         - cd alfresco-identity-service-${IDENTITY_VERSION}/bin
         - pwd
         - dir
-        - powershell -ExecutionPolicy AllSigned -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
+        - powershell Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+        - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
     #     echo "TODO"
     # - name: Test Helm Chart
     #   stage: Test
