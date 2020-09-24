@@ -118,7 +118,7 @@ jobs:
     - name: Test Windows
       stage: Test Windows
       os: windows
-      language: java
+      language: shell
       env: 
         - OS=Windows
         - AWSCLI_PATH="C:\Program Files\Amazon\AWSCLIV2"
@@ -142,6 +142,7 @@ jobs:
         - cd alfresco-identity-service-${IDENTITY_VERSION}/bin
         - pwd
         - dir
+        - ./distribution/tests/java.sh
         - powershell -Command Get-ExecutionPolicy
         - powershell -Command 'Set-ExecutionPolicy unrestricted'
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
