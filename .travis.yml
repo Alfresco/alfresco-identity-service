@@ -126,9 +126,10 @@ jobs:
       install:
         - choco install awscli
       script:
+        - source distribution/build.properties
+        - export IDENTITY_VERSION=${IDENTITY_VERSION}
+        - echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
         - export PATH=$AWSCLI_PATH:$PATH
-        - cd "C:\Program Files\Amazon\AWSCLIV2"
-        - echo $PATH
         - aws.exe version
         - aws.exe configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
         - aws.exe configure set aws_secret_access_key ${AWS_ACCESS_KEY_ID}
