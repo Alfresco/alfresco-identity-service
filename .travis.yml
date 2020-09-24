@@ -138,11 +138,11 @@ jobs:
         - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-39/
         - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip
         - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+        - ./distribution/tests/java.sh
         - unzip alfresco-identity-service-${IDENTITY_VERSION}.zip
         - cd alfresco-identity-service-${IDENTITY_VERSION}/bin
         - pwd
         - dir
-        - ./distribution/tests/java.sh
         - powershell -Command Get-ExecutionPolicy
         - powershell -Command 'Set-ExecutionPolicy unrestricted'
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
