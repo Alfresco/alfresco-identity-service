@@ -11,10 +11,10 @@ services:
   - docker
 
 stages:
-  - name: Test Windows
   - name: Lint
   - name: Build
   - name: Test
+  - name: Test Windows
   - name: Publish
     if: branch = master OR commit_message = "[publish]"
 
@@ -134,9 +134,10 @@ jobs:
         - aws.exe configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
         - aws.exe configure set aws_secret_access_key ${AWS_ACCESS_KEY_ID}
         - aws.exe configure set default.region ${AWS_DEFAULT_REGION}
-        - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-39/
-        - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip
-        - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+        - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
+        - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+        - aws.exe s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
         - unzip alfresco-identity-service-${IDENTITY_VERSION}.zip
         - cd alfresco-identity-service-${IDENTITY_VERSION}/bin
         - pwd
