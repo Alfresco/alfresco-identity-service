@@ -144,7 +144,7 @@ jobs:
         - dir
         - powershell -Command Get-ExecutionPolicy
         - powershell -Command 'Set-ExecutionPolicy unrestricted'
-        - powershell -Command -executionpolicy bypass /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
+        - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
 
     #    echo "TODO"
     # - name: Test Helm Chart
