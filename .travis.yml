@@ -109,7 +109,7 @@ jobs:
         cd distribution
         source build.properties
         make test || { echo "Command failed with error code $?"; sleep 1; exit 1; }
-     - name: Test ZIP on Linux
+    - name: Test ZIP on Linux
       stage: Test
       script: |
         source distribution/build.properties
