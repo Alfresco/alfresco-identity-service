@@ -16,7 +16,7 @@
    "postBindingLogout": "true",
    "nameIDPolicyFormat": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
    "postBindingResponse": "true",
-   "singleLogoutServiceUrl": "https://dev-ps-alfresco.auth0.com/samlp/yawGxts95GpuUOrIdCN9bxzHI7MWa6Qi/logout",
+   "singleLogoutServiceUrl": "https://dev-ps-alfresco.auth0.com/samlp/${SAML_CLIENT_ID}/logout",
    "backchannelSupported": "",
    "signatureAlgorithm": "RSA_SHA256",
    "wantAssertionsEncrypted": "",
@@ -25,7 +25,7 @@
    "postBindingAuthnRequest": "true",
    "forceAuthn": "",
    "wantAuthnRequestsSigned": "true",
-   "singleSignOnServiceUrl": "https://dev-ps-alfresco.auth0.com/samlp/yawGxts95GpuUOrIdCN9bxzHI7MWa6Qi",
+   "singleSignOnServiceUrl": "https://dev-ps-alfresco.auth0.com/samlp/${SAML_CLIENT_ID}",
    "addExtensionsElementWithKeyInfo": "false"
    }
 }

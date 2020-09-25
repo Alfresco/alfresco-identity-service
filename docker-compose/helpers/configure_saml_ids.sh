@@ -9,14 +9,20 @@ log_error() {
     exit 1
 }
 
+check_var() {
+    if [ -z "$1" ]; then
+        log_error "$2 env variable is mandatory"
+    fi
+}
+
 # AIMS properties
 IDP_ID='saml'
 REALM='alfresco'
 REALM_KEY_PROVIDER_NAME="${IDS_KEY_PROVIDER_NAME:-dbp-sso-rsa}"
+SAML_CLIENT_ID="${AUTH0_CLIENT_ID}"
 
-if [ -z "${HOST_IP}" ]; then
-    log_error "HOST_IP environment variable is mandatory."
-fi
+check_var "$HOST_IP" "HOST_IP"
+check_var "$SAML_CLIENT_ID" "AUTH0_CLIENT_ID"
 
 IDS_BASE_URL="http://${HOST_IP}:8999"
 
@@ -52,7 +58,12 @@ else
     fi
 fi
 
-SAML_PROVIDER_PAYLOAD=$(cat helpers/config-files/idpSamlConfig.json)
+# Get idpSamlConfig.json file and perform variable substitution
+SAML_PROVIDER_PAYLOAD=$(eval "cat <<EOF
+$(<helpers/config-files/idpSamlConfig.json)
+EOF
+" 2>/dev/null)
+
 # Import new SAML identity provider in Identity Service
 STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$IDS_BASE_URL/auth/admin/realms/$REALM/identity-provider/instances" \
     -H "Content-Type: application/json" \
