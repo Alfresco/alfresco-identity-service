@@ -16,7 +16,7 @@ stages:
   - name: Test
   - name: Test Windows
   - name: Publish
-    if: branch = master OR commit_message = "[publish]"
+#    if: branch = master OR commit_message = "[publish]"
 
 # import:
 #   - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
