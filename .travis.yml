@@ -13,7 +13,6 @@ services:
 stages:
   - name: Lint
   - name: Build
-  - Test helm
   - name: Test
   - name: Test Windows
   - name: Publish
@@ -100,8 +99,8 @@ jobs:
         make || { echo "Command failed with error code $?"; sleep 1; exit 1; }
         # security scan the build
         source build.properties
-
         # upload ZIP file to S3 bucket
+
         aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
     - name: Test helm
       stage: Test helm
@@ -155,9 +154,24 @@ jobs:
         - powershell -Command 'Set-ExecutionPolicy unrestricted'
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
-
-    #    echo "TODO"
+    - name: Publish
+      stage: Publish
+      if: commit_message ~= /\[trigger release\]/ AND branch ~= /^(master)$/
+      before_deploy: aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+      deploy:
+        provider: s3
+        access_key_id: "${STAGING_AWS_ACCESS_KEY}"
+        secret_access_key: "${STAGING_AWS_SECRET_KEY}"
+        bucket: "alfresco-artefacts-staging"
+        skip_cleanup: true
+        region: "eu-west-1"
+        local_dir: "deploy_dir"
+        upload-dir: "enterprise/alfresco-identity-service/${IDENTITY_VERSION}/"
+        on:
+          all_branches: true
+        #    echo "TODO"
     # - name: Test Helm Chart
     #   stage: Test
     #   script: |
     #     echo "TODO"
+
