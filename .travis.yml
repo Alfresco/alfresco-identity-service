@@ -70,7 +70,7 @@ before_install:
 
 before_script:
   - |
-    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
     REPO_NAME=${TRAVIS_REPO_SLUG##*/}
     PROJECT_NAME=alfresco-identity-service
     helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
