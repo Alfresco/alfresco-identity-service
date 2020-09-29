@@ -44,7 +44,7 @@ branches:
 
 before_install:
   - |
-    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]]; then
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] || [ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
     # cp .travis.settings.xml $HOME/.m2/settings.xml
     pip install --upgrade awscli
     # use helm 2 for the Build stage
@@ -70,7 +70,7 @@ before_install:
 
 before_script:
   - |
-    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]]; then
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] || [ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
     REPO_NAME=${TRAVIS_REPO_SLUG##*/}
     PROJECT_NAME=alfresco-identity-service
     helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
@@ -150,7 +150,6 @@ jobs:
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
     - name: Publish
       stage: Publish
-#      if: commit_message ~= /\[trigger release\]/ AND branch ~= /^(master)$/
       before_deploy: aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
       deploy:
         provider: s3
@@ -161,8 +160,6 @@ jobs:
         region: "eu-west-1"
         local_dir: "deploy_dir"
         upload-dir: "enterprise/alfresco-identity-service/${IDENTITY_VERSION}/"
-        on:
-          all_branches: true
         #    echo "TODO"
     # - name: Test Helm Chart
     #   stage: Test
