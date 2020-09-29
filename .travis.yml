@@ -11,11 +11,11 @@ services:
   - docker
 
 stages:
+  - name: Publish
   - name: Lint
   - name: Build
   - name: Test
   - name: Test Windows
-  - name: Publish
 #    if: branch = master OR commit_message = "[publish]"
 
 # import:
@@ -150,7 +150,8 @@ jobs:
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
     - name: Publish
       stage: Publish
-      before_deploy: aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+      before_deploy: aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+      language: bash
       deploy:
         provider: s3
         access_key_id: "${STAGING_AWS_ACCESS_KEY}"
