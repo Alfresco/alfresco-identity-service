@@ -102,12 +102,6 @@ jobs:
         # upload ZIP file to S3 bucket
 
         aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
-    - name: Test helm
-      stage: Test helm
-      script: |
-        cd distribution
-        source build.properties
-        make test || { echo "Command failed with error code $?"; sleep 1; exit 1; }
     - name: Test ZIP on Linux
       stage: Test
       script: |
