@@ -150,7 +150,7 @@ jobs:
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
     - name: Publish
       stage: Publish
-      if: commit_message ~= /\[trigger release\]/ AND branch ~= /^(master)$/
+#      if: commit_message ~= /\[trigger release\]/ AND branch ~= /^(master)$/
       before_deploy: aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
       deploy:
         provider: s3
