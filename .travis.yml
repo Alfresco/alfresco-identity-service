@@ -161,6 +161,8 @@ jobs:
         region: "eu-west-1"
         local_dir: "deploy_dir"
         upload-dir: "enterprise/alfresco-identity-service/${IDENTITY_VERSION}/"
+        on:
+           all_branches: true
         #    echo "TODO"
     # - name: Test Helm Chart
     #   stage: Test
