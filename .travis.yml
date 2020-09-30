@@ -11,11 +11,11 @@ services:
   - docker
 
 stages:
-  - name: Publish
   - name: Lint
   - name: Build
   - name: Test
   - name: Test Windows
+  - name: Publish
 #    if: branch = master OR commit_message = "[publish]"
 
 # import:
@@ -161,7 +161,7 @@ jobs:
         provider: s3
         access_key_id: "${STAGING_AWS_ACCESS_KEY}"
         secret_access_key: "${STAGING_AWS_SECRET_KEY}"
-        bucket: "alfresco-artefacts-staging"
+        bucket: "${S3_STAGING_BUCKET}"
         skip_cleanup: true
         region: "eu-west-1"
         local_dir: "deploy_dir"
