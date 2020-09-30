@@ -44,7 +44,7 @@ branches:
 
 before_install:
   - |
-    pip install --upgrade awscli
+    sudo pip install --upgrade awscli
     if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
     # cp .travis.settings.xml $HOME/.m2/settings.xml
     # use helm 2 for the Build stage
