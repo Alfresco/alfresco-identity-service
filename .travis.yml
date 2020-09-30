@@ -158,6 +158,9 @@ jobs:
         - aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
       language: bash
       deploy:
+        script:
+          - source distribution/build.properties
+          - export IDENTITY_VERSION=${IDENTITY_VERSION}
         provider: s3
         access_key_id: "${STAGING_AWS_ACCESS_KEY}"
         secret_access_key: "${STAGING_AWS_SECRET_KEY}"
