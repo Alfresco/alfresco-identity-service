@@ -100,7 +100,7 @@ jobs:
         # security scan the build
         source build.properties
         # upload ZIP file to S3 bucket
-        ls
+        aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.md5 s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/        
         aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
     - name: Test ZIP on Linux
       stage: Test
@@ -155,8 +155,9 @@ jobs:
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
         - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
         - aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
-      language: bash
+        language: bash
       deploy:
         script:
           - source distribution/build.properties
