@@ -181,7 +181,7 @@ jobs:
         - export PRIVATE_IMAGE=quay.io/alfresco/alfresco-identity-service:${IDENTITY_VERSION}
         - export PUBLIC_IMAGE=alfresco/alfresco-identity-service:${IDENTITY_VERSION}
         - docker rmi ${PRIVATE_IMAGE}
-        - echo "$DOCKER_PASSWORD_QUAY" | docker login -u "$DOCKER_USERNAME_QUAY" --password-stdin && \
+        - echo "$DOCKER_PASSWORD_QUAY" | docker login quay.io -u "$DOCKER_USERNAME_QUAY" --password-stdin && \
         - docker pull ${PRIVATE_IMAGE}
         - docker tag ${PRIVATE_IMAGE} ${PUBLIC_IMAGE}
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin && \
