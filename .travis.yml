@@ -176,8 +176,8 @@ jobs:
       script:
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
-        - export PRIVATE_IMAGE=quay.io/alfresco/alfresco-identity-service:${bamboo.prop.IDENTITY_VERSION}
-        - export PUBLIC_IMAGE=alfresco/alfresco-identity-service:${bamboo.prop.IDENTITY_VERSION}
+        - export PRIVATE_IMAGE=quay.io/alfresco/alfresco-identity-service:${IDENTITY_VERSION}
+        - export PUBLIC_IMAGE=alfresco/alfresco-identity-service:${IDENTITY_VERSION}
         - docker rmi ${PRIVATE_IMAGE}
         - docker pull ${PRIVATE_IMAGE}
         - docker tag ${PRIVATE_IMAGE} ${PUBLIC_IMAGE}
