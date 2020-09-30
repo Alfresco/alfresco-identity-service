@@ -173,8 +173,6 @@ jobs:
            all_branches: true
     - name: Publish DockerHub
       stage: Publish DockerHub
-      before_script:
-      - echo "${DOCKER_PASSWORD_QUAY}" | docker login ${registry} -u "${DOCKER_USERNAME_QUAY}" --password-stdin
       script:
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
