@@ -152,7 +152,10 @@ jobs:
       stage: Publish
       env: 
         - IDENTITY_VERSION=${IDENTITY_VERSION}      
-      before_deploy: aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+      before_deploy: 
+        - source distribution/build.properties
+        - export IDENTITY_VERSION=${IDENTITY_VERSION}
+        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
       language: bash
       deploy:
         provider: s3
