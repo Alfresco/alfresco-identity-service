@@ -136,7 +136,6 @@ jobs:
         - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
         - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip
         - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
-        - aws.exe s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
         - unzip alfresco-identity-service-${IDENTITY_VERSION}.zip
         - cd alfresco-identity-service-${IDENTITY_VERSION}/bin
         - pwd
@@ -155,7 +154,8 @@ jobs:
       before_deploy: 
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
-        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-39/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        - aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
       language: bash
       deploy:
         provider: s3
