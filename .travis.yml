@@ -15,10 +15,10 @@ stages:
   - name: Build
   - name: Test
   - name: Test Windows
-  - name: Publish
-    if: branch = master OR commit_message = "[publish]"
+  - name: Publish S3
+#    if: branch = master OR commit_message = "[publish]"
   - name: Publish DockerHub
-    if: branch = master OR commit_message = "[publish]"
+#    if: branch = master OR commit_message = "[publish]"
 
 # import:
 #   - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
