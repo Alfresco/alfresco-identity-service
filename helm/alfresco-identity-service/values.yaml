@@ -63,7 +63,7 @@ keycloak:
     create: false
   keycloak:
     image:
-      repository: alfresco/alfresco-identity-service
+      repository: quay.io/alfresco/alfresco-identity-service
       tag: 1.4.0-SNAPSHOT
       pullPolicy: Always
       pullSecrets:
