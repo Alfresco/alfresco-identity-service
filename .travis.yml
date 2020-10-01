@@ -1,0 +1,193 @@
+language: java
+jdk:
+  - openjdk11
+
+#sudo: required
+
+os: linux
+dist: xenial
+
+services:
+  - docker
+
+stages:
+  - name: Lint
+  - name: Build
+  - name: Test
+  - name: Test Windows
+  - name: Publish S3
+    if: branch = master OR commit_message = "[publish]"
+  - name: Publish DockerHub
+    if: branch = master OR commit_message = "[publish]"
+
+# import:
+#   - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
+#   - source: Alfresco/alfresco-process-tools:.travis.docker_login.yml@master
+
+env:
+  global:
+    - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-30}
+    - BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-${TRAVIS_BRANCH}}
+    - HELM_REPO_BASE_URL=https://kubernetes-charts.alfresco.com
+    - HELM_REPO=incubator
+    - KUBERNETES_VERSION=1.18.4
+    - HELM_VERSION=${HELM_VERSION:-3.2.4}
+
+cache:
+  directories:
+    - ${HOME}/.m2
+    - ${HOME}/.m2/repository
+
+branches:
+  only:
+    - master
+    - /AUTH-.*/
+    - /OPSEXP-.*/
+
+before_install:
+  - |
+    sudo pip install --upgrade awscli
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
+    # cp .travis.settings.xml $HOME/.m2/settings.xml
+    # use helm 2 for the Build stage
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build" ]]; then
+      HELM_VERSION=2.16.7
+      curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
+      sudo mv linux-amd64/helm /usr/local/bin
+      helm version --client
+      helm init --client-only
+    else
+      curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
+      sudo mv linux-amd64/helm /usr/local/bin
+      helm version
+    fi
+    # curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
+    # curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator.sha256
+    # openssl sha1 -sha256 aws-iam-authenticator
+    # chmod +x ./aws-iam-authenticator
+    # mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+    # export PATH=$PATH:$HOME/bin
+    # aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
+    fi
+
+before_script:
+  - |
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
+    REPO_NAME=${TRAVIS_REPO_SLUG##*/}
+    PROJECT_NAME=alfresco-identity-service
+    helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
+    helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    helm repo add alfresco-incubator ${HELM_REPO_BASE_URL}/${HELM_REPO}
+    if [[ "${TRAVIS_BRANCH}" == "master" ]] && [[ "${TRAVIS_COMMIT_MESSAGE}" == *"[release]"* ]]
+    then
+      export HELM_REPO=stable
+    fi
+    helm repo update
+    echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
+    fi
+
+jobs:
+  include:
+    - name: Lint chart
+      stage: Lint
+      script: |
+        helm dep up helm/${PROJECT_NAME}
+        helm lint helm/${PROJECT_NAME}
+    - name: Build
+      stage: Build
+      script: |
+        cd distribution
+        # build and package
+        make || { echo "Command failed with error code $?"; sleep 1; exit 1; }
+        # security scan the build
+        source build.properties
+        # upload ZIP file to S3 bucket
+        aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.md5 s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
+        aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
+    - name: Test ZIP on Linux
+      stage: Test
+      script: |
+        source distribution/build.properties
+        export IDENTITY_VERSION=${IDENTITY_VERSION}
+        echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
+        aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+        chmod +x distribution/tests/endpoints.sh
+        distribution/tests/endpoints.sh
+      #after_script: |
+        # empty the artifacts bucket (in case there were previous failed builds)
+        # aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
+    - name: Test Windows
+      stage: Test Windows
+      os: windows
+      language: shell
+      env: 
+        - OS=Windows
+        - AWSCLI_PATH="C:\Program Files\Amazon\AWSCLIV2"
+        - IDENTITY_VERSION=${IDENTITY_VERSION}
+      install:
+        - choco install awscli
+      script:
+        - source distribution/build.properties
+        - export IDENTITY_VERSION=${IDENTITY_VERSION}
+        - echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
+        - export PATH=$AWSCLI_PATH:$PATH
+        - echo $PATH
+        - aws.exe configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
+        - aws.exe configure set aws_secret_access_key ${AWS_ACCESS_KEY_ID}
+        - aws.exe configure set default.region ${AWS_DEFAULT_REGION}
+        - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
+        - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+        - unzip alfresco-identity-service-${IDENTITY_VERSION}.zip
+        - cd alfresco-identity-service-${IDENTITY_VERSION}/bin
+        - pwd
+        - dir
+        - export JAVA_HOME=${JAVA_HOME:-/c/jdk}
+        - export PATH=${JAVA_HOME}/bin:${PATH}
+        - choco install jdk8 -params 'installdir=c:\\jdk' -y        
+        - powershell -Command Get-ExecutionPolicy
+        - powershell -Command 'Set-ExecutionPolicy unrestricted'
+        - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
+        - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
+    - name: Publish S3
+      stage: Publish S3
+      env: 
+        - IDENTITY_VERSION=${IDENTITY_VERSION}      
+      before_deploy: 
+        - source distribution/build.properties
+        - export IDENTITY_VERSION=${IDENTITY_VERSION}
+        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
+        - aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
+      language: bash
+      deploy:
+        provider: s3
+        access_key_id: "${STAGING_AWS_ACCESS_KEY}"
+        secret_access_key: "${STAGING_AWS_SECRET_KEY}"
+        bucket: "${S3_STAGING_BUCKET}"
+        skip_cleanup: true
+        region: "eu-west-1"
+        local_dir: "deploy_dir"
+        upload-dir: "enterprise/alfresco-identity-service/"
+        on:
+           all_branches: true
+    - name: Publish DockerHub
+      stage: Publish DockerHub
+      script:
+        - source distribution/build.properties
+        - export IDENTITY_VERSION=${IDENTITY_VERSION}
+        - export PRIVATE_IMAGE=quay.io/alfresco/alfresco-identity-service:${IDENTITY_VERSION}
+        - export PUBLIC_IMAGE=alfresco/alfresco-identity-service:${IDENTITY_VERSION}
+        - docker rmi ${PRIVATE_IMAGE}
+        - echo "$DOCKER_PASSWORD_QUAY" | docker login quay.io -u "$DOCKER_USERNAME_QUAY" --password-stdin
+        - docker pull ${PRIVATE_IMAGE}
+        - docker tag ${PRIVATE_IMAGE} ${PUBLIC_IMAGE}
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker push ${PUBLIC_IMAGE}
+
+        #    echo "TODO"
+    # - name: Test Helm Chart
+    #   stage: Test
+    #   script: |
+    #     echo "TODO"
+
