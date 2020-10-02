@@ -153,8 +153,8 @@ jobs:
       stage: Test Helm Chart
       script: |
         export namespace=$(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
-        export release_name_ingress=ids-${TRAVIS_BUILD_NUMBER}
-        export release_name_ids=acs-${TRAVIS_BUILD_NUMBER}
+        export release_name_ingress=ing-${TRAVIS_BUILD_NUMBER}
+        export release_name_ids=ids-${TRAVIS_BUILD_NUMBER}
 
         # Utility Functions
 
