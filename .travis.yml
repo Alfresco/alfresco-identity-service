@@ -240,6 +240,18 @@ jobs:
           name: $release_name_ingress-nginx-ingress
           namespace: $namespace
         ---
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: alfresco-volume-claim
+        spec:
+          accessModes:
+            - ReadWriteMany
+          storageClassName: nfs
+          resources:
+            requests:
+              storage: 20Gi
+        ---
         $(kubectl create secret docker-registry quay-registry-secret --dry-run=client --docker-server=${DOCKER_REGISTRY} --docker-username=${DOCKER_REGISTRY_USERNAME} --docker-password=${DOCKER_REGISTRY_PASSWORD} -n $namespace -o yaml)
         EOF
 
