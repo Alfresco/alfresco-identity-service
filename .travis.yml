@@ -274,7 +274,10 @@ jobs:
         --namespace $namespace
 
         # install Identity Service
-        # TODO
+        helm upgrade --install $release_name_ids helm/alfresco-identity-service \
+        --values=test/helm/test-values.yaml \
+        --wait \
+        --namespace $namespace
 
         # check dns and pods
         DNS_PROPAGATED=0
@@ -305,10 +308,10 @@ jobs:
         #docker run -a STDOUT --volume $PWD/test/postman/helm:/etc/newman --network host postman/newman_alpine33:3.9.2 run "acs-test-helm-collection.json" --global-var "protocol=https" --global-var "url=$namespace.dev.alfresco.me"
         TEST_RESULT=$?
 
-        if [[ "$TRAVIS_COMMIT_MESSAGE" != *"[keep env]"* ]]; then
-          helm delete $release_name_ingress $release_name_ids -n $namespace
-          kubectl delete namespace $namespace
-        fi
+        # if [[ "$TRAVIS_COMMIT_MESSAGE" != *"[keep env]"* ]]; then
+        #   helm delete $release_name_ingress $release_name_ids -n $namespace
+        #   kubectl delete namespace $namespace
+        # fi
 
         if [[ "${TEST_RESULT}" == "1" ]]; then
           echo "Tests failed, exiting"
