@@ -274,6 +274,7 @@ jobs:
         --namespace $namespace
 
         # install Identity Service
+        helm dep up helm/alfresco-identity-service
         helm upgrade --install $release_name_ids helm/alfresco-identity-service \
         --values=test/helm/test-values.yaml \
         --wait \
