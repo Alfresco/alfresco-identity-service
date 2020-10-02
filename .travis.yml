@@ -244,6 +244,7 @@ jobs:
         kind: PersistentVolumeClaim
         metadata:
           name: alfresco-volume-claim
+          namespace: $namespace
         spec:
           accessModes:
             - ReadWriteMany
@@ -277,7 +278,6 @@ jobs:
         helm dep up helm/alfresco-identity-service
         helm upgrade --install $release_name_ids helm/alfresco-identity-service \
         --values=test/helm/test-values.yaml \
-        --wait \
         --namespace $namespace
 
         # check dns and pods
