@@ -20,8 +20,8 @@ stages:
   - name: Publish DockerHub
     if: branch = master AND commit_message = "[publish]"
 
-# import:
-#   - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
+import:
+  - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
 #   - source: Alfresco/alfresco-process-tools:.travis.docker_login.yml@master
 
 env:
