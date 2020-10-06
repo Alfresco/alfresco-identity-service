@@ -1,5 +1,10 @@
 realm:
-  alfresco:
+  alfresco:    
+    client:
+      redirectUris:
+        - "*"
+      webOrigins:
+        - "*"
     extraGroups:
     - name: testgroup
       path: "/testgroup"
