@@ -288,7 +288,7 @@ jobs:
         helm dep up helm/alfresco-identity-service
         helm upgrade --install $release_name_ids helm/alfresco-identity-service \
         --values=test/helm/test-values.yaml \
-        --set realm.alfresco.client.redirectUris={http://$namespace.dev.alfresco.me*,https://$namespace.dev.alfresco.me*}
+        --set realm.alfresco.client.redirectUris={http://$namespace.dev.alfresco.me*,https://$namespace.dev.alfresco.me*} \
         --wait \
         --namespace $namespace
 
