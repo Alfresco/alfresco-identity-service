@@ -1,0 +1,33 @@
+{
+    "alias": "saml",
+    "internalId": "a8d2f290-3638-4e5f-94db-fc7fe66b2cd2",
+    "providerId": "saml",
+    "enabled": true,
+    "updateProfileFirstLoginMode": "on",
+    "trustEmail": false,
+    "storeToken": false,
+    "addReadTokenRoleOnCreate": false,
+    "authenticateByDefault": false,
+    "linkOnly": false,
+    "firstBrokerLoginFlowAlias": "first broker login",
+    "config": {
+        "hideOnLoginPage": "",
+        "validateSignature": "true",
+        "samlXmlKeyNameTranformer": "KEY_ID",
+        "signingCertificate": "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",
+        "postBindingLogout": "true",
+        "nameIDPolicyFormat": "urn:oasis:names:tc:SAML:1.1:nameid-format:unspecified",
+        "postBindingResponse": "true",
+        "singleLogoutServiceUrl": "https://pingfederate.alfresco.me:9031/idp/SLO.saml2",
+        "backchannelSupported": "",
+        "signatureAlgorithm": "RSA_SHA256",
+        "wantAssertionsEncrypted": "",
+        "xmlSigKeyInfoKeyNameTransformer": "NONE",
+        "useJwksUrl": "true",
+        "wantAssertionsSigned": "",
+        "postBindingAuthnRequest": "true",
+        "forceAuthn": "",
+        "singleSignOnServiceUrl": "https://pingfederate.alfresco.me:9031/idp/SSO.saml2",
+        "wantAuthnRequestsSigned": "true"
+    }
+}

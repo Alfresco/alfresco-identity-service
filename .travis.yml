@@ -155,6 +155,7 @@ jobs:
         export namespace=$(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
         export release_name_ingress=ing-${TRAVIS_BUILD_NUMBER}
         export release_name_ids=ids-${TRAVIS_BUILD_NUMBER}
+        export openldap_release=openldap-${TRAVIS_BUILD_NUMBER}
 
         # Utility Functions
 
@@ -265,19 +266,29 @@ jobs:
         --set controller.service.targetPorts.https=80 \
         --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-backend-protocol"="http" \
         --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-ssl-ports"="https" \
-        --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-ssl-cert"="${ACM_CERTIFICATE}" \
+        --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-ssl-cert"="$ACM_CERTIFICATE" \
         --set controller.service.annotations."external-dns\.alpha\.kubernetes\.io/hostname"="$namespace.dev.alfresco.me" \
         --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-ssl-negotiation-policy"="ELBSecurityPolicy-TLS-1-2-2017-01" \
-        --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-security-groups"="${AWS_SG}" \
+        --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-security-groups"="$AWS_SG" \
         --set controller.publishService.enabled=true \
         --wait \
         --atomic \
+        --namespace $namespace
+
+        # install ldap
+
+        LDAP_CONFIG_FILE="test/helm/ldap-config.yaml"
+
+        helm upgrade --install $openldap_release stable/openldap \
+        -f $LDAP_CONFIG_FILE \
+        --wait \
         --namespace $namespace
 
         # install Identity Service
         helm dep up helm/alfresco-identity-service
         helm upgrade --install $release_name_ids helm/alfresco-identity-service \
         --values=test/helm/test-values.yaml \
+        --set realm.alfresco.client.redirectUris={http://$namespace.dev.alfresco.me*,https://$namespace.dev.alfresco.me*}
         --wait \
         --namespace $namespace
 
@@ -306,9 +317,29 @@ jobs:
 
         pods_ready
 
+        # Set IDP Config 
+        HOST=$namespace.dev.alfresco.me ./test/helm/set_idp_config.sh
+
         # run identity checks
-        #docker run -a STDOUT --volume $PWD/test/postman/helm:/etc/newman --network host postman/newman_alpine33:3.9.2 run "acs-test-helm-collection.json" --global-var "protocol=https" --global-var "url=$namespace.dev.alfresco.me"
+        docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "identity-test-collection.json" --global-var "identity_host=$namespace.dev.alfresco.me"
         TEST_RESULT=$?
+        echo "TEST_RESULT=${TEST_RESULT}"
+
+        if [[ "${TEST_RESULT}" == "0" ]]; then
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
+          TEST_RESULT=$?
+          echo "TEST_RESULT=${TEST_RESULT}"
+        fi
+
+        if [[ "${TEST_RESULT}" == "0" ]]; then
+          cd test/saml 
+          export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
+          export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
+          mvn clean test
+          TEST_RESULT=$?
+          echo "TEST_RESULT=${TEST_RESULT}"
+          cd ../..
+        fi
 
         if [[ "$TRAVIS_COMMIT_MESSAGE" != *"[keep env]"* ]]; then
           helm delete $release_name_ingress $release_name_ids -n $namespace

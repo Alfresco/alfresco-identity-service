@@ -1,0 +1,267 @@
+# Util
+
+separator() {
+    echo "============================"
+}
+
+log_warn() {
+    echo "warn::: $1"
+}
+
+log_info() {
+    echo "info::: $1"
+}
+
+log_error() {
+    echo "error::: $1"
+    exit 1
+}
+
+printVarSummary() {
+    separator
+    echo "Variables Summary"
+    separator
+    for var in $VAR_LIST
+    do
+        echo "$var = ${!var}"
+    done
+    separator
+}
+
+release_name_infrastructure() {
+  helm ls --namespace "$namespace" | grep "alfresco-infrastructure" | awk '{print $1}'
+}
+release_name_dbp() {
+  helm ls --namespace "$namespace" | grep "alfresco-dbp" | awk '{print $1}'
+}
+
+release_name_ingress() {
+  helm ls --namespace "$namespace" | grep "nginx-ingress" | awk '{print $1}'
+}
+
+get_cluster_type() {
+   echo "${bamboo_cluster_type}"
+}
+
+check_cluster_resources() {
+  processing_units=40 #if you have 4 processors you will have 4000m cpu units however since we count the percentage usage for every machine we need to remove two decimals off that, ending up with 40 in this case
+  memory_units=160 #if you have 16GB memory you will have around 16000Mi memory units however since we count the percentage usage for every machine we need to remove two decimals off that, ending up with 160 in this case
+  allocation_threshold=85 # percentage above which we fail the build
+  util=$(kubectl get nodes --no-headers | awk '{print $1}' | xargs -I {} sh -c 'echo {} ; kubectl describe node {} | grep Allocated -A 5 | grep -ve Event -ve Allocated -ve percent -ve -- ; echo''')
+  memalloc=$(echo "$util" | grep % | awk '{print $2}' | grep Mi | awk -v awkvar="$memory_units" '{ sum += $1 } END { if (NR > 0) { print sum/(NR*awkvar) } }' | awk '{printf "%.0f",$1}')
+  cpualloc=$(echo "$util" | grep % | awk '{print $2}' | grep m | awk -v awkvar="$processing_units" '{ sum += $1 } END { if (NR > 0) { print sum/(NR*awkvar) } }' | awk '{printf "%.0f",$1}')
+
+  if (( $memalloc > $allocation_threshold )); then 
+    echo "The cluster is at "$memalloc"% memory allocation, please clean up first!" 
+    exit 1
+  else 
+    echo "Memory allocation on the cluster is "$memalloc"%"
+  fi
+  if (( $cpualloc > $allocation_threshold )); then 
+    echo "The cluster is at "$cpualloc"% cpu allocation, please clean up first!"
+    exit 1
+  else echo "CPU allocation on the cluster is "$cpualloc"%"
+  fi
+}
+
+get_namespace(){
+   echo "${bamboo_planKey}-${bamboo_buildNumber}" | awk '{print tolower($0)}'
+}
+
+create_secrets(){
+  docker_config=$1
+  cat << EOS > $PWD/bamboo-build-dbp/scripts/secrets.yaml
+apiVersion: v1
+kind: Secret
+type: kubernetes.io/dockerconfigjson
+metadata:
+  name: quay-registry-secret
+data:
+ .dockerconfigjson: $docker_config
+EOS
+}
+
+get_elbaddress(){
+  INFRARELEASE=$(release_name_ingress)
+  DESIREDNAMESPACE=$(get_namespace)
+  if [ $1 = true ]; then
+    echo "$(kubectl get services $INFRARELEASE-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath={.status.loadBalancer.ingress[0].hostname})"
+  else
+    echo "$(minikube ip)"
+  fi
+}
+
+is_route53_enabled() {
+    [ "$(get_cluster_type)" = "aws" ] &&  [ "${bamboo_aws_route53_enable}" = "true" ] && return 0
+    return 1
+}
+
+is_openldap_enabled() {
+    [ "$(get_cluster_type)" = "aws" ] && [ "${bamboo_openldap_enable}" = "true" ] && return 0
+    return 1
+}
+
+get_route53_hostname() {
+    namespace=$(get_namespace)
+    domainname=$1
+    if [ -z "${namespace}" ]; then
+        log_error "Unable to get namespace for Route53 host name"
+    fi
+    if [ -z "${domainname}" ]; then
+        log_error "Unable to get Route53 domain name"
+    fi
+    echo "${namespace}.${domainname}"
+}
+
+get_route53_domain() {
+    echo "${bamboo_aws_route53_domain}"
+}
+
+get_route53_arn() {
+    echo "${bamboo_aws_route53_ssl_cert_arn}"
+}
+
+get_infraport(){
+  echo "$(kubectl get service $(release_name_infrastructure)-nginx-ingress-controller --namespace $(get_namespace) -o jsonpath='{.spec.ports[?(@.name=="http").nodePort}')"
+}
+
+get_url() {
+    elbaddress=$(get_elbaddress $1)
+    if [ $1 = true ]; then
+        # for Route53-enabled config we assume SSL accessed via Route53 alias
+        if is_route53_enabled; then
+            echo "https://$(get_route53_hostname $(get_route53_domain))"
+        else
+            echo "http://$elbaddress"
+        fi
+    else
+        infraport=$(get_infraport)
+        echo "http://$elbaddress:$infraport"
+    fi
+}
+
+get_pod_name(){
+    local -r podname="$1"
+    local -r local_namespace="$2"
+    kubectl get pods --namespace $local_namespace | grep $podname | awk '{print $1}'
+}
+
+delete_pod() {
+    local -r podnames="$1"
+    local -r local_namespace="$2"
+    local podtodelete=""
+
+    for po in $podnames; do
+        echo "Getting pod name from keyword '$po' in '$local_namespace' namespace"
+        podtodelete=$(get_pod_name $po $local_namespace)
+        if [ -n "$podtodelete" ]; then
+            break
+        fi
+    done
+
+    if [ -n "$podtodelete" ]; then
+        echo "Deleting pod $podtodelete in '$local_namespace' namespace"
+        kubectl delete pod $podtodelete --namespace $local_namespace
+    else
+        echo "No Pod found with the given keywords '$podnames' in '$local_namespace' namespace"
+    fi
+}
+
+# Test to see if the ELB DNS has been propagated
+wait_for_dns_propagation() {
+ hostname=$1
+
+ DNS_PROPAGATED=0
+ # counters
+ DNS_COUNTER=0
+ # counters limit
+ DNS_COUNTER_MAX=90
+ # sleep seconds
+ DNS_SLEEP_SECONDS=10
+ 
+ log_info "Trying to perform a trace DNS query to prevent caching"
+ dig +trace $hostname @8.8.8.8
+ 
+ while [ "$DNS_PROPAGATED" -eq 0 ] && [ "$DNS_COUNTER" -le "$DNS_COUNTER_MAX" ]; do
+   host $hostname 8.8.8.8
+   if [ "$?" -eq 1 ]; then
+     DNS_COUNTER=$((DNS_COUNTER + 1))
+     log_info "DNS Not Propagated - Sleeping $DNS_SLEEP_SECONDS seconds"
+     sleep "$DNS_SLEEP_SECONDS"
+
+   else
+     log_info "DNS Propagated"
+     DNS_PROPAGATED=1
+   fi
+ done
+
+ [ $DNS_PROPAGATED -ne 1 ] && log_error "DNS entry for ${hostname} did not propagate within expected time"
+}
+
+wait_for_all_pod_readiness() {
+  # counters
+  PODS_COUNTER=0
+  # counters limit
+  PODS_COUNTER_MAX=120
+  # sleep seconds
+  PODS_SLEEP_SECONDS=10
+  
+  namespace=$(get_namespace)
+
+  log_info "Validate that all the pods in the deployment are ready"
+  while [ "$PODS_COUNTER" -lt "$PODS_COUNTER_MAX" ]; do
+    pendingpodcount=$(kubectl get pods --namespace "$namespace" | awk '{print $2}' | grep -c '0/1' || true)
+    if [ "$pendingpodcount" -eq 0 ]; then
+      runningPods=$(kubectl get pods --namespace "$namespace")
+      log_info "All pods are Running and Ready!"
+      log_info "$runningPods"
+      break
+    fi
+      PODS_COUNTER=$((PODS_COUNTER + 1))
+      log_info "$pendingpodcount pods are not yet ready - sleeping $PODS_SLEEP_SECONDS seconds - counter $PODS_COUNTER"
+      sleep "$PODS_SLEEP_SECONDS"
+      continue
+     done
+     if [ "$PODS_COUNTER" -ge "$PODS_COUNTER_MAX" ]; then
+      failedPods=$(kubectl get pods --namespace "$namespace" | grep '0/1' | awk '{print $1}')
+      log_info "\nThe following pods were not ready:\n"
+      for failedpod in $failedPods; do 
+        log_info "$failedpod"
+      done
+      for failedpod in $failedPods; do 
+        log_info "Description for $failedpod :\n"
+        kubectl describe pod $failedpod --namespace "$namespace"
+      done
+      log_error "Pods did not start - exit"
+      kubectl get pods --namespace "$namespace"
+      exit 1
+     fi
+}
+
+wait_for_url_200_status() {
+  # counters
+  URL_CHECK_COUNTER=0
+  # counters limit
+  URL_CHECK_COUNTER_MAX=120
+  # sleep seconds
+  URL_CHECK_SLEEP_SECONDS=10
+
+  url=$1
+
+  log_info "Waiting for 200 status on URL: $url"
+  while [ "$URL_CHECK_COUNTER" -lt "$URL_CHECK_COUNTER_MAX" ]; do
+    httpstatus=$(curl -s -L --insecure -o /dev/null -w "%{http_code}" "$url")
+    if [ "$httpstatus" -eq 200 ]; then
+      log_info "GET returned $httpstatus: $url"
+      break
+    fi
+      URL_CHECK_COUNTER=$((URL_CHECK_COUNTER + 1))
+      log_info "GET returned $httpstatus: $url"
+      sleep "$URL_CHECK_SLEEP_SECONDS"
+      continue
+     done
+     if [ "$URL_CHECK_COUNTER" -ge "$URL_CHECK_COUNTER_MAX" ]; then
+      log_error "URL did not return 200: $url"
+      exit 1
+     fi
+}

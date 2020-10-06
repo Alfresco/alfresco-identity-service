@@ -1,0 +1,93 @@
+{
+  "id": "12428c8b-dd48-45c7-ad39-d99c745f0002",
+  "parentId": "alfresco",
+  "name": "ldap",
+  "providerId": "ldap",
+  "providerType": "org.keycloak.storage.UserStorageProvider",
+  "config": {
+    "fullSyncPeriod": [
+      "-1"
+    ],
+    "pagination": [
+      "true"
+    ],
+    "usersDn": [
+      "ou=users,dc=example,dc=org"
+    ],
+    "connectionPooling": [
+      "true"
+    ],
+    "cachePolicy": [
+      "DEFAULT"
+    ],
+    "useKerberosForPasswordAuthentication": [
+      "false"
+    ],
+    "importEnabled": [
+      "true"
+    ],
+    "enabled": [
+      "true"
+    ],
+    "changedSyncPeriod": [
+      "-1"
+    ],
+    "usernameLDAPAttribute": [
+      "uid"
+    ],
+    "bindDn": [
+      "cn=admin,dc=example,dc=org"
+    ],
+    "bindCredential": [
+      "admin"
+    ],
+    "lastSync": [
+      "1536238653"
+    ],
+    "vendor": [
+      "other"
+    ],
+    "uuidLDAPAttribute": [
+      "uid"
+    ],
+    "allowKerberosAuthentication": [
+      "false"
+    ],
+    "connectionUrl": [
+      "ldap://openldap-:389"
+    ],
+    "syncRegistrations": [
+      "false"
+    ],
+    "authType": [
+      "simple"
+    ],
+    "debug": [
+      "false"
+    ],
+    "searchScope": [
+      "1"
+    ],
+    "useTruststoreSpi": [
+      "ldapsOnly"
+    ],
+    "priority": [
+      "0"
+    ],
+    "userObjectClasses": [
+      "inetOrgPerson, organizationalPerson"
+    ],
+    "rdnLDAPAttribute": [
+      "uid"
+    ],
+    "editMode": [
+      "READ_ONLY"
+    ],
+    "validatePasswordPolicy": [
+      "false"
+    ],
+    "batchSizeForSync": [
+      "1000"
+    ]
+  }
+}

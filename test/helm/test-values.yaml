@@ -1,12 +1,5 @@
 realm:
   alfresco:
-    client:
-      redirectUris:
-        - "http://localhost*"
-        - "https://localhost*"
-      webOrigins:
-        - "http://localhost*"
-        - "https://localhost*"
     extraGroups:
     - name: testgroup
       path: "/testgroup"
