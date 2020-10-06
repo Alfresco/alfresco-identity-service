@@ -325,12 +325,6 @@ jobs:
         echo "TEST_RESULT=${TEST_RESULT}"
 
         if [[ "${TEST_RESULT}" == "0" ]]; then
-          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
-          TEST_RESULT=$?
-          echo "TEST_RESULT=${TEST_RESULT}"
-        fi
-
-        if [[ "${TEST_RESULT}" == "0" ]]; then
           cd test/saml 
           export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
           export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
@@ -338,6 +332,12 @@ jobs:
           TEST_RESULT=$?
           echo "TEST_RESULT=${TEST_RESULT}"
           cd ../..
+        fi
+        
+        if [[ "${TEST_RESULT}" == "0" ]]; then
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
+          TEST_RESULT=$?
+          echo "TEST_RESULT=${TEST_RESULT}"
         fi
 
         if [[ "$TRAVIS_COMMIT_MESSAGE" != *"[keep env]"* ]]; then
