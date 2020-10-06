@@ -342,7 +342,7 @@ jobs:
         fi
 
         if [[ "$TRAVIS_COMMIT_MESSAGE" != *"[keep env]"* ]]; then
-          helm delete $release_name_ingress $release_name_ids -n $namespace
+          helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
           kubectl delete namespace $namespace
         fi
 
