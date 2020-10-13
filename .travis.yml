@@ -263,11 +263,11 @@ jobs:
         --set controller.scope.namespace=$namespace \
         --set rbac.create=true \
         --set controller.config."proxy-body-size"="100m" \
-        --set controller.service.targetPorts.https=80 \
+        --set controller.service.targetPorts.https=http \
         --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-backend-protocol"="http" \
         --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-ssl-ports"="https" \
         --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-ssl-cert"="$ACM_CERTIFICATE" \
-        --set controller.service.annotations."external-dns\.alpha\.kubernetes\.io/hostname"="$namespace.dev.alfresco.me" \
+        --set controller.service.annotations."external-dns\.alpha\.kubernetes\.io/hostname"="*.$namespace.dev.alfresco.me,$namespace.dev.alfresco.me" \
         --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-ssl-negotiation-policy"="ELBSecurityPolicy-TLS-1-2-2017-01" \
         --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-security-groups"="$AWS_SG" \
         --set controller.publishService.enabled=true \

@@ -22,7 +22,7 @@ public final class TokenTestConstants
     public final static By ELEMENT_SAML_KEYCLOAK = By.linkText("saml");
     public final static By ELEMENT_SAML_ALFRESCO = By.cssSelector("input[value=saml]");
 
-    public final static String ELEMENT_USERID = "userid";
+    public final static String ELEMENT_USERID = "username";
     public final static String ELEMENT_PASWORD = "password";
 
     //Header Parameters

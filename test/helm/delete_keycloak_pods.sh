@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-. "$PWD/bamboo-build-dbp/scripts/common.func"
+. "test/helm/common.func"
 
 namespace=$(get_namespace)
 

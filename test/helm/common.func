@@ -70,7 +70,7 @@ get_namespace(){
 
 create_secrets(){
   docker_config=$1
-  cat << EOS > $PWD/bamboo-build-dbp/scripts/secrets.yaml
+  cat << EOS > $PWD/test/helm/secrets.yaml
 apiVersion: v1
 kind: Secret
 type: kubernetes.io/dockerconfigjson
