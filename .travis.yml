@@ -326,17 +326,6 @@ jobs:
         echo "TEST_RESULT=${TEST_RESULT}"
 
         if [[ "${TEST_RESULT}" == "0" ]]; then
-          cd test/saml 
-          export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
-          export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
-          mvn clean test
-          TEST_RESULT=$?
-          echo "TEST_RESULT=${TEST_RESULT}"
-          cd ../..
-        fi
-
-
-        if [[ "${TEST_RESULT}" == "0" ]]; then
           docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "change-keycloak-access-token-lifespan-collection.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
           HOST=$namespace.dev.alfresco.me ./test/helm/delete_keycloak_pods.sh
           docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "check-keycloak-access-token-lifespan-change-persisted.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
@@ -354,6 +343,16 @@ jobs:
           helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
           kubectl delete namespace $namespace
         fi
+
+        # if [[ "${TEST_RESULT}" == "0" ]]; then
+        #   cd test/saml 
+        #   export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
+        #   export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
+        #   mvn clean test
+        #   TEST_RESULT=$?
+        #   echo "TEST_RESULT=${TEST_RESULT}"
+        #   cd ../..
+        # fi
 
         if [[ "${TEST_RESULT}" == "1" ]]; then
           echo "Tests failed, exiting"
