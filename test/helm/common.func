@@ -65,7 +65,7 @@ check_cluster_resources() {
 }
 
 get_namespace(){
-   echo "${bamboo_planKey}-${bamboo_buildNumber}" | awk '{print tolower($0)}'
+   echo $(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
 }
 
 create_secrets(){
