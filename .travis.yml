@@ -20,7 +20,12 @@ stages:
   - name: Publish DockerHub
     if: branch = master OR commit_message = "[publish]"
 
-# import:
+import:
+  - source: Alfresco/alfresco-process-tools:.travis.pre-commit.yml@master
+  - source: Alfresco/alfresco-process-tools:.travis.helm-docs_install.yml@master
+    if: os != windows
+  - source: Alfresco/alfresco-process-tools:.travis.kubepug_install.yml@master
+    if: os != windows
 #   - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
 #   - source: Alfresco/alfresco-process-tools:.travis.docker_login.yml@master
 
@@ -30,7 +35,6 @@ env:
     - BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-${TRAVIS_BRANCH}}
     - HELM_REPO_BASE_URL=https://kubernetes-charts.alfresco.com
     - HELM_REPO=incubator
-    - KUBERNETES_VERSION=1.18.4
     - HELM_VERSION=${HELM_VERSION:-3.2.4}
 
 cache:
@@ -88,11 +92,6 @@ before_script:
 
 jobs:
   include:
-    - name: Lint chart
-      stage: Lint
-      script: |
-        helm dep up helm/${PROJECT_NAME}
-        helm lint helm/${PROJECT_NAME}
     - name: Build
       stage: Build
       script: |
@@ -120,7 +119,7 @@ jobs:
       stage: Test Windows
       os: windows
       language: shell
-      env: 
+      env:
         - OS=Windows
         - AWSCLI_PATH="C:\Program Files\Amazon\AWSCLIV2"
         - IDENTITY_VERSION=${IDENTITY_VERSION}
@@ -144,16 +143,16 @@ jobs:
         - dir
         - export JAVA_HOME=${JAVA_HOME:-/c/jdk}
         - export PATH=${JAVA_HOME}/bin:${PATH}
-        - choco install jdk8 -params 'installdir=c:\\jdk' -y        
+        - choco install jdk8 -params 'installdir=c:\\jdk' -y
         - powershell -Command Get-ExecutionPolicy
         - powershell -Command 'Set-ExecutionPolicy unrestricted'
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
     - name: Publish S3
       stage: Publish S3
-      env: 
-        - IDENTITY_VERSION=${IDENTITY_VERSION}      
-      before_deploy: 
+      env:
+        - IDENTITY_VERSION=${IDENTITY_VERSION}
+      before_deploy:
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
         - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
