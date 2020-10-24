@@ -21,7 +21,7 @@ stages:
     if: branch = master OR commit_message = "[publish]"
 
 import:
-  - source: Alfresco/alfresco-process-tools:.travis.pre-commit.yml@master
+#  - source: Alfresco/alfresco-process-tools:.travis.pre-commit.yml@master
 #  - source: Alfresco/alfresco-process-tools:.travis.helm-docs_install.yml@master
 #  - source: Alfresco/alfresco-process-tools:.travis.kubepug_install.yml@master
 #   - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
@@ -90,14 +90,14 @@ before_script:
 
 jobs:
   include:
-    - name: List Windows
+    - name: Lint Windows
       stage: Lint
       os: windows
       language: shell
       script:
         - env
-        - echo curl -fsSL https://github.com/rikatz/kubepug/releases/download/v$KUBEPUG_VERSION/kubepug_$(uname | tr '[:upper:]' '[:lower:]')_amd64.tar.gz
-        - echo curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_$(uname)_x86_64.tar.gz
+        - echo "curl -fsSL https://github.com/rikatz/kubepug/releases/download/v$KUBEPUG_VERSION/kubepug_$(uname | tr '[:upper:]' '[:lower:]')_amd64.tar.gz"
+        - echo "curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_$(uname)_x86_64.tar.gz"
     - name: Build
       stage: Build
       script: |
