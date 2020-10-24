@@ -47,9 +47,10 @@ branches:
     - /OPSEXP-.*/
 
 before_install:
+  - env
   - |
     sudo pip install --upgrade awscli
-    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
+    if [[ "${OS}" != "Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
     # cp .travis.settings.xml $HOME/.m2/settings.xml
     # use helm 2 for the Build stage
     if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build" ]]; then
@@ -95,7 +96,6 @@ jobs:
       os: windows
       language: shell
       script:
-        - env
         - echo "curl -fsSL https://github.com/rikatz/kubepug/releases/download/v$KUBEPUG_VERSION/kubepug_$(uname | tr '[:upper:]' '[:lower:]')_amd64.tar.gz"
         - echo "curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_$(uname)_x86_64.tar.gz"
     - name: Build
