@@ -1,31 +1,14 @@
-language: java
-jdk:
-  - openjdk11
-
-#sudo: required
-
-os: linux
-dist: xenial
-
-services:
-  - docker
-
 stages:
   - name: Lint
   - name: Build
   - name: Test
-  - name: Test Windows
-  - name: Publish S3
-    if: branch = master OR commit_message = "[publish]"
-  - name: Publish DockerHub
+  - name: Publish
     if: branch = master OR commit_message = "[publish]"
 
 import:
-#  - source: Alfresco/alfresco-process-tools:.travis.pre-commit.yml@master
-#  - source: Alfresco/alfresco-process-tools:.travis.helm-docs_install.yml@master
-#  - source: Alfresco/alfresco-process-tools:.travis.kubepug_install.yml@master
-#   - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
-#   - source: Alfresco/alfresco-process-tools:.travis.docker_login.yml@master
+  - source: Alfresco/alfresco-process-tools:.travis.pre-commit.yml@master
+  - source: Alfresco/alfresco-process-tools:.travis.helm-docs_install.yml@master
+  - source: Alfresco/alfresco-process-tools:.travis.kubepug_install.yml@master
 
 env:
   global:
@@ -68,13 +51,6 @@ before_install:
             sudo mv linux-amd64/helm /usr/local/bin
             helm version
           fi
-          # curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
-          # curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator.sha256
-          # openssl sha1 -sha256 aws-iam-authenticator
-          # chmod +x ./aws-iam-authenticator
-          # mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-          # export PATH=$PATH:$HOME/bin
-          # aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
         fi
         ;;
     esac
@@ -106,6 +82,8 @@ jobs:
   include:
     - name: Build
       stage: Build
+      language: java
+      jdk: openjdk11
       script: |
         cd distribution
         # build and package
@@ -128,7 +106,7 @@ jobs:
         # empty the artifacts bucket (in case there were previous failed builds)
         # aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
     - name: Test Windows
-      stage: Test Windows
+      stage: Test
       os: windows
       language: shell
       env:
@@ -143,12 +121,12 @@ jobs:
         - echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
         - export PATH=$AWSCLI_PATH:$PATH
         - echo $PATH
-        - aws.exe configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
-        - aws.exe configure set aws_secret_access_key ${AWS_ACCESS_KEY_ID}
-        - aws.exe configure set default.region ${AWS_DEFAULT_REGION}
-        - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
-        - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip
-        - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+        - aws configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
+        - aws configure set aws_secret_access_key ${AWS_ACCESS_KEY_ID}
+        - aws configure set default.region ${AWS_DEFAULT_REGION}
+        - aws s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
+        - aws s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
         - unzip alfresco-identity-service-${IDENTITY_VERSION}.zip
         - cd alfresco-identity-service-${IDENTITY_VERSION}/bin
         - pwd
@@ -161,7 +139,7 @@ jobs:
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
     - name: Publish S3
-      stage: Publish S3
+      stage: Publish
       env:
         - IDENTITY_VERSION=${IDENTITY_VERSION}
       before_deploy:
@@ -183,7 +161,7 @@ jobs:
         on:
            all_branches: true
     - name: Publish DockerHub
-      stage: Publish DockerHub
+      stage: Publish
       script:
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
@@ -195,10 +173,3 @@ jobs:
         - docker tag ${PRIVATE_IMAGE} ${PUBLIC_IMAGE}
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker push ${PUBLIC_IMAGE}
-
-        #    echo "TODO"
-    # - name: Test Helm Chart
-    #   stage: Test
-    #   script: |
-    #     echo "TODO"
-
