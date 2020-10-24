@@ -126,6 +126,8 @@ jobs:
       install:
         - choco install awscli
       script:
+        - echo curl -fsSL https://github.com/rikatz/kubepug/releases/download/v$KUBEPUG_VERSION/kubepug_$(uname | tr '[:upper:]' '[:lower:]')_amd64.tar.gz
+        - echo curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_$(uname)_x86_64.tar.gz
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
         - echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
