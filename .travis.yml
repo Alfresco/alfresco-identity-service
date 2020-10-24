@@ -48,14 +48,14 @@ branches:
 
 before_install:
   - echo $(uname)
-  - if [[ "$OSTYPE" != "Windows*" ]]; then
+  - if [[ $OSTYPE != Windows* ]]; then
       echo this is NOT Windows
     else
       echo this is Windows
     fi
   - |
     sudo pip install --upgrade awscli
-    if [[ $OSTYPE != "Windows*" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
+    if [[ $OSTYPE != Windows* ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
     # cp .travis.settings.xml $HOME/.m2/settings.xml
     # use helm 2 for the Build stage
     if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build" ]]; then
