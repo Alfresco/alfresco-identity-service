@@ -47,53 +47,60 @@ branches:
     - /OPSEXP-.*/
 
 before_install:
-  - echo $(uname -s)
-  - echo $OSTYPE
-  - if [[ ! $OSTYPE =~ Windows ]]; then
-      echo this is NOT Windows
-    else
-      echo this is Windows
-    fi
-  - |
-    sudo pip install --upgrade awscli
-    if [[ ! $OSTYPE =~ Windows ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
-    # cp .travis.settings.xml $HOME/.m2/settings.xml
-    # use helm 2 for the Build stage
-    if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build" ]]; then
-      HELM_VERSION=2.16.7
-      curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
-      sudo mv linux-amd64/helm /usr/local/bin
-      helm version --client
-      helm init --client-only
-    else
-      curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
-      sudo mv linux-amd64/helm /usr/local/bin
-      helm version
-    fi
-    # curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
-    # curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator.sha256
-    # openssl sha1 -sha256 aws-iam-authenticator
-    # chmod +x ./aws-iam-authenticator
-    # mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-    # export PATH=$PATH:$HOME/bin
-    # aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
-    fi
+  - |-
+    case $TRAVIS_OS_NAME in
+      windows)
+        echo do not install anything on Windows
+        ;;
+      default)
+        sudo pip install --upgrade awscli
+        if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
+          # cp .travis.settings.xml $HOME/.m2/settings.xml
+          # use helm 2 for the Build stage
+          if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build" ]]; then
+            HELM_VERSION=2.16.7
+            curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
+            sudo mv linux-amd64/helm /usr/local/bin
+            helm version --client
+            helm init --client-only
+          else
+            curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
+            sudo mv linux-amd64/helm /usr/local/bin
+            helm version
+          fi
+          # curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
+          # curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator.sha256
+          # openssl sha1 -sha256 aws-iam-authenticator
+          # chmod +x ./aws-iam-authenticator
+          # mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+          # export PATH=$PATH:$HOME/bin
+          # aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
+        fi
+        ;;
+    esac
 
 before_script:
-  - |
-    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
-    REPO_NAME=${TRAVIS_REPO_SLUG##*/}
-    PROJECT_NAME=alfresco-identity-service
-    helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
-    helm repo add stable https://kubernetes-charts.storage.googleapis.com
-    helm repo add alfresco-incubator ${HELM_REPO_BASE_URL}/${HELM_REPO}
-    if [[ "${TRAVIS_BRANCH}" == "master" ]] && [[ "${TRAVIS_COMMIT_MESSAGE}" == *"[release]"* ]]
-    then
-      export HELM_REPO=stable
-    fi
-    helm repo update
-    echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
-    fi
+  - |-
+    case $TRAVIS_OS_NAME in
+      windows)
+        echo do not install anything on Windows
+        ;;
+      default)
+        if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
+          REPO_NAME=${TRAVIS_REPO_SLUG##*/}
+          PROJECT_NAME=alfresco-identity-service
+          helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
+          helm repo add stable https://kubernetes-charts.storage.googleapis.com
+          helm repo add alfresco-incubator ${HELM_REPO_BASE_URL}/${HELM_REPO}
+          if [[ "${TRAVIS_BRANCH}" == "master" ]] && [[ "${TRAVIS_COMMIT_MESSAGE}" == *"[release]"* ]]
+          then
+            export HELM_REPO=stable
+          fi
+          helm repo update
+          echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
+        fi
+        ;;
+    esac
 
 jobs:
   include:
@@ -102,8 +109,8 @@ jobs:
       os: windows
       language: shell
       script:
-        - echo "curl -fsSL https://github.com/rikatz/kubepug/releases/download/v$KUBEPUG_VERSION/kubepug_$(uname | tr '[:upper:]' '[:lower:]')_amd64.tar.gz"
-        - echo "curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_$(uname)_x86_64.tar.gz"
+        - echo "curl -fsSL https://github.com/rikatz/kubepug/releases/download/v$KUBEPUG_VERSION/kubepug_$TRAVIS_OS_NAME_amd64.tar.gz"
+        - echo "curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_$TRAVIS_OS_NAME_x86_64.tar.gz"
     - name: Build
       stage: Build
       script: |
