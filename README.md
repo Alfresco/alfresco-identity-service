@@ -1,5 +1,7 @@
 # Alfresco Identity Service
 
+[![pre-commit](https://img.shields.io/badge/pre--commit-enabled-brightgreen?logo=pre-commit&logoColor=white)](https://github.com/pre-commit/pre-commit)
+
 The *Alfresco Identity Service* will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication. This project contains the open-source core of this service.
 
 For installing and [upgrading](https://github.com/Alfresco/alfresco-identity-service/blob/master/upgrade.md) the Identity Service you can choose either a Kubernetes distribution or a standalone distribution. Both methods are described in the following sections.
@@ -86,14 +88,6 @@ Please check the Anaxes Shipyard documentation on [running a cluster](https://gi
 
 If you are deploying the Identity Service into a cluster with other Alfresco components such as Content Services and Process Services, a VPC and cluster with 5 nodes is recommended. Each node should be a m4.xlarge EC2 instance.
 
-### Helm Tiller
-
-Initialize the Helm Tiller:
-
-```bash
-helm init
-```
-
 ### K8s Cluster Namespace
 
 As mentioned as part of the Anaxes Shipyard guidelines, you should deploy into a separate namespace in the cluster to avoid conflicts (create the namespace only if it does not already exist):
@@ -147,7 +141,7 @@ helm status $RELEASENAME
 export ELBADDRESS=$(kubectl get services $RELEASENAME-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 ```
 
-The deployment 
+The deployment
 
 This is deployed with the **default example realm applied** which results in default values of:
 
@@ -184,14 +178,14 @@ helm install alfresco-stable/alfresco-infrastructure \
   --namespace $DESIREDNAMESPACE
 ```
 
-Note in case of multiple redirectUris the values must be comma-separated with no whitespaces surrounding the 
-corresponding commas. 
+Note in case of multiple redirectUris the values must be comma-separated with no whitespaces surrounding the
+corresponding commas.
 
 If you want to deploy your own realm with further customizations, see *Customizing the Realm* below.
 
 #### Changing Alfresco Client webOrigins
 
-Similarly to [redirectUris](#changing-alfresco-client-redirecturis), webOrigins can be changed by overriding the 
+Similarly to [redirectUris](#changing-alfresco-client-redirecturis), webOrigins can be changed by overriding the
 `alfresco-identity-service.client.alfresco.webOrigins` property:
 
 ```bash
@@ -224,7 +218,7 @@ For added resilience, we rely on support in the Keycloak chart for specifying mu
 
 ```
 
-In addition, for high availability, Keycloak supports clustering.  For more information on how to configure high availability and clustering, you can consult this additional documentation.  
+In addition, for high availability, Keycloak supports clustering.  For more information on how to configure high availability and clustering, you can consult this additional documentation.
 
 
 [Keycloak Stable chart Readme](https://github.com/codecentric/helm-charts/tree/master/charts/keycloak#high-availability-and-clustering)
