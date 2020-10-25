@@ -7,21 +7,13 @@ stages:
 
 import:
   - source: Alfresco/alfresco-process-tools:.travis.pre-commit.yml@master
+  - source: Alfresco/alfresco-process-tools:.travis.helm_install.yml@master
   - source: Alfresco/alfresco-process-tools:.travis.helm-docs_install.yml@master
   - source: Alfresco/alfresco-process-tools:.travis.kubepug_install.yml@master
-
-env:
-  global:
-    - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-30}
-    - BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-${TRAVIS_BRANCH}}
-    - HELM_REPO_BASE_URL=https://kubernetes-charts.alfresco.com
-    - HELM_REPO=incubator
-    - HELM_VERSION=${HELM_VERSION:-3.2.4}
 
 cache:
   directories:
     - ${HOME}/.m2
-    - ${HOME}/.m2/repository
 
 branches:
   only:
@@ -30,53 +22,7 @@ branches:
     - /OPSEXP-.*/
 
 before_install:
-  - |-
-    case $TRAVIS_OS_NAME in
-      windows)
-        echo do not install anything on Windows
-        ;;
-      *)
-        sudo pip install --upgrade awscli
-        if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
-          # cp .travis.settings.xml $HOME/.m2/settings.xml
-          # use helm 2 for the Build stage
-          if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build" ]]; then
-            HELM_VERSION=2.16.7
-            curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
-            sudo mv linux-amd64/helm /usr/local/bin
-            helm version --client
-            helm init --client-only
-          else
-            curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
-            sudo mv linux-amd64/helm /usr/local/bin
-            helm version
-          fi
-        fi
-        ;;
-    esac
-
-before_script:
-  - |-
-    case $TRAVIS_OS_NAME in
-      windows)
-        echo do not install anything on Windows
-        ;;
-      *)
-        if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
-          REPO_NAME=${TRAVIS_REPO_SLUG##*/}
-          PROJECT_NAME=alfresco-identity-service
-          helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
-          helm repo add stable https://kubernetes-charts.storage.googleapis.com
-          helm repo add alfresco-incubator ${HELM_REPO_BASE_URL}/${HELM_REPO}
-          if [[ "${TRAVIS_BRANCH}" == "master" ]] && [[ "${TRAVIS_COMMIT_MESSAGE}" == *"[release]"* ]]
-          then
-            export HELM_REPO=stable
-          fi
-          helm repo update
-          echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
-        fi
-        ;;
-    esac
+  - pip install --upgrade awscli
 
 jobs:
   include:
@@ -91,13 +37,11 @@ jobs:
         # security scan the build
         source build.properties
         # upload ZIP file to S3 bucket
-        aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.md5 s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
-        aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
+        aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.{zip,md5} s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
     - name: Test ZIP on Linux
       stage: Test
       script: |
         source distribution/build.properties
-        export IDENTITY_VERSION=${IDENTITY_VERSION}
         echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
         aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
         chmod +x distribution/tests/endpoints.sh
@@ -109,18 +53,9 @@ jobs:
       stage: Test
       os: windows
       language: shell
-      env:
-        - OS=Windows
-        - AWSCLI_PATH="C:\Program Files\Amazon\AWSCLIV2"
-        - IDENTITY_VERSION=${IDENTITY_VERSION}
-      install:
-        - choco install awscli
       script:
         - source distribution/build.properties
-        - export IDENTITY_VERSION=${IDENTITY_VERSION}
         - echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
-        - export PATH=$AWSCLI_PATH:$PATH
-        - echo $PATH
         - aws configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
         - aws configure set aws_secret_access_key ${AWS_ACCESS_KEY_ID}
         - aws configure set default.region ${AWS_DEFAULT_REGION}
@@ -129,19 +64,15 @@ jobs:
         - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
         - unzip alfresco-identity-service-${IDENTITY_VERSION}.zip
         - cd alfresco-identity-service-${IDENTITY_VERSION}/bin
-        - pwd
-        - dir
+        - choco install jdk8 -params 'installdir=c:\\jdk' -y
         - export JAVA_HOME=${JAVA_HOME:-/c/jdk}
         - export PATH=${JAVA_HOME}/bin:${PATH}
-        - choco install jdk8 -params 'installdir=c:\\jdk' -y
         - powershell -Command Get-ExecutionPolicy
         - powershell -Command 'Set-ExecutionPolicy unrestricted'
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
     - name: Publish S3
       stage: Publish
-      env:
-        - IDENTITY_VERSION=${IDENTITY_VERSION}
       before_deploy:
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}

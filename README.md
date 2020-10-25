@@ -88,14 +88,6 @@ Please check the Anaxes Shipyard documentation on [running a cluster](https://gi
 
 If you are deploying the Identity Service into a cluster with other Alfresco components such as Content Services and Process Services, a VPC and cluster with 5 nodes is recommended. Each node should be a m4.xlarge EC2 instance.
 
-### Helm Tiller
-
-Initialize the Helm Tiller:
-
-```bash
-helm init
-```
-
 ### K8s Cluster Namespace
 
 As mentioned as part of the Anaxes Shipyard guidelines, you should deploy into a separate namespace in the cluster to avoid conflicts (create the namespace only if it does not already exist):
