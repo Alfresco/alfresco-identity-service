@@ -1,6 +1,19 @@
 ingress:
   annotations:
     nginx.ingress.kubernetes.io/enable-cors: "false"
+  hostName: identity_host
+
+global:
+  keycloak:
+    realm: alfresco
+    host: identity_host
+
+keycloak:
+  keycloak:
+    extraEnv: |
+      - name: PROXY_ADDRESS_FORWARDING
+        value: "true"
+
 realm:
   alfresco:    
     client:
