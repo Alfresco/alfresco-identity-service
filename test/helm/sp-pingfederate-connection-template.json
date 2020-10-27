@@ -1,10 +1,10 @@
 {
   "type": "SP",
-  "name": "http://HOSTNAME/auth/realms/alfresco",
-  "entityId": "http://HOSTNAME/auth/realms/alfresco",
+  "name": "https://HOSTNAME/auth/realms/alfresco",
+  "entityId": "https://HOSTNAME/auth/realms/alfresco",
   "active": true,
   "contactInfo": {},
-  "baseUrl": "http://HOSTNAME",
+  "baseUrl": "https://HOSTNAME",
   "loggingMode": "STANDARD",
   "virtualEntityIds": [],
   "licenseConnectionGroup": "",
