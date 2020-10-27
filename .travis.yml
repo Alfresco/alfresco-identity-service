@@ -322,6 +322,7 @@ jobs:
         sed -i "s/HOSTNAME/$namespace.dev.alfresco.me/g" test/helm/sp-pingfederate-connection-template.json
         ./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD" -c -j test/helm/sp-pingfederate-connection-template.json
 
+
         # Set IDP Config 
         HOST=$namespace.dev.alfresco.me ./test/helm/set_idp_config.sh
 
