@@ -283,7 +283,7 @@ jobs:
         EOR
 
         # install ingress
-        helm upgrade --install $release_name_ingress stable/nginx-ingress -f ingressvalues.yaml
+        helm upgrade --install $release_name_ingress stable/nginx-ingress -f ingressvalues.yaml \
         --wait \
         --atomic \
         --namespace $namespace
@@ -371,11 +371,12 @@ jobs:
           helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
           kubectl delete namespace $namespace
           export connection_id=$(./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD" -g "" | jq -r '.items[] | select(.entityId | contains ("$namespace.dev.alfresco.me/auth/realms/alfresco")).id')
+          echo $connection_id
           if [ -n "$connection_id" -a $(grep -c . <<<"$connection_id") -eq 1 ]; then
               echo "entity id: $entity_id connection_id: $connection_id"
               ./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD"  -d "$connection_id" -f
           else
-              log_warn "Unable to get a unique connection id for entity id: ${entity_id}"
+              echo "Unable to get a unique connection id for entity id: ${entity_id}"
           fi
         fi
 
