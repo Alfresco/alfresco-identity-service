@@ -41,7 +41,7 @@ if [ "$PODS_COUNTER" -ge "$PODS_COUNTER_MAX" ]; then
     exit 1
 fi
 
-log_info "Obtaining admin token"
+echo "Obtaining admin token"
 TOKEN=$(curl --insecure --silent --show-error -X POST "https://${HOST}/auth/realms/master/protocol/openid-connect/token" \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "username=admin" \
@@ -49,7 +49,7 @@ TOKEN=$(curl --insecure --silent --show-error -X POST "https://${HOST}/auth/real
     -d "grant_type=password" \
     -d "client_id=admin-cli" | jq -r ".access_token")
 
-log_info "Setting up key pairs"
+echo "Setting up key pairs"
 # Delete existing key pair
 curl --insecure -v --silent --show-error -X DELETE "https://${HOST}/auth/admin/realms/alfresco/components/14b13815-a8b1-412c-a98d-0da235e8c8f9" \
     -H "Authorization: Bearer $TOKEN" \

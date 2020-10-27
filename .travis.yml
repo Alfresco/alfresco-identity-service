@@ -257,20 +257,33 @@ jobs:
         $(kubectl create secret docker-registry quay-registry-secret --dry-run=client --docker-server=quay.io --docker-username=${DOCKER_USERNAME_QUAY} --docker-password=${DOCKER_PASSWORD_QUAY} -n $namespace -o yaml)
         EOF
 
+        cat << EOR >> ingressvalues.yaml
+        rbac:
+          create: true
+        controller:
+          scope:
+            enable: true
+            namespace: $namespace
+          config:
+            proxy-body-size: "100m"
+          publishService:
+            enabled: true
+          service:
+            targetPorts:
+              https: http
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: "*.$namespace.dev.alfresco.me,$namespace.dev.alfresco.me"
+              service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Creator=Platform-Services,Department=Engineering,NoAutomaticShutdown=True,Owner=Platform-Services,Production=False,Purpose=DBP and SSO Testing,Tool=k8sIngress"
+              service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+              service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
+              service.beta.kubernetes.io/aws-load-balancer-ssl-cert: $ACM_CERTIFICATE
+              service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+              service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: ELBSecurityPolicy-TLS-1-2-2017-01
+              service.beta.kubernetes.io/aws-load-balancer-security-groups: $AWS_SG
+        EOR
+
         # install ingress
-        helm upgrade --install $release_name_ingress stable/nginx-ingress \
-        --set controller.scope.enabled=true \
-        --set controller.scope.namespace=$namespace \
-        --set rbac.create=true \
-        --set controller.config."proxy-body-size"="100m" \
-        --set controller.service.targetPorts.https=http \
-        --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-backend-protocol"="http" \
-        --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-ssl-ports"="https" \
-        --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-ssl-cert"="$ACM_CERTIFICATE" \
-        --set controller.service.annotations."external-dns\.alpha\.kubernetes\.io/hostname"="$namespace.dev.alfresco.me" \
-        --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-ssl-negotiation-policy"="ELBSecurityPolicy-TLS-1-2-2017-01" \
-        --set controller.service.annotations."service\.beta\.kubernetes\.io/aws-load-balancer-security-groups"="$AWS_SG" \
-        --set controller.publishService.enabled=true \
+        helm upgrade --install $release_name_ingress stable/nginx-ingress -f ingressvalues.yaml
         --wait \
         --atomic \
         --namespace $namespace
@@ -322,7 +335,6 @@ jobs:
         sed -i "s/HOSTNAME/$namespace.dev.alfresco.me/g" test/helm/sp-pingfederate-connection-template.json
         ./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD" -c -j test/helm/sp-pingfederate-connection-template.json
 
-
         # Set IDP Config 
         HOST=$namespace.dev.alfresco.me ./test/helm/set_idp_config.sh
 
@@ -358,6 +370,13 @@ jobs:
         if [[ ${TRAVIS_COMMIT_MESSAGE} != *"[keep env]"* ]]; then
           helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
           kubectl delete namespace $namespace
+          export connection_id=$(./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD" -g "" | jq -r '.items[] | select(.entityId | contains ("$namespace.dev.alfresco.me/auth/realms/alfresco")).id')
+          if [ -n "$connection_id" -a $(grep -c . <<<"$connection_id") -eq 1 ]; then
+              echo "entity id: $entity_id connection_id: $connection_id"
+              ./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD"  -d "$connection_id" -f
+          else
+              log_warn "Unable to get a unique connection id for entity id: ${entity_id}"
+          fi
         fi
 
         if [[ "${TEST_RESULT}" == "1" ]]; then
