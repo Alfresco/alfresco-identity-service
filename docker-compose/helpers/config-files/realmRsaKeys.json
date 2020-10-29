@@ -2,7 +2,6 @@
     "name": "dbp-sso-rsa",
     "providerId": "rsa",
     "providerType": "org.keycloak.keys.KeyProvider",
-    "parentId": "alfresco",
     "config": {
         "priority": [
             "200"

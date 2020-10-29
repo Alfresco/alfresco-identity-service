@@ -35,7 +35,7 @@ TOKEN=$(curl --insecure --silent --show-error "$IDS_BASE_URL/auth/realms/master/
     -d "client_id=admin-cli" | jq -r ".access_token")
 
 # Check if the realm key provider already exists
-KEY_NAME=$(curl -s "$IDS_BASE_URL/auth/admin/realms/$REALM/components?parent=$REALM&type=org.keycloak.keys.KeyProvider&name=$REALM_KEY_PROVIDER_NAME" \
+KEY_NAME=$(curl -s "$IDS_BASE_URL/auth/admin/realms/$REALM/components?type=org.keycloak.keys.KeyProvider&name=$REALM_KEY_PROVIDER_NAME" \
     -H "Authorization: Bearer $TOKEN" | jq '. | .[].name')
 
 log_info "Setting the realm key provider '$REALM_KEY_PROVIDER_NAME' ..."
