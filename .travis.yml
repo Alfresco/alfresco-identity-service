@@ -271,14 +271,13 @@ jobs:
           service:
             targetPorts:
               https: http
-              http: http
             annotations:
               external-dns.alpha.kubernetes.io/hostname: "*.$namespace.dev.alfresco.me,$namespace.dev.alfresco.me"
               service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Creator=Platform-Services,Department=Engineering,NoAutomaticShutdown=True,Owner=Platform-Services,Production=False,Purpose=DBP and SSO Testing,Tool=k8sIngress"
               service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
               service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
               service.beta.kubernetes.io/aws-load-balancer-ssl-cert: $ACM_CERTIFICATE
-              service.beta.kubernetes.io/aws-load-balancer-ssl-ports: "https"
+              service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
               service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: ELBSecurityPolicy-TLS-1-2-2017-01
               service.beta.kubernetes.io/aws-load-balancer-security-groups: $AWS_SG
         EOR
@@ -369,9 +368,7 @@ jobs:
         fi
 
         if [[ ${TRAVIS_COMMIT_MESSAGE} != *"[keep env]"* ]]; then
-          helm delete $release_name_ingress -n $namespace
-          helm delete $release_name_ids -n $namespace
-          helm delete $openldap_release -n $namespace
+          helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
           kubectl delete namespace $namespace
           export connection_id=$(./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD" -g "" | jq -r '.items[] | select(.entityId | contains ("$namespace.dev.alfresco.me/auth/realms/alfresco")).id')
           echo $connection_id
