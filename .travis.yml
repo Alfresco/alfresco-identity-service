@@ -358,7 +358,7 @@ jobs:
         if [[ "${TEST_RESULT}" == "0" ]]; then
           cd test/saml 
           export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
-          export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
+          export KEYCLOAK_ISSUER=http://$namespace.dev.alfresco.me/auth/realms/alfresco
           mvn clean test
           TEST_RESULT=$?
           echo "TEST_RESULT=${TEST_RESULT}"
