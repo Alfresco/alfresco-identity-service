@@ -76,7 +76,7 @@ before_script:
     REPO_NAME=${TRAVIS_REPO_SLUG##*/}
     PROJECT_NAME=alfresco-identity-service
     helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
-    helm repo add stable https://charts.helm.sh/stable
+    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
     helm repo add alfresco-incubator ${HELM_REPO_BASE_URL}/${HELM_REPO}
     if [[ "${TRAVIS_BRANCH}" == "master" ]] && [[ "${TRAVIS_COMMIT_MESSAGE}" == *"[release]"* ]]
     then
@@ -270,9 +270,9 @@ jobs:
             enabled: true
           service:
             targetPorts:
-              https: http
+              https: 80
             annotations:
-              external-dns.alpha.kubernetes.io/hostname: "*.$namespace.dev.alfresco.me,$namespace.dev.alfresco.me"
+              external-dns.alpha.kubernetes.io/hostname: "$namespace.dev.alfresco.me"
               service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Creator=Platform-Services,Department=Engineering,NoAutomaticShutdown=True,Owner=Platform-Services,Production=False,Purpose=DBP and SSO Testing,Tool=k8sIngress"
               service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
               service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
@@ -283,14 +283,14 @@ jobs:
         EOR
 
         # install ingress
-        helm upgrade --install $release_name_ingress stable/nginx-ingress -f ingressvalues.yaml \
+        helm upgrade --install $release_name_ingress ingress-nginx/ingress-nginx --version=3.7.1 -f ingressvalues.yaml \
         --namespace $namespace
 
         # install ldap
 
         LDAP_CONFIG_FILE="test/helm/ldap-config.yaml"
 
-        helm upgrade --install $openldap_release stable/openldap \
+        helm upgrade --install $openldap_release https://github.com/geek-cookbook/helm-openldap/archive/openldap-1.2.9.tar.gz \
         -f $LDAP_CONFIG_FILE \
         --wait \
         --namespace $namespace

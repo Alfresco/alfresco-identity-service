@@ -19,7 +19,6 @@ realm:
     client:
       redirectUris:
         - "https://identity_host*"
-        - "http://identity_host*"
       webOrigins:
         - "*"
     extraGroups:
