@@ -290,7 +290,7 @@ jobs:
 
         LDAP_CONFIG_FILE="test/helm/ldap-config.yaml"
 
-        helm upgrade --install $openldap_release https://github.com/geek-cookbook/helm-openldap/archive/openldap-1.2.9.tar.gz \
+        helm upgrade --install $openldap_release https://github.com/geek-cookbook/helm-openldap/releases/download/openldap-1.2.9/openldap-1.2.9.tgz \
         -f $LDAP_CONFIG_FILE \
         --wait \
         --namespace $namespace
