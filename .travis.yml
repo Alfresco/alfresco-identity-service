@@ -14,15 +14,8 @@ stages:
   - name: Lint
   - name: Build
   - name: Test
-  - name: Test Windows
-  - name: Publish S3
+  - name: Publish
     if: branch = master OR commit_message = "[publish]"
-  - name: Publish DockerHub
-    if: branch = master OR commit_message = "[publish]"
-
-# import:
-#   - source: Alfresco/alfresco-process-tools:.travis.kubernetes_install.yml@master
-#   - source: Alfresco/alfresco-process-tools:.travis.docker_login.yml@master
 
 env:
   global:
@@ -61,14 +54,17 @@ before_install:
       sudo mv linux-amd64/helm /usr/local/bin
       helm version
     fi
-    # curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
-    # curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator.sha256
-    # openssl sha1 -sha256 aws-iam-authenticator
-    # chmod +x ./aws-iam-authenticator
-    # mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-    # export PATH=$PATH:$HOME/bin
-    # aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
+    curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
+    curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator.sha256
+    openssl sha1 -sha256 aws-iam-authenticator
+    chmod +x ./aws-iam-authenticator
+    mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+    export PATH=$PATH:$HOME/bin
+    aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
     fi
+    export KUBERNETES_VERSION=1.18.9
+    curl -fsSL https://dl.k8s.io/v${KUBERNETES_VERSION}/kubernetes-client-$(uname | tr '[:upper:]' '[:lower:]')-amd64.tar.gz | tar xz --strip=3 -C $HOME/bin/ kubernetes/client/bin/kubectl &&
+    echo kubectl $(kubectl version --client --short)
 
 before_script:
   - |
@@ -76,7 +72,7 @@ before_script:
     REPO_NAME=${TRAVIS_REPO_SLUG##*/}
     PROJECT_NAME=alfresco-identity-service
     helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
-    helm repo add stable https://kubernetes-charts.storage.googleapis.com
+    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
     helm repo add alfresco-incubator ${HELM_REPO_BASE_URL}/${HELM_REPO}
     if [[ "${TRAVIS_BRANCH}" == "master" ]] && [[ "${TRAVIS_COMMIT_MESSAGE}" == *"[release]"* ]]
     then
@@ -117,13 +113,17 @@ jobs:
         # empty the artifacts bucket (in case there were previous failed builds)
         # aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
     - name: Test Windows
-      stage: Test Windows
+      stage: Test
       os: windows
       language: shell
       env: 
         - OS=Windows
         - AWSCLI_PATH="C:\Program Files\Amazon\AWSCLIV2"
         - IDENTITY_VERSION=${IDENTITY_VERSION}
+      before_install:
+        - echo "skipping before_install"
+      before_script:
+        - echo "skipping before_script"
       install:
         - choco install awscli
       script:
@@ -149,8 +149,241 @@ jobs:
         - powershell -Command 'Set-ExecutionPolicy unrestricted'
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
+    - name: Test Helm Chart
+      stage: Test
+      script: |
+        export namespace=$(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
+        export release_name_ingress=ing-${TRAVIS_BUILD_NUMBER}
+        export release_name_ids=ids-${TRAVIS_BUILD_NUMBER}
+        export openldap_release=openldap-${TRAVIS_BUILD_NUMBER}
+
+        # Utility Functions
+
+        # pod status
+        pod_status() {
+          kubectl get pods --namespace $namespace -o=custom-columns=NAME:.metadata.name,STATUS:.status.phase,READY:.status.conditions[?\(@.type==\'Ready\'\)].status
+        }
+
+        # pods ready
+        pods_ready() {
+          PODS_COUNTER=0
+          PODS_COUNTER_MAX=60
+          PODS_SLEEP_SECONDS=10
+
+          while [ "$PODS_COUNTER" -lt "$PODS_COUNTER_MAX" ]; do
+            totalpods=$(pod_status | grep -v NAME | wc -l | sed 's/ *//')
+            readypodcount=$(pod_status | grep ' True' | wc -l | sed 's/ *//')
+            if [ "$readypodcount" -eq "$totalpods" ]; then
+                  echo "     $readypodcount/$totalpods pods ready now"
+                  pod_status
+              echo "All pods are ready!"
+              break
+            fi
+              PODS_COUNTER=$((PODS_COUNTER + 1))
+              echo "just $readypodcount/$totalpods pods ready now - sleeping $PODS_SLEEP_SECONDS seconds - counter $PODS_COUNTER"
+              sleep "$PODS_SLEEP_SECONDS"
+              continue
+            done
+
+          if [ "$PODS_COUNTER" -ge "$PODS_COUNTER_MAX" ]; then
+            pod_status
+            echo "Pods did not start - exit 1"
+            exit 1
+          fi
+        }
+
+        cat <<EOF | kubectl apply -f -
+        apiVersion: v1
+        kind: Namespace
+        metadata:
+          name: $namespace
+        ---
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: Role
+        metadata:
+          name: $namespace:psp
+          namespace: $namespace
+        rules:
+        - apiGroups:
+          - policy
+          resourceNames:
+          - kube-system
+          resources:
+          - podsecuritypolicies
+          verbs:
+          - use
+        ---
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: RoleBinding
+        metadata:
+          name: $namespace:psp:default
+          namespace: $namespace
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: Role
+          name: $namespace:psp
+        subjects:
+        - kind: ServiceAccount
+          name: default
+          namespace: $namespace
+        ---
+        apiVersion: rbac.authorization.k8s.io/v1
+        kind: RoleBinding
+        metadata:
+          name: $namespace:psp:$release_name_ingress-nginx-ingress
+          namespace: $namespace
+        roleRef:
+          apiGroup: rbac.authorization.k8s.io
+          kind: Role
+          name: $namespace:psp
+        subjects:
+        - kind: ServiceAccount
+          name: $release_name_ingress-nginx-ingress
+          namespace: $namespace
+        ---
+        apiVersion: v1
+        kind: PersistentVolumeClaim
+        metadata:
+          name: alfresco-volume-claim
+          namespace: $namespace
+        spec:
+          accessModes:
+            - ReadWriteMany
+          storageClassName: nfs-client
+          resources:
+            requests:
+              storage: 20Gi
+        ---
+        $(kubectl create secret docker-registry quay-registry-secret --dry-run=client --docker-server=quay.io --docker-username=${DOCKER_USERNAME_QUAY} --docker-password=${DOCKER_PASSWORD_QUAY} -n $namespace -o yaml)
+        EOF
+
+        cat << EOR >> ingressvalues.yaml
+        rbac:
+          create: true
+        controller:
+          scope:
+            enable: true
+            namespace: $namespace
+          config:
+            proxy-body-size: "100m"
+          publishService:
+            enabled: true
+          service:
+            targetPorts:
+              https: 80
+            annotations:
+              external-dns.alpha.kubernetes.io/hostname: "$namespace.dev.alfresco.me"
+              service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Creator=Platform-Services,Department=Engineering,NoAutomaticShutdown=True,Owner=Platform-Services,Production=False,Purpose=DBP and SSO Testing,Tool=k8sIngress"
+              service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
+              service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
+              service.beta.kubernetes.io/aws-load-balancer-ssl-cert: $ACM_CERTIFICATE
+              service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
+              service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: ELBSecurityPolicy-TLS-1-2-2017-01
+              service.beta.kubernetes.io/aws-load-balancer-security-groups: $AWS_SG
+        EOR
+
+        # install ingress
+        helm upgrade --install $release_name_ingress ingress-nginx/ingress-nginx --version=3.7.1 -f ingressvalues.yaml \
+        --namespace $namespace
+
+        # install ldap
+
+        LDAP_CONFIG_FILE="test/helm/ldap-config.yaml"
+
+        helm upgrade --install $openldap_release https://github.com/geek-cookbook/helm-openldap/releases/download/openldap-1.2.9/openldap-1.2.9.tgz \
+        -f $LDAP_CONFIG_FILE \
+        --wait \
+        --namespace $namespace
+
+        # install Identity Service
+        sed -i "s/identity_host/$namespace.dev.alfresco.me/g" test/helm/test-values.yaml
+        helm dep up helm/alfresco-identity-service
+        helm upgrade --install $release_name_ids helm/alfresco-identity-service \
+        --values=test/helm/test-values.yaml \
+        --wait \
+        --namespace $namespace
+
+        # check dns and pods
+        DNS_PROPAGATED=0
+        DNS_COUNTER=0
+        DNS_COUNTER_MAX=90
+        DNS_SLEEP_SECONDS=10
+
+        echo "Trying to perform a trace DNS query to prevent caching"
+        dig +trace $namespace.dev.alfresco.me @8.8.8.8
+
+        while [ "$DNS_PROPAGATED" -eq 0 ] && [ "$DNS_COUNTER" -le "$DNS_COUNTER_MAX" ]; do
+          host $namespace.dev.alfresco.me 8.8.8.8
+          if [ "$?" -eq 1 ]; then
+            DNS_COUNTER=$((DNS_COUNTER + 1))
+            echo "DNS Not Propagated - Sleeping $DNS_SLEEP_SECONDS seconds"
+            sleep "$DNS_SLEEP_SECONDS"
+          else
+            echo "DNS Propagated"
+            DNS_PROPAGATED=1
+          fi
+        done
+
+        [ $DNS_PROPAGATED -ne 1 ] && echo "DNS entry for $namespace.dev.alfresco.me did not propagate within expected time" && exit 1
+
+        pods_ready
+
+        # Set IDP Config 
+        HOST=$namespace.dev.alfresco.me ./test/helm/set_idp_config.sh
+
+        # run identity checks
+        docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "identity-test-collection.json" --global-var "identity_host=$namespace.dev.alfresco.me"
+        TEST_RESULT=$?
+        echo "TEST_RESULT=${TEST_RESULT}"
+
+        if [[ "${TEST_RESULT}" == "0" ]]; then
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "change-keycloak-access-token-lifespan-collection.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
+          HOST=$namespace.dev.alfresco.me ./test/helm/delete_keycloak_pods.sh
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "check-keycloak-access-token-lifespan-change-persisted.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
+          TEST_RESULT=$?
+          echo "TEST_RESULT=${TEST_RESULT}"
+        fi
+
+        if [[ "${TEST_RESULT}" == "0" ]]; then
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --global-var "identity_host=$namespace.dev.alfresco.me"
+          TEST_RESULT=$?
+          echo "TEST_RESULT=${TEST_RESULT}"
+        fi
+
+        # OPSEXP-674 - https://alfresco.atlassian.net/browse/OPSEXP-674
+        # if [[ "${TEST_RESULT}" == "0" ]]; then
+        #   # setup pingfederate
+        #   sed -i "s/HOSTNAME/$namespace.dev.alfresco.me/g" test/helm/sp-pingfederate-connection-template.json
+        #   ./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD" -c -j test/helm/sp-pingfederate-connection-template.json
+
+        #   cd test/saml 
+        #   export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
+        #   export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
+        #   mvn clean test
+        #   TEST_RESULT=$?
+        #   echo "TEST_RESULT=${TEST_RESULT}"
+        #   cd ../..
+        # fi
+
+        if [[ ${TRAVIS_COMMIT_MESSAGE} != *"[keep env]"* ]]; then
+          helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
+          kubectl delete namespace $namespace
+          export connection_id=$(./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD" -g "" | jq -r '.items[] | select(.entityId | contains ("$namespace.dev.alfresco.me/auth/realms/alfresco")).id')
+          echo $connection_id
+          if [ -n "$connection_id" -a $(grep -c . <<<"$connection_id") -eq 1 ]; then
+              echo "entity id: $entity_id connection_id: $connection_id"
+              ./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD"  -d "$connection_id" -f
+          else
+              echo "Unable to get a unique connection id for entity id: ${entity_id}"
+          fi
+        fi
+
+        if [[ "${TEST_RESULT}" == "1" ]]; then
+          echo "Tests failed, exiting"
+          exit 1
+        fi
     - name: Publish S3
-      stage: Publish S3
+      stage: Publish
       env: 
         - IDENTITY_VERSION=${IDENTITY_VERSION}      
       before_deploy: 
@@ -172,7 +405,7 @@ jobs:
         on:
            all_branches: true
     - name: Publish DockerHub
-      stage: Publish DockerHub
+      stage: Publish
       script:
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
@@ -184,10 +417,25 @@ jobs:
         - docker tag ${PRIVATE_IMAGE} ${PUBLIC_IMAGE}
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker push ${PUBLIC_IMAGE}
-
-        #    echo "TODO"
-    # - name: Test Helm Chart
-    #   stage: Test
-    #   script: |
-    #     echo "TODO"
-
+    - name: package and publish chart
+      stage: Publish
+      script: |
+        if [[ "${TRAVIS_BRANCH}" != "master" ]]; then
+          CHART_VERSION=$(cat helm/${PROJECT_NAME}/Chart.yaml | grep version: | awk '{print $2}')
+          NON_SUFFIX_VERSION=$(echo "${CHART_VERSION}" | awk -F - '{print $1}')
+          ALPHA_BUILD_VERSION="${NON_SUFFIX_VERSION}-A${TRAVIS_BUILD_NUMBER}"
+          echo "Changing Chart version to ${ALPHA_BUILD_VERSION} as this is a feature branch..."
+          sed -i s,$CHART_VERSION,$ALPHA_BUILD_VERSION,g helm/${PROJECT_NAME}/Chart.yaml
+        fi
+        COMMIT_MESSAGE_FIRST_LINE=$(git log --pretty=format:%s --max-count=1)
+        echo using COMMIT_MESSAGE_FIRST_LINE=${COMMIT_MESSAGE_FIRST_LINE}
+        git clone https://${GITHUB_TOKEN}@github.com/Alfresco/charts.git
+        echo using HELM_REPO=${HELM_REPO}
+        mkdir repo
+        helm package --dependency-update --destination repo helm/${PROJECT_NAME}
+        helm repo index repo --url ${HELM_REPO_BASE_URL}/${HELM_REPO} --merge charts/${HELM_REPO}/index.yaml
+        mv repo/* charts/${HELM_REPO}
+        cd charts
+        git add ${HELM_REPO}
+        git commit -m "${COMMIT_MESSAGE_FIRST_LINE}"
+        git push --quiet origin master

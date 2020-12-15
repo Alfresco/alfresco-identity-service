@@ -555,7 +555,7 @@
 		{
 			"id": "8529fd2c-39ae-4a3b-bb9b-c8219d786e4b",
 			"key": "identityServiceUrl",
-			"value": "alfresco-identity-service.{{dbpurl}}/auth",
+			"value": "{{identity_host}}/auth",
 			"type": "string"
 		},
 		{
