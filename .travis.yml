@@ -14,9 +14,7 @@ stages:
   - name: Lint
   - name: Build
   - name: Test
-  - name: Test Windows
-  - name: Test Helm Chart
-  - name: publish
+  - name: Publish
     if: branch = master OR commit_message = "[publish]"
 
 import:
@@ -116,7 +114,7 @@ jobs:
         # empty the artifacts bucket (in case there were previous failed builds)
         # aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
     - name: Test Windows
-      stage: Test Windows
+      stage: Test
       os: windows
       language: shell
       env: 
@@ -149,7 +147,7 @@ jobs:
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
     - name: Test Helm Chart
-      stage: Test Helm Chart
+      stage: Test
       script: |
         export namespace=$(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
         export release_name_ingress=ing-${TRAVIS_BUILD_NUMBER}
@@ -382,7 +380,7 @@ jobs:
           exit 1
         fi
     - name: Publish S3
-      stage: publish
+      stage: Publish
       env: 
         - IDENTITY_VERSION=${IDENTITY_VERSION}      
       before_deploy: 
@@ -404,7 +402,7 @@ jobs:
         on:
            all_branches: true
     - name: Publish DockerHub
-      stage: publish
+      stage: Publish
       script:
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
@@ -417,7 +415,7 @@ jobs:
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker push ${PUBLIC_IMAGE}
     - name: package and publish chart
-      stage: publish
+      stage: Publish
       script: |
         if [[ "${TRAVIS_BRANCH}" != "master" ]]; then
           CHART_VERSION=$(cat helm/${PROJECT_NAME}/Chart.yaml | grep version: | awk '{print $2}')
