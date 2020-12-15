@@ -120,6 +120,10 @@ jobs:
         - OS=Windows
         - AWSCLI_PATH="C:\Program Files\Amazon\AWSCLIV2"
         - IDENTITY_VERSION=${IDENTITY_VERSION}
+      before_install:
+        - echo "skipping before_install"
+      before_script:
+        - echo "skipping before_script"
       install:
         - choco install awscli
       script:
@@ -324,11 +328,6 @@ jobs:
 
         pods_ready
 
-        # setup pingfederate
-
-        sed -i "s/HOSTNAME/$namespace.dev.alfresco.me/g" test/helm/sp-pingfederate-connection-template.json
-        ./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD" -c -j test/helm/sp-pingfederate-connection-template.json
-
         # Set IDP Config 
         HOST=$namespace.dev.alfresco.me ./test/helm/set_idp_config.sh
 
@@ -351,15 +350,20 @@ jobs:
           echo "TEST_RESULT=${TEST_RESULT}"
         fi
 
-        if [[ "${TEST_RESULT}" == "0" ]]; then
-          cd test/saml 
-          export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
-          export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
-          mvn clean test
-          TEST_RESULT=$?
-          echo "TEST_RESULT=${TEST_RESULT}"
-          cd ../..
-        fi
+        # OPSEXP-674 - https://alfresco.atlassian.net/browse/OPSEXP-674
+        # if [[ "${TEST_RESULT}" == "0" ]]; then
+        #   # setup pingfederate
+        #   sed -i "s/HOSTNAME/$namespace.dev.alfresco.me/g" test/helm/sp-pingfederate-connection-template.json
+        #   ./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD" -c -j test/helm/sp-pingfederate-connection-template.json
+
+        #   cd test/saml 
+        #   export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
+        #   export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
+        #   mvn clean test
+        #   TEST_RESULT=$?
+        #   echo "TEST_RESULT=${TEST_RESULT}"
+        #   cd ../..
+        # fi
 
         if [[ ${TRAVIS_COMMIT_MESSAGE} != *"[keep env]"* ]]; then
           helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
