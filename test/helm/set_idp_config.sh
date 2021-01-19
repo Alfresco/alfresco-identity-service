@@ -65,13 +65,14 @@ curl --insecure -v --silent --show-error -X POST "https://${HOST}/auth/admin/rea
 
 # Configure SAML IdP
 # if [ "${bamboo_pingfederate_connection_enable}" = "true" ]; then
-    log_info "Adding PingFederate config"
+    # OPSEXP-674 - https://alfresco.atlassian.net/browse/OPSEXP-674
+    # log_info "Adding PingFederate config"
 
-    curl --insecure -v --silent --show-error -X POST "https://${HOST}/auth/admin/realms/alfresco/identity-provider/instances" \
-        -H "Authorization: Bearer $TOKEN" \
-        -H "Accept: application/json" \
-        -H "Content-Type: application/json" \
-        --data "@${CONFIG_TEMPLATES_DIR}/saml-idp-defn.json"
+    # curl --insecure -v --silent --show-error -X POST "https://${HOST}/auth/admin/realms/alfresco/identity-provider/instances" \
+    #     -H "Authorization: Bearer $TOKEN" \
+    #     -H "Accept: application/json" \
+    #     -H "Content-Type: application/json" \
+    #     --data "@${CONFIG_TEMPLATES_DIR}/saml-idp-defn.json"
 # else
 #     log_info "Skipping PingFederate config"
 # fi

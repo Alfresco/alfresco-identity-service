@@ -328,9 +328,6 @@ jobs:
 
         pods_ready
 
-        # Set IDP Config 
-        HOST=$namespace.dev.alfresco.me ./test/helm/set_idp_config.sh
-
         # run identity checks
         docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "identity-test-collection.json" --global-var "identity_host=$namespace.dev.alfresco.me"
         TEST_RESULT=$?
@@ -351,6 +348,8 @@ jobs:
         fi
 
         # OPSEXP-674 - https://alfresco.atlassian.net/browse/OPSEXP-674
+        # Set IDP Config 
+        # HOST=$namespace.dev.alfresco.me ./test/helm/set_idp_config.sh
         # if [[ "${TEST_RESULT}" == "0" ]]; then
         #   # setup pingfederate
         #   sed -i "s/HOSTNAME/$namespace.dev.alfresco.me/g" test/helm/sp-pingfederate-connection-template.json
