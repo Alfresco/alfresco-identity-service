@@ -266,11 +266,18 @@ jobs:
             namespace: $namespace
           config:
             proxy-body-size: "100m"
+            generate-request-id: "true"
+            PROXY-READ-TIMEOUT: "3600"
+            proxy-send-timeout: "3600"
+            ssl-redirect: "false"
+            server-tokens: "false"
+            use-forwarded-headers: "true"
           publishService:
             enabled: true
           service:
             targetPorts:
-              https: 80
+              https: http
+              http: http
             annotations:
               external-dns.alpha.kubernetes.io/hostname: "$namespace.dev.alfresco.me"
               service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Creator=Platform-Services,Department=Engineering,NoAutomaticShutdown=True,Owner=Platform-Services,Production=False,Purpose=DBP and SSO Testing,Tool=k8sIngress"

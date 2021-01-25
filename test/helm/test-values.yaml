@@ -55,13 +55,13 @@ realm:
       groups:
       - "/admin"
       - "/testgroup"
-    - username: usera
+    - username: ajay
       enabled: true
       totp: false
       emailVerified: false
-      firstName: UserA
-      lastName: UserA
-      email: usera@test.com
+      firstName: Alan
+      lastName: Jay
+      email: ajay@ss.com
       credentials: []
       disableableCredentialTypes: []
       realmRoles:
@@ -73,7 +73,7 @@ realm:
         - view-profile
       federatedIdentities:
       - identityProvider: saml
-        userId: userA
-        userName: usera
+        userId: auth0|5e29de3e4117ab0e9cca2659
+        userName: ajay
       groups: []
       requiredActions: []
