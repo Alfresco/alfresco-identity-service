@@ -19,6 +19,7 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.SSLContext;
 
@@ -105,30 +106,34 @@ import org.slf4j.LoggerFactory;
         //Create HTMLUnit WebDriver
         WebDriver driver;
 
-        if(!isBrowserEnable())
-        {
-            driver = new HtmlUnitDriver(true);
-        }
-        else
-        {
+        // if(!isBrowserEnable())
+        // {
+        //     driver = new HtmlUnitDriver(true);
+        // }
+        // else
+        // {
             ChromeDriverService service = new ChromeDriverService.Builder().usingAnyFreePort().build();
             service.start();
             driver = new RemoteWebDriver(service.getUrl(), DesiredCapabilities.chrome());
-        }
-        
-        //Initiate page
-        driver.get("https://" + getHostname() + "/auth/realms/" + getRealm() +"/protocol/openid-connect/auth?response_type=id_token%20token&client_id=alfresco&state=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs&redirect_uri=http%3A%2F%2F" + getHostname() + "%2Fdummy_redirect&scope=openid%20profile%20email&nonce=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs");
-        logger.info("Login page URL: " + driver.getCurrentUrl());
+        // }
 
-        //Click on SAML link on login page, the link is theme-dependent
-        String themeName = getTheme();
-        WebElement element = driver.findElement(
-            themeName.compareTo(ALFRESCO_THEME_NAME) == 0 ? ELEMENT_SAML_ALFRESCO : ELEMENT_SAML_KEYCLOAK);
-        element.click();
+        https://opsexp674-192.dev.alfresco.me/auth/realms/alfresco/protocol/openid-connect/auth?response_type=id_token%20token&client_id=alfresco&state=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs&redirect_uri=https%3A%2F%2Fopsexp674-192.dev.alfresco.me%2Fdummy_redirect&scope=openid%20profile%20email
+        //Increase Default Timeout for pages to load
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
+
+        //Initiate page
+        driver.get("https://" + getHostname() + "/auth/realms/" + getRealm() +"/protocol/openid-connect/auth?response_type=id_token%20token&client_id=alfresco&state=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs&redirect_uri=https%3A%2F%2F" + getHostname() + "%2Fdummy_redirect&scope=openid%20profile%20email&nonce=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs");
+        logger.info("Login page URL: " + driver.getCurrentUrl());
+        logger.info("https://" + getHostname() + "/auth/realms/" + getRealm() +"/protocol/openid-connect/auth?response_type=id_token%20token&client_id=alfresco&state=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs&redirect_uri=https%3A%2F%2F" + getHostname() + "%2Fdummy_redirect&scope=openid%20profile%20email&nonce=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs");
+        // //Click on SAML link on login page, the link is theme-dependent
+        // String themeName = getTheme();
+        // WebElement element = driver.findElement(
+        //     themeName.compareTo(ALFRESCO_THEME_NAME) == 0 ? ELEMENT_SAML_ALFRESCO : ELEMENT_SAML_KEYCLOAK);
+        // element.click();
 
         //Select User, Enter password, and submit form on SAML page
-        Select select = new Select(driver.findElement(ByName.name(TokenTestConstants.ELEMENT_USERID)));
-        select.selectByVisibleText(getUser());
+        WebElement usernameField = driver.findElement(ByName.name(TokenTestConstants.ELEMENT_USERID));
+        usernameField.sendKeys(getUser());
         logger.info("ok user worked");
         WebElement passwordField = driver.findElement(ByName.name(TokenTestConstants.ELEMENT_PASWORD));
         passwordField.sendKeys(getPassword());
@@ -144,6 +149,7 @@ import org.slf4j.LoggerFactory;
 
         //Get token param
         Map<String, String> params = getQueryStringMap(driver.getCurrentUrl());
+        logger.info(driver.getCurrentUrl());
         String token = params.get(TokenTestConstants.HEADER_ACCESS_TOKEN);
         logger.info("access_token parameter: " + token);
         
