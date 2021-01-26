@@ -74,7 +74,7 @@ if [ -n "${KEY_NAME}" ]; then
     log_info "The realm key provider '${REALM_KEY_PROVIDER_NAME}' already exists."
 else
     # Set the realm keys (i.e. private key and certificate. For example, the certificate that other party needs to validate the AIMS signed SAML message)
-    KEYS_PAYLOAD="$(cat ../../modules/identity/config-files/realmRsaKeys.json)"
+    KEYS_PAYLOAD="$(cat config-files/realmRsaKeys.json)"
     get_token
     STATUS_CODE="$(curl -s -o /dev/null -w "%{http_code}" \
         "${IDS_BASE_URL}/auth/admin/realms/${REALM}/components" \
@@ -94,7 +94,7 @@ fi
 config_saml(){
 # Get idpSamlConfig.json file and perform variable substitution
 SAML_PROVIDER_PAYLOAD="$(eval "cat <<EOF
-$(<../../modules/identity/config-files/idpSamlConfig.json)
+$(<config-files/idpSamlConfig.json)
 EOF
 " 2>/dev/null)"
 
@@ -115,7 +115,7 @@ fi
 }
 
 add_idp_mapper() {
-    MAPPER_PAYLOAD="$(cat "../../modules/identity/config-files/${1}")"
+    MAPPER_PAYLOAD="$(cat "config-files/${1}")"
     MAPPER_NAME="$(echo "${MAPPER_PAYLOAD}" | jq -r '.name')"
 
     log_info "Adding SAML mapper '${MAPPER_NAME}' ..."
@@ -168,7 +168,7 @@ if [ "null" = "${AUTH_CFG_ID}" ]; then
         "${IDS_BASE_URL}/auth/admin/realms/${REALM}/authentication/executions/${EXECUTION_ID}/config" \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer ${TOKEN}" \
-        -d @../../modules/identity/config-files/samlBrowserFlowExecution.json)"
+        -d @config-files/samlBrowserFlowExecution.json)"
 
     if [ "${STATUS_CODE}" -eq 201 ]; then
         log_info "The authenticator config has been created and the SAML flow execution is now enforced."
@@ -179,7 +179,7 @@ else
     log_info "Updating the authenticator config ..."
 
     # Get the execution payload by inserting the ID of the identity-provider-redirector execution
-    EXECUTION_PAYLOAD="$(cat ../../modules/identity/config-files/samlBrowserFlowExecution.json | jq --arg id "${EXECUTION_ID}" '. + {id: $id}')"
+    EXECUTION_PAYLOAD="$(cat config-files/samlBrowserFlowExecution.json | jq --arg id "${EXECUTION_ID}" '. + {id: $id}')"
 
 
     # Update execution of the SAML Identity Provider Redirector
@@ -197,9 +197,6 @@ else
     fi
 fi
 }
-
-# ## Check if ACS is up and running
-# ../../modules/identity/acs-start-check.sh "${1}"
 
 ## Set realm key
 run_and_check_000_status_code configure_realm
