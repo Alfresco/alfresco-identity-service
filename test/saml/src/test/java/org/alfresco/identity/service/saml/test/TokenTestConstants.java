@@ -26,7 +26,7 @@ public final class TokenTestConstants
     public final static String ELEMENT_PASWORD = "password";
 
     //Header Parameters
-    public final static String HEADER_ACCESS_TOKEN = "location";
+    public final static String HEADER_ACCESS_TOKEN = "access_token";
 
     //Key Factory Algorithims
     public final static String ALGORITHIM_RSA = "RSA";

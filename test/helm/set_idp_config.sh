@@ -49,34 +49,6 @@ TOKEN=$(curl --insecure --silent --show-error -X POST "https://${HOST}/auth/real
     -d "grant_type=password" \
     -d "client_id=admin-cli" | jq -r ".access_token")
 
-echo "Setting up key pairs"
-# Delete existing key pair
-curl --insecure -v --silent --show-error -X DELETE "https://${HOST}/auth/admin/realms/alfresco/components/14b13815-a8b1-412c-a98d-0da235e8c8f9" \
-    -H "Authorization: Bearer $TOKEN" \
-    -H "Accept: application/json" \
-    -H "Content-Type: application/json"
-
-# ... and replace it with a pre-configured one whose public key is known
-curl --insecure -v --silent --show-error -X POST "https://${HOST}/auth/admin/realms/alfresco/components" \
-    -H "Authorization: Bearer $TOKEN" \
-    -H "Accept: application/json" \
-    -H "Content-Type: application/json" \
-    --data "@${CONFIG_TEMPLATES_DIR}/key-provider-defn.json"
-
-# Configure SAML IdP
-# if [ "${bamboo_pingfederate_connection_enable}" = "true" ]; then
-    # OPSEXP-674 - https://alfresco.atlassian.net/browse/OPSEXP-674
-    # log_info "Adding PingFederate config"
-
-    # curl --insecure -v --silent --show-error -X POST "https://${HOST}/auth/admin/realms/alfresco/identity-provider/instances" \
-    #     -H "Authorization: Bearer $TOKEN" \
-    #     -H "Accept: application/json" \
-    #     -H "Content-Type: application/json" \
-    #     --data "@${CONFIG_TEMPLATES_DIR}/saml-idp-defn.json"
-# else
-#     log_info "Skipping PingFederate config"
-# fi
-
 # Configure LDAP Storage Provider
 # if is_openldap_enabled; then
     log_info "Adding LDAP config"

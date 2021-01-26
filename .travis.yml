@@ -2,7 +2,8 @@ language: java
 jdk:
   - openjdk11
 
-#sudo: required
+addons:
+  chrome: stable
 
 os: linux
 dist: xenial
@@ -357,32 +358,25 @@ jobs:
           echo "TEST_RESULT=${TEST_RESULT}"
         fi
 
-        # OPSEXP-674 - https://alfresco.atlassian.net/browse/OPSEXP-674
-        # if [[ "${TEST_RESULT}" == "0" ]]; then
-        #   # setup pingfederate
-        #   sed -i "s/HOSTNAME/$namespace.dev.alfresco.me/g" test/helm/sp-pingfederate-connection-template.json
-        #   ./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD" -c -j test/helm/sp-pingfederate-connection-template.json
-
-        #   cd test/saml 
-        #   export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
-        #   export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
-        #   mvn clean test
-        #   TEST_RESULT=$?
-        #   echo "TEST_RESULT=${TEST_RESULT}"
-        #   cd ../..
-        # fi
+        if [[ "${TEST_RESULT}" == "0" ]]; then
+          openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in test/helm/config-files/realmRsaKeys.json.enc -out test/helm/config-files/realmRsaKeys.json -d
+          cd test/helm
+          ./auth0-api.sh create $namespace.dev.alfresco.me
+          ./configure-saml-ids.sh $namespace.dev.alfresco.me
+          cd ../saml 
+          export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
+          export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
+          mvn clean test
+          TEST_RESULT=$?
+          echo "TEST_RESULT=${TEST_RESULT}"
+          cd ../..
+        fi
 
         if [[ "${TRAVIS_COMMIT_MESSAGE}" != *"[keep env]"* ]]; then
           helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
           kubectl delete namespace $namespace
-          export connection_id=$(./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD" -g "" | jq -r '.items[] | select(.entityId | contains ("$namespace.dev.alfresco.me/auth/realms/alfresco")).id')
-          echo $connection_id
-          if [ -n "$connection_id" -a $(grep -c . <<<"$connection_id") -eq 1 ]; then
-              echo "entity id: $entity_id connection_id: $connection_id"
-              ./test/helm/pingfederate.sh -U "$PF_USER" -P "$PF_PASSWORD"  -d "$connection_id" -f
-          else
-              echo "Unable to get a unique connection id for entity id: ${entity_id}"
-          fi
+          cd test/helm
+          ./auth0-api.sh delete $namespace.dev.alfresco.me
         fi
 
         if [[ "${TEST_RESULT}" == "1" ]]; then
