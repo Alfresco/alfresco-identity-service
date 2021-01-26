@@ -20,7 +20,7 @@ IDP_ID='saml'
 REALM='alfresco'
 REALM_KEY_PROVIDER_NAME="${IDS_KEY_PROVIDER_NAME:-dbp-sso-rsa}"
 
-SAML_CLIENT_ID="$(../../modules/identity/auth0-api.sh getId "${1}")"
+SAML_CLIENT_ID="$(./auth0-api.sh getId "${1}")"
 HOST_IP="${1}"
 IDS_BASE_URL="https://${HOST_IP}"
 
