@@ -364,8 +364,8 @@ jobs:
           sudo mv -f ~/chromedriver /usr/local/share/
           sudo chmod +x /usr/local/share/chromedriver
           sudo ln -s /usr/local/share/chromedriver /usr/local/bin/chromedriver
-          openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in test/helm/config-files/realmRsaKeys.json.enc -out test/helm/config-files/realmRsaKeys.json -d
-          cd test/helm
+          openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in $PWD/test/helm/config-files/realmRsaKeys.json.enc -out $PWD/test/helm/config-files/realmRsaKeys.json -d
+          cd $PWD/test/helm
           ./auth0-api.sh create $namespace.dev.alfresco.me
           ./configure-saml-ids.sh $namespace.dev.alfresco.me
           cd ../saml 
