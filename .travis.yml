@@ -2,9 +2,6 @@ language: java
 jdk:
   - openjdk11
 
-addons:
-  chrome: stable
-
 os: linux
 dist: xenial
 
