@@ -26,9 +26,6 @@ import org.openqa.selenium.By.ByName;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeDriverService;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,6 +60,7 @@ import static io.github.bonigarcia.wdm.WebDriverManager.chromedriver;
 {  
     private Logger logger = LoggerFactory.getLogger(TokenTest.class);
     private Properties appProps = null;
+    private WebDriver driver;
 
     @BeforeAll
     void setup()
@@ -86,9 +84,8 @@ import static io.github.bonigarcia.wdm.WebDriverManager.chromedriver;
     void cleanup()
     {
         //Clean up remote chromedriver service
-        if (service != null)
-        {
-            service.stop();
+        if (driver != null) {
+            driver.quit();
         }
     }
 
@@ -101,7 +98,6 @@ import static io.github.bonigarcia.wdm.WebDriverManager.chromedriver;
            Exception
     {   
         //Create HTMLUnit WebDriver
-        WebDriver driver;
 
         driver = new ChromeDriver();
 
