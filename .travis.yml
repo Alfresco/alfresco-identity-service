@@ -36,7 +36,7 @@ branches:
 
 before_install:
   - |
-    openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in test/helm/config-files/realmRsaKeys.json.enc -out test/helm/config-files/realmRsaKeys.json -d
+    openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in realmRsaKeys.json.enc -out ~\/Documents/GithubRepos/alfresco-identity-service/test/helm/config-files/realmRsaKeys.json -d
     sudo pip install --upgrade awscli
     if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
     # cp .travis.settings.xml $HOME/.m2/settings.xml
@@ -338,38 +338,37 @@ jobs:
         # Set IDP Config 
         HOST=$namespace.dev.alfresco.me ./test/helm/set_idp_config.sh
 
-        # # run identity checks
-        # docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "identity-test-collection.json" --global-var "identity_host=$namespace.dev.alfresco.me"
-        # TEST_RESULT=$?
-        # echo "TEST_RESULT=${TEST_RESULT}"
-
-        # if [[ "${TEST_RESULT}" == "0" ]]; then
-        #   docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "change-keycloak-access-token-lifespan-collection.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
-        #   HOST=$namespace.dev.alfresco.me ./test/helm/delete_keycloak_pods.sh
-        #   docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "check-keycloak-access-token-lifespan-change-persisted.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
-        #   TEST_RESULT=$?
-        #   echo "TEST_RESULT=${TEST_RESULT}"
-        # fi
-
-        # if [[ "${TEST_RESULT}" == "0" ]]; then
-        #   docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --global-var "identity_host=$namespace.dev.alfresco.me"
-        #   TEST_RESULT=$?
-        #   echo "TEST_RESULT=${TEST_RESULT}"
-        # fi
-
-        # if [[ "${TEST_RESULT}" == "0" ]]; then
-        ls
-        cd test/helm
-        ./auth0-api.sh create $namespace.dev.alfresco.me
-        ./configure-saml-ids.sh $namespace.dev.alfresco.me
-        cd ../saml 
-        export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
-        export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
-        mvn clean test
+        # run identity checks
+        docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "identity-test-collection.json" --global-var "identity_host=$namespace.dev.alfresco.me"
         TEST_RESULT=$?
         echo "TEST_RESULT=${TEST_RESULT}"
-        cd ../..
-        # fi
+
+        if [[ "${TEST_RESULT}" == "0" ]]; then
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "change-keycloak-access-token-lifespan-collection.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
+          HOST=$namespace.dev.alfresco.me ./test/helm/delete_keycloak_pods.sh
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "check-keycloak-access-token-lifespan-change-persisted.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
+          TEST_RESULT=$?
+          echo "TEST_RESULT=${TEST_RESULT}"
+        fi
+
+        if [[ "${TEST_RESULT}" == "0" ]]; then
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --global-var "identity_host=$namespace.dev.alfresco.me"
+          TEST_RESULT=$?
+          echo "TEST_RESULT=${TEST_RESULT}"
+        fi
+
+        if [[ "${TEST_RESULT}" == "0" ]]; then
+          cd test/helm
+          ./auth0-api.sh create $namespace.dev.alfresco.me
+          ./configure-saml-ids.sh $namespace.dev.alfresco.me
+          cd ../saml 
+          export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
+          export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
+          mvn clean test
+          TEST_RESULT=$?
+          echo "TEST_RESULT=${TEST_RESULT}"
+          cd ../..
+        fi
 
         if [[ "${TRAVIS_COMMIT_MESSAGE}" != *"[keep env]"* ]]; then
           helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
