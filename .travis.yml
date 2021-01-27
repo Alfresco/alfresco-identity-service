@@ -1,6 +1,5 @@
 language: java
-jdk:
-  - openjdk11
+jdk: openjdk11
 
 os: linux
 dist: xenial
@@ -149,6 +148,8 @@ jobs:
         - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
     - name: Test Helm Chart
       stage: Test
+      addons:
+        chrome: stable
       script: |
         export namespace=$(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
         export release_name_ingress=ing-${TRAVIS_BUILD_NUMBER}
