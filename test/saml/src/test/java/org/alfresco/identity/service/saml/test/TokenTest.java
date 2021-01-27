@@ -48,9 +48,9 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
 
+import static io.github.bonigarcia.wdm.WebDriverManager.chromedriver;
 import static org.alfresco.identity.service.saml.test.TokenTestConstants.*;
 import static org.junit.Assert.assertNotNull;
-import static io.github.bonigarcia.wdm.WebDriverManager.chromedriver;
 
 /**
  * @author Jared Ottley
