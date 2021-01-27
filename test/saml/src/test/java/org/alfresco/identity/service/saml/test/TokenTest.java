@@ -155,12 +155,10 @@ import static org.junit.Assert.assertNotNull;
 
         //Get token param
         Map<String, String> params = getQueryStringMap(driver.getCurrentUrl());
-        String currentURL = driver.getCurrentUrl();
 
         String token = params.get(TokenTestConstants.HEADER_ACCESS_TOKEN);
         logger.info("access_token parameter: " + token);
         
-
         //Decode token and verify token
 
         DecodedJWT jwt = null;
@@ -190,8 +188,6 @@ import static org.junit.Assert.assertNotNull;
 
         assertNotNull(jwt);  
         
-        //Quit Driver session
-        driver.quit();
 
     }
 
@@ -320,18 +316,6 @@ import static org.junit.Assert.assertNotNull;
     private String getPassword()
     {
         return resolveProperty(PROP_SAML_PASSWORD);
-    }
-
-    private Boolean isBrowserEnable()
-    {
-        String enabled = resolveProperty(PROP_ENABLE_BROWSER);
-
-        if (StringUtils.isNotBlank(enabled))
-        {
-            return Boolean.valueOf(enabled);
-        }
-
-        return false;
     }
 
     /**
