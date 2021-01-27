@@ -97,7 +97,7 @@ import static org.junit.Assert.assertNotNull;
         chromeOptions.addArguments("--disable-dev-shm-usage");
         chromeOptions.addArguments("--disable-extensions");
         chromeOptions.addArguments("--single-process");
-//        chromeOptions.setHeadless(properties.isBrowserHeadless());
+        chromeOptions.addArguments("--headless");
         chromeOptions.addArguments("--window-size=1920,1080");
         //disable chrome browser info bar
         chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
