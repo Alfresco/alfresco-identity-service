@@ -74,10 +74,7 @@ if [ -n "${KEY_NAME}" ]; then
     log_info "The realm key provider '${REALM_KEY_PROVIDER_NAME}' already exists."
 else
     # Set the realm keys (i.e. private key and certificate. For example, the certificate that other party needs to validate the AIMS signed SAML message)
-    KEYS_PAYLOAD="$(cat config-files/realmRsaKeys.json)"
-    ls
-    cat config-files/realmRsaKeys.json
-    echo $KEYS_PAYLOAD
+    KEYS_PAYLOAD="$(cat $PWD/config-files/realmRsaKeys.json)"
     get_token
     STATUS_CODE="$(curl -s -o /dev/null -w "%{http_code}" \
         "${IDS_BASE_URL}/auth/admin/realms/${REALM}/components" \

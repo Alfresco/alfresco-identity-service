@@ -359,7 +359,6 @@ jobs:
         # if [[ "${TEST_RESULT}" == "0" ]]; then
         ls
         openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in $PWD/test/helm/config-files/realmRsaKeys.json.enc -out $PWD/test/helm/config-files/realmRsaKeys.json -d
-        ls $PWD/test/helm/config-files
         cd test/helm
         ./auth0-api.sh create $namespace.dev.alfresco.me
         ./configure-saml-ids.sh $namespace.dev.alfresco.me
