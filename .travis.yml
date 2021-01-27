@@ -36,6 +36,7 @@ branches:
 
 before_install:
   - |
+    openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in test/helm/config-files/realmRsaKeys.json.enc -out test/helm/config-files/realmRsaKeys.json -d
     sudo pip install --upgrade awscli
     if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
     # cp .travis.settings.xml $HOME/.m2/settings.xml
@@ -358,7 +359,6 @@ jobs:
 
         # if [[ "${TEST_RESULT}" == "0" ]]; then
         ls
-        openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in $PWD/test/helm/config-files/realmRsaKeys.json.enc -out $PWD/test/helm/config-files/realmRsaKeys.json -d
         cd test/helm
         ./auth0-api.sh create $namespace.dev.alfresco.me
         ./configure-saml-ids.sh $namespace.dev.alfresco.me

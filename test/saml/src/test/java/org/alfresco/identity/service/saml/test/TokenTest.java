@@ -78,7 +78,7 @@ import static org.junit.Assert.assertNotNull;
         {
             logger.info("Unable to read properties file");
         }
-       driver = createWebDriver();
+        driver = createWebDriver();
     }
     public WebDriver createWebDriver()
     {
