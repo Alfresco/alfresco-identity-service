@@ -26,6 +26,7 @@ import org.openqa.selenium.By.ByName;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -77,7 +78,37 @@ import static org.junit.Assert.assertNotNull;
         {
             logger.info("Unable to read properties file");
         }
+       driver = createWebDriver();
+    }
+    public WebDriver createWebDriver()
+    {
+        return createChromeWebDriver();
+    }
+    private WebDriver createChromeWebDriver()
+    {
         chromedriver().setup();
+        return new ChromeDriver(setChromeBrowserOptions());
+    }
+    private ChromeOptions setChromeBrowserOptions()
+    {
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--no-sandbox");
+        chromeOptions.addArguments("--disable-gpu");
+        chromeOptions.addArguments("--disable-dev-shm-usage");
+        chromeOptions.addArguments("--disable-extensions");
+        chromeOptions.addArguments("--single-process");
+//        chromeOptions.setHeadless(properties.isBrowserHeadless());
+        chromeOptions.addArguments("--window-size=1920,1080");
+        //disable chrome browser info bar
+        chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+//        chromeOptions.addArguments(String.format("--lang=%s", getBrowserLanguage(properties)));
+        //disable profile password manager
+        HashMap<String, Object> chromePrefs = new HashMap<>();
+        chromePrefs.put("credentials_enable_service", false);
+        chromePrefs.put("profile.password_manager_enabled", false);
+//        chromePrefs.put("download.default_directory", getDownloadLocation());
+        chromeOptions.setExperimentalOption("prefs", chromePrefs);
+        return chromeOptions;
     }
 
     @AfterAll
@@ -97,10 +128,6 @@ import static org.junit.Assert.assertNotNull;
            InvalidKeySpecException, 
            Exception
     {   
-        //Create HTMLUnit WebDriver
-
-        driver = new ChromeDriver();
-
         //Increase Default Timeout for pages to load
         driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
