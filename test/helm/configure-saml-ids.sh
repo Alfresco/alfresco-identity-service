@@ -75,6 +75,8 @@ if [ -n "${KEY_NAME}" ]; then
 else
     # Set the realm keys (i.e. private key and certificate. For example, the certificate that other party needs to validate the AIMS signed SAML message)
     KEYS_PAYLOAD="$(cat config-files/realmRsaKeys.json)"
+    ls
+    cat config-files/realmRsaKeys.json
     echo $KEYS_PAYLOAD
     get_token
     STATUS_CODE="$(curl -s -o /dev/null -w "%{http_code}" \
