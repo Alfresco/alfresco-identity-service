@@ -49,6 +49,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 import static org.alfresco.identity.service.saml.test.TokenTestConstants.*;
 import static org.junit.Assert.assertNotNull;
@@ -78,6 +79,7 @@ import static org.junit.Assert.assertNotNull;
         {
             logger.info("Unable to read properties file");
         }
+        WebDriverManager.chromedriver().setup();
     }
 
     @AfterAll
