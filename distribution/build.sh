@@ -91,7 +91,7 @@ mkdir -p $DISTRIBUTION_NAME/realm
 # rendered (without installation) using helm. Note only "realm-secret.yaml" needs to be rendered as this is how the
 # realm gets passed on to keycloak when on k8s.
 #
-helm init --client-only
+helm init --stable-repo-url=https://charts.helm.sh/stable --client-only
 if [ -z "$(helm repo list | grep ${HELM_REPO_NAME})" ]; then
   echo "adding helm repository"
   helm repo add ${HELM_REPO_NAME} ${bamboo_helm_repo_location}

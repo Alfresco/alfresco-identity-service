@@ -39,3 +39,6 @@ requirements.lock
 #Helm project files
 charts/
 
+#Test rsa realms keys
+test/helm/config-files/realmRsaKeys.json
+

@@ -1,0 +1,10 @@
+{
+   "name": "Email",
+   "identityProviderAlias": "saml",
+   "identityProviderMapper": "saml-user-attribute-idp-mapper",
+   "config": {
+      "user.attribute": "Email",
+      "attribute.friendly.name": "Email",
+      "attribute.name": "Email"
+   }
+}

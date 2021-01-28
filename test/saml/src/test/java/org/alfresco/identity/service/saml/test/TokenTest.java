@@ -1,8 +1,36 @@
 package org.alfresco.identity.service.saml.test;
 
-import static org.alfresco.identity.service.saml.test.TokenTestConstants.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.conn.ssl.NoopHostnameVerifier;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.ssl.SSLContextBuilder;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestInstance;
+import org.junit.jupiter.api.TestInstance.Lifecycle;
+import org.openqa.selenium.By;
+import org.openqa.selenium.By.ByName;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import javax.net.ssl.SSLContext;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,43 +47,11 @@ import java.security.spec.X509EncodedKeySpec;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLContext;
-
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-
-import org.openqa.selenium.By.ByLinkText;
-import org.openqa.selenium.By.ByName;
-import org.openqa.selenium.chrome.ChromeDriverService;
-import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.lang3.StringUtils;
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.conn.ssl.NoopHostnameVerifier;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.ssl.SSLContextBuilder;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.TestInstance.Lifecycle;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.htmlunit.HtmlUnitDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.openqa.selenium.support.ui.Select;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import static io.github.bonigarcia.wdm.WebDriverManager.chromedriver;
+import static org.alfresco.identity.service.saml.test.TokenTestConstants.*;
+import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Jared Ottley
@@ -65,7 +61,7 @@ import org.slf4j.LoggerFactory;
 {  
     private Logger logger = LoggerFactory.getLogger(TokenTest.class);
     private Properties appProps = null;
-    private ChromeDriverService service = null;
+    private WebDriver driver;
 
     @BeforeAll
     void setup()
@@ -82,15 +78,45 @@ import org.slf4j.LoggerFactory;
         {
             logger.info("Unable to read properties file");
         }
+        driver = createWebDriver();
+    }
+    public WebDriver createWebDriver()
+    {
+        return createChromeWebDriver();
+    }
+    private WebDriver createChromeWebDriver()
+    {
+        chromedriver().setup();
+        return new ChromeDriver(setChromeBrowserOptions());
+    }
+    private ChromeOptions setChromeBrowserOptions()
+    {
+        ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.addArguments("--no-sandbox");
+        chromeOptions.addArguments("--disable-gpu");
+        chromeOptions.addArguments("--disable-dev-shm-usage");
+        chromeOptions.addArguments("--disable-extensions");
+        chromeOptions.addArguments("--single-process");
+        chromeOptions.addArguments("--headless");
+        chromeOptions.addArguments("--window-size=1920,1080");
+        //disable chrome browser info bar
+        chromeOptions.setExperimentalOption("excludeSwitches", new String[]{"enable-automation"});
+//        chromeOptions.addArguments(String.format("--lang=%s", getBrowserLanguage(properties)));
+        //disable profile password manager
+        HashMap<String, Object> chromePrefs = new HashMap<>();
+        chromePrefs.put("credentials_enable_service", false);
+        chromePrefs.put("profile.password_manager_enabled", false);
+//        chromePrefs.put("download.default_directory", getDownloadLocation());
+        chromeOptions.setExperimentalOption("prefs", chromePrefs);
+        return chromeOptions;
     }
 
     @AfterAll
     void cleanup()
     {
         //Clean up remote chromedriver service
-        if (service != null)
-        {
-            service.stop();
+        if (driver != null) {
+            driver.quit();
         }
     }
 
@@ -102,24 +128,13 @@ import org.slf4j.LoggerFactory;
            InvalidKeySpecException, 
            Exception
     {   
-        //Create HTMLUnit WebDriver
-        WebDriver driver;
+        //Increase Default Timeout for pages to load
+        driver.manage().timeouts().implicitlyWait(10, TimeUnit.SECONDS);
 
-        if(!isBrowserEnable())
-        {
-            driver = new HtmlUnitDriver(true);
-        }
-        else
-        {
-            ChromeDriverService service = new ChromeDriverService.Builder().usingAnyFreePort().build();
-            service.start();
-            driver = new RemoteWebDriver(service.getUrl(), DesiredCapabilities.chrome());
-        }
-        
         //Initiate page
-        driver.get("https://" + getHostname() + "/auth/realms/" + getRealm() +"/protocol/openid-connect/auth?response_type=id_token%20token&client_id=alfresco&state=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs&redirect_uri=http%3A%2F%2F" + getHostname() + "%2Fdummy_redirect&scope=openid%20profile%20email&nonce=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs");
+        driver.get("https://" + getHostname() + "/auth/realms/" + getRealm() +"/protocol/openid-connect/auth?response_type=id_token%20token&client_id=alfresco&state=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs&redirect_uri=https%3A%2F%2F" + getHostname() + "%2Fdummy_redirect&scope=openid%20profile%20email&nonce=CIteJYtFrA22JnCikKHJ2QPrNuGHzyOphE1SsSNs");
+        
         logger.info("Login page URL: " + driver.getCurrentUrl());
-
         //Click on SAML link on login page, the link is theme-dependent
         String themeName = getTheme();
         WebElement element = driver.findElement(
@@ -127,16 +142,12 @@ import org.slf4j.LoggerFactory;
         element.click();
 
         //Select User, Enter password, and submit form on SAML page
-        Select select = new Select(driver.findElement(ByName.name(TokenTestConstants.ELEMENT_USERID)));
-        select.selectByVisibleText(getUser());
-        logger.info("ok user worked");
+        WebElement usernameField = driver.findElement(ByName.name(TokenTestConstants.ELEMENT_USERID));
+        usernameField.sendKeys(getUser());
         WebElement passwordField = driver.findElement(ByName.name(TokenTestConstants.ELEMENT_PASWORD));
         passwordField.sendKeys(getPassword());
-        logger.info("password worked");
-
         passwordField.submit();
-        
-        logger.info("submit?");
+        WebElement nginxPageElement = driver.findElement(By.xpath("//*[contains(text(), 'nginx')]"));
         //Get the redirect URL for validation -- If you check the status of the
         //redirct URL call it will be 404.  The page does not exist. All we are
         //intersted in is the token parameter in the URL
@@ -144,11 +155,12 @@ import org.slf4j.LoggerFactory;
 
         //Get token param
         Map<String, String> params = getQueryStringMap(driver.getCurrentUrl());
+
         String token = params.get(TokenTestConstants.HEADER_ACCESS_TOKEN);
         logger.info("access_token parameter: " + token);
         
-
         //Decode token and verify token
+
         DecodedJWT jwt = null;
         try
         {
@@ -176,8 +188,6 @@ import org.slf4j.LoggerFactory;
 
         assertNotNull(jwt);  
         
-        //Quit Driver session
-        driver.quit();
 
     }
 
@@ -306,18 +316,6 @@ import org.slf4j.LoggerFactory;
     private String getPassword()
     {
         return resolveProperty(PROP_SAML_PASSWORD);
-    }
-
-    private Boolean isBrowserEnable()
-    {
-        String enabled = resolveProperty(PROP_ENABLE_BROWSER);
-
-        if (StringUtils.isNotBlank(enabled))
-        {
-            return Boolean.valueOf(enabled);
-        }
-
-        return false;
     }
 
     /**
