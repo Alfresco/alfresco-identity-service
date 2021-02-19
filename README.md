@@ -142,9 +142,7 @@ helm status $RELEASENAME
 export ELBADDRESS=$(kubectl get services $RELEASENAME-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 ```
 
-The deployment 
-
-This is deployed with the **default example realm applied** which results in default values of:
+The above steps will deploy _alfresco-identity-service_ with the **default example realm applied** which results in default values of:
 
 | Property                      | Value                    |
 | ----------------------------- | ------------------------ |
