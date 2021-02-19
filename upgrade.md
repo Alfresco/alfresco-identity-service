@@ -7,11 +7,11 @@
 
 ### General upgrade procedure
 
-For upgrading Alfresco Identity Management Service we are mainly following the Keycloak upgrade procedure.
-We will be explaining how to do it if you are using our out of the box distribution or Kubernetes deployment.
-However depending on the environment you are using you should follow these high-level steps:
+For upgrading Alfresco Identity Management Service we are mainly following the Keycloak [upgrade procedure](https://www.keycloak.org/docs/latest/upgrading/).
+We will be explaining how to do it if you are using our out-of-the-box distribution or Kubernetes deployment.
+However, depending on the environment you are using you should follow these high-level steps:
 
-1. Prior to applying the upgrade, [handle any open transactions](https://www.keycloak.org/docs/4.8/server_admin/#user-session-management) and delete the data/tx-object-store/ transaction directory.
+1. Prior to applying the upgrade, handle any open transactions and delete the data/tx-object-store/ transaction directory.
 
 2. Back up the old installation (configuration, themes, and so on).
 
@@ -29,7 +29,7 @@ However depending on the environment you are using you should follow these high-
 
 Within the next sections we will go through a simple distribution and Kubernetes upgrade plus rollback.
 
-  **_NOTE:_** In depth documentation on Keycloak upgrade can be found [here](https://www.keycloak.org/docs/7.0/upgrading/index.html#_upgrading).
+  **_NOTE:_** In depth documentation on Keycloak upgrade can be found [here](https://www.keycloak.org/docs/latest/upgrading/).
 
 ### Kubernetes
 
