@@ -387,10 +387,13 @@ jobs:
       script: |
         if [[ "${TRAVIS_BRANCH}" != "master" ]]; then
           CHART_VERSION=$(cat helm/${PROJECT_NAME}/Chart.yaml | grep version: | awk '{print $2}')
-          NON_SUFFIX_VERSION=$(echo "${CHART_VERSION}" | awk -F - '{print $1}')
-          ALPHA_BUILD_VERSION="${NON_SUFFIX_VERSION}-A${TRAVIS_BUILD_NUMBER}"
-          echo "Changing Chart version to ${ALPHA_BUILD_VERSION} as this is a feature branch..."
-          sed -i s,$CHART_VERSION,$ALPHA_BUILD_VERSION,g helm/${PROJECT_NAME}/Chart.yaml
+          # Only modify the chart version if it doesn't have '-M*' at the end
+          if [[ "${CHART_VERSION}" != *"-M"* ]]; then
+            NON_SUFFIX_VERSION=$(echo "${CHART_VERSION}" | awk -F - '{print $1}')
+            ALPHA_BUILD_VERSION="${NON_SUFFIX_VERSION}-A${TRAVIS_BUILD_NUMBER}"
+            echo "Changing Chart version to ${ALPHA_BUILD_VERSION} as this is a feature branch..."
+            sed -i s,$CHART_VERSION,$ALPHA_BUILD_VERSION,g helm/${PROJECT_NAME}/Chart.yaml
+          fi
         fi
         COMMIT_MESSAGE_FIRST_LINE=$(git log --pretty=format:%s --max-count=1)
         echo using COMMIT_MESSAGE_FIRST_LINE=${COMMIT_MESSAGE_FIRST_LINE}
