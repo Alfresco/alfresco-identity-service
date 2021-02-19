@@ -86,14 +86,6 @@ Please check the ACS deployment [documentation](https://github.com/Alfresco/acs-
 
 If you are deploying the Identity Service into a cluster with other Alfresco components such as Content Services and Process Services, a VPC and cluster with 5 nodes is recommended. Each node should be a m4.xlarge EC2 instance.
 
-### Helm Tiller
-
-Initialize the Helm Tiller:
-
-```bash
-helm init
-```
-
 ### K8s Cluster Namespace
 
 Create the namespace if it does not already exist, to avoid conflicts in the cluster:
@@ -110,24 +102,30 @@ This environment variable will be used in the deployment steps.
 1. Prepare the EKS cluster by deploying an ingress. See the instruction [here](https://github.com/Alfresco/acs-deployment/blob/master/docs/helm/eks-deployment.md#ingress)
 
 
-2. Set the release name as a variable:
+2. Get the release name from the ingress deployment (step 1) and set it as a variable:
+
+```bash
+export INGRESS_RELEASENAME=<YOUR_INGRESS_RELEASE_NAME>
+```
+
+3. Set the Identity Service release name as a variable:
 
 ```bash
 export RELEASENAME=ids
 ```
 
-3. Deploy the Identity Service.
+4. Deploy the Identity Service.
 
 ```bash
 
 helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
 
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service \
+helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
   --namespace $DESIREDNAMESPACE
 ```
 
 <!-- markdownlint-disable MD029 -->
-4. Wait for the release to get deployed (When checking status your pods should be READY 1/1):
+5. Wait for the release to get deployed (When checking status your pods should be READY 1/1):
 <!-- markdownlint-enable MD029 -->
 
 ```bash
@@ -135,11 +133,11 @@ helm status $RELEASENAME
 ```
 
 <!-- markdownlint-disable MD029 -->
-5. Get local or ELB IP and set it as a variable for future use:
+6. Get local or ELB IP and set it as a variable for future use:
 <!-- markdownlint-disable MD029 -->
 
 ```bash
-export ELBADDRESS=$(kubectl get services $RELEASENAME-nginx-ingress-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
+export ELBADDRESS=$(kubectl get services $INGRESS_RELEASENAME-ingress-nginx-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 ```
 
 The above steps will deploy _alfresco-identity-service_ with the **default example realm applied** which results in default values of:
@@ -158,7 +156,7 @@ The above steps will deploy _alfresco-identity-service_ with the **default examp
 You can override the default redirectUri of `http://localhost*` for your environment with the `alfresco-identity-service.client.alfresco.redirectUris` property:
 
 ```bash
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service \
+helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
   --set alfresco-identity-service.realm.alfresco.client.redirectUris="{$DNSNAME}" \
   --namespace $DESIREDNAMESPACE
 ```
@@ -166,7 +164,7 @@ helm install $RELEASENAME alfresco-stable/alfresco-identity-service \
 including multiple redirectUris:
 
 ```bash
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service \
+helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
   --set alfresco-identity-service.realm.alfresco.client.redirectUris="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
   --namespace $DESIREDNAMESPACE
 ```
@@ -182,7 +180,7 @@ Similarly to [redirectUris](#changing-alfresco-client-redirecturis), webOrigins 
 `alfresco-identity-service.client.alfresco.webOrigins` property:
 
 ```bash
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service \
+helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
   --set alfresco-identity-service.realm.alfresco.client.webOrigins="{$DNSNAME}" \
   --namespace $DESIREDNAMESPACE
 ```
@@ -190,7 +188,7 @@ helm install $RELEASENAME alfresco-stable/alfresco-identity-service \
 For multiple webOrigins:
 
 ```bash
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service \
+helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
   --set alfresco-identity-service.realm.alfresco.client.webOrigins="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
   --namespace $DESIREDNAMESPACE
 ```
@@ -245,7 +243,7 @@ kubectl create secret generic realm-secret \
 
 helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
 
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service \
+helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
   --set alfresco-identity-service.keycloak.extraEnv.name=KEYCLOAK_IMPORT \
   --set alfresco-identity-service.keycloak.extraEnv.value="/realm/realm.json" \
   --namespace $DESIREDNAMESPACE
