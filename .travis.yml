@@ -12,6 +12,7 @@ stages:
   - name: Build
   - name: Test
   - name: Publish_Chart
+    if: branch = master OR commit_message = "[publish]"
   - name: Release
     if: branch = master OR commit_message = "[release]"
 
