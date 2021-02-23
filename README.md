@@ -234,9 +234,23 @@ kubectl create secret generic realm-secret \
   --namespace=$DESIREDNAMESPACE
 ```
 
+3. Create a yaml file with following settings. The file name can be anything, for example: **custom-values.yaml**
+
+```yaml
+keycloak:
+  extraEnv: |
+    - name: KEYCLOAK_USER
+      value: admin
+    - name: KEYCLOAK_PASSWORD
+      value: admin
+    - name: KEYCLOAK_IMPORT
+      value: /realm/realm.json
+```
+
+**_NOTE:_** The above settings use the default _admin/admin_ for keycloak username and password, you can replace those with your own values.
 
 <!-- markdownlint-disable MD029 -->
-3. Deploy the identity chart with the new settings:
+4. Deploy the identity chart with the new settings:
 <!-- markdownlint-enable MD029 -->
 
 ```bash
@@ -244,8 +258,7 @@ kubectl create secret generic realm-secret \
 helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
 
 helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
-  --set alfresco-identity-service.keycloak.extraEnv.name=KEYCLOAK_IMPORT \
-  --set alfresco-identity-service.keycloak.extraEnv.value="/realm/realm.json" \
+  -f custom-values.yaml \
   --namespace $DESIREDNAMESPACE
 ```
 

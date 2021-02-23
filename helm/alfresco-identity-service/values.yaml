@@ -69,10 +69,8 @@ keycloak:
       - name: quay-registry-secret
   serviceAccount:
     create: true
-  username: admin
-  password: admin
   service:
-    port: 80
+    httpPort: 80
   extraVolumes: |
     - name: realm-secret
       secret:
@@ -82,6 +80,10 @@ keycloak:
       mountPath: "/realm/"
       readOnly: true
   extraEnv: |
+    - name: KEYCLOAK_USER
+      value: admin
+    - name: KEYCLOAK_PASSWORD
+      value: admin
     - name: KEYCLOAK_IMPORT
       value: /realm/alfresco-realm.json
   ###
