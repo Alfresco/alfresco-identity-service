@@ -14,7 +14,7 @@ stages:
   - name: Publish_Chart
     if: branch = master OR commit_message = "[publish]"
   - name: Release
-    if: branch = master OR commit_message = "[release]"
+    if: branch = master AND commit_message = "[release]"
 
 env:
   global:
