@@ -11,8 +11,10 @@ stages:
   - name: Lint
   - name: Build
   - name: Test
-  - name: Publish
+  - name: Publish_Chart
     if: branch = master OR commit_message = "[publish]"
+  - name: Release
+    if: branch = master OR commit_message = "[release]"
 
 env:
   global:
@@ -38,7 +40,7 @@ before_install:
   - |
     openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in test/helm/config-files/realmRsaKeys.json.enc -out test/helm/config-files/realmRsaKeys.json -d    
     sudo pip install --upgrade awscli
-    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Release" ]]; then
     # cp .travis.settings.xml $HOME/.m2/settings.xml
     # use helm 2 for the Build stage
     if [[ ${TRAVIS_BUILD_STAGE_NAME} == "Build" ]]; then
@@ -66,7 +68,7 @@ before_install:
 
 before_script:
   - |
-    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Publish" ]]; then
+    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Release" ]]; then
     REPO_NAME=${TRAVIS_REPO_SLUG##*/}
     PROJECT_NAME=alfresco-identity-service
     helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
@@ -381,10 +383,35 @@ jobs:
           echo "Tests failed, exiting"
           exit 1
         fi
+    - name: Package and Publish Chart
+      stage: Publish_Chart
+      script: |
+        if [[ "${TRAVIS_BRANCH}" != "master" ]]; then
+          CHART_VERSION=$(cat helm/${PROJECT_NAME}/Chart.yaml | grep version: | awk '{print $2}')
+          # Only modify the chart version if it doesn't have '-M*' at the end
+          if [[ "${CHART_VERSION}" != *"-M"* ]]; then
+            NON_SUFFIX_VERSION=$(echo "${CHART_VERSION}" | awk -F - '{print $1}')
+            ALPHA_BUILD_VERSION="${NON_SUFFIX_VERSION}-A${TRAVIS_BUILD_NUMBER}"
+            echo "Changing Chart version to ${ALPHA_BUILD_VERSION} as this is a feature branch..."
+            sed -i s,$CHART_VERSION,$ALPHA_BUILD_VERSION,g helm/${PROJECT_NAME}/Chart.yaml
+          fi
+        fi
+        COMMIT_MESSAGE_FIRST_LINE=$(git log --pretty=format:%s --max-count=1)
+        echo using COMMIT_MESSAGE_FIRST_LINE=${COMMIT_MESSAGE_FIRST_LINE}
+        git clone https://${GITHUB_TOKEN}@github.com/Alfresco/charts.git
+        echo using HELM_REPO=${HELM_REPO}
+        mkdir repo
+        helm package --dependency-update --destination repo helm/${PROJECT_NAME}
+        helm repo index repo --url ${HELM_REPO_BASE_URL}/${HELM_REPO} --merge charts/${HELM_REPO}/index.yaml
+        mv repo/* charts/${HELM_REPO}
+        cd charts
+        git add ${HELM_REPO}
+        git commit -m "${COMMIT_MESSAGE_FIRST_LINE}"
+        git push --quiet origin master
     - name: Publish S3
-      stage: Publish
+      stage: Release
       env: 
-        - IDENTITY_VERSION=${IDENTITY_VERSION}      
+        - IDENTITY_VERSION=${IDENTITY_VERSION}
       before_deploy: 
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
@@ -404,7 +431,7 @@ jobs:
         on:
            all_branches: true
     - name: Publish DockerHub
-      stage: Publish
+      stage: Release
       script:
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
@@ -415,25 +442,3 @@ jobs:
         - docker tag ${PRIVATE_IMAGE} ${PUBLIC_IMAGE}
         - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
         - docker push ${PUBLIC_IMAGE}
-    - name: package and publish chart
-      stage: Publish
-      script: |
-        if [[ "${TRAVIS_BRANCH}" != "master" ]]; then
-          CHART_VERSION=$(cat helm/${PROJECT_NAME}/Chart.yaml | grep version: | awk '{print $2}')
-          NON_SUFFIX_VERSION=$(echo "${CHART_VERSION}" | awk -F - '{print $1}')
-          ALPHA_BUILD_VERSION="${NON_SUFFIX_VERSION}-A${TRAVIS_BUILD_NUMBER}"
-          echo "Changing Chart version to ${ALPHA_BUILD_VERSION} as this is a feature branch..."
-          sed -i s,$CHART_VERSION,$ALPHA_BUILD_VERSION,g helm/${PROJECT_NAME}/Chart.yaml
-        fi
-        COMMIT_MESSAGE_FIRST_LINE=$(git log --pretty=format:%s --max-count=1)
-        echo using COMMIT_MESSAGE_FIRST_LINE=${COMMIT_MESSAGE_FIRST_LINE}
-        git clone https://${GITHUB_TOKEN}@github.com/Alfresco/charts.git
-        echo using HELM_REPO=${HELM_REPO}
-        mkdir repo
-        helm package --dependency-update --destination repo helm/${PROJECT_NAME}
-        helm repo index repo --url ${HELM_REPO_BASE_URL}/${HELM_REPO} --merge charts/${HELM_REPO}/index.yaml
-        mv repo/* charts/${HELM_REPO}
-        cd charts
-        git add ${HELM_REPO}
-        git commit -m "${COMMIT_MESSAGE_FIRST_LINE}"
-        git push --quiet origin master
