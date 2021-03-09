@@ -3,6 +3,17 @@
 
 ---
 
+### *Alfresco Identity Service 1.4.0*
+
+#### Epics
+* [<a href='https://alfresco.atlassian.net/browse/AUTH-493'>ACS-493</a>] - Upgrade to Keycloak 12.0.3-patch
+
+
+#### Bugs
+* [<a href='https://alfresco.atlassian.net/browse/ACA-4286'>ACA-4286</a>] - Fix Alfresco login theme
+* Change versioning to SemVer v2
+
+
 ### *Alfresco Identity Service 1.3*
 
 #### Bugs
