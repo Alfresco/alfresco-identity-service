@@ -20,7 +20,7 @@
 							"var jsonData = pm.response.json();",
 							"",
 							"pm.test(\"Token is bearer token\", function () {",
-							"    pm.expect(jsonData.token_type).to.eql(\"bearer\");",
+							"    pm.expect(jsonData.token_type.toLowerCase()).to.eql(\"bearer\");",
 							"});",
 							"",
 							"pm.test(\"Response contains access token\", function () {",
