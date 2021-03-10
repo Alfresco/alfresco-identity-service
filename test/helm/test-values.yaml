@@ -10,8 +10,12 @@ global:
 
 keycloak:
   extraEnv: |
-    - name: PROXY_ADDRESS_FORWARDING
-      value: "true"
+    - name: KEYCLOAK_USER
+      value: admin
+    - name: KEYCLOAK_PASSWORD
+      value: admin
+    - name: KEYCLOAK_IMPORT
+      value: /realm/alfresco-realm.json
 
 realm:
   alfresco:

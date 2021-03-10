@@ -17,7 +17,7 @@ log_test_passed() {
 
 WORK_DIR=$(pwd)
 
-unzip -oq alfresco-identity-service-"$IDENTITY_VERSION".zip
+unzip -oq alfresco-identity-service-1.4.0.zip
 
 PID=$(pgrep -f "standalone")
 if [ -n "$PID" ]; then
@@ -25,7 +25,7 @@ if [ -n "$PID" ]; then
   pkill -KILL -f "standalone"
 fi
 
-cd alfresco-identity-service-$IDENTITY_VERSION/bin || exit
+cd alfresco-identity-service-1.4.0/bin || exit
 
 log_info "Starting the identity service"
 /bin/bash -c './standalone.sh &'
@@ -70,7 +70,7 @@ else
   log_test_passed
 fi
 
-RES=$(curl -sSL "http://localhost:8080/auth/realms/alfresco/account" | grep "Alfresco Identity Service")
+RES=$(curl -sSL "http://localhost:8080/auth/realms/alfresco/protocol/openid-connect/auth?client_id=security-admin-console&redirect_uri=http%3A%2F%2Flocalhost%3A8080%2Fauth%2Fadmin%2Falfresco%2Fconsole%2F&state=ea46ea9f-c963-4f06-89a9-ea9ec04c9694&response_mode=fragment&response_type=code&scope=openid&nonce=44e4af22-2f82-47ef-864e-364c662ae884&code_challenge=IfHxRz3ftCUq4h-SXrSsfXGhoH5z-NfkUSCVyPiNEIc&code_challenge_method=S256" | grep "Alfresco Identity Service")
 if [ -z "$RES" ]; then
   log_error "Can't find application-name: 'Alfresco Identity Service'. Status code: : $STATUS_CODE"
 else
@@ -104,8 +104,8 @@ log_info "Killing identity service processes: $PID"
 pkill -KILL -f "standalone"
 
 cd "$WORK_DIR" || exit
-log_info "Deleting alfresco-identity-service-$IDENTITY_VERSION directory."
-rm -rf alfresco-identity-service-$IDENTITY_VERSION
+log_info "Deleting alfresco-identity-service-1.4.0 directory."
+rm -rf alfresco-identity-service-1.4.0
 
 log_info "Done."
 exit 0
