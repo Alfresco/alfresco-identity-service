@@ -17,7 +17,7 @@ log_test_passed() {
 
 WORK_DIR=$(pwd)
 
-unzip -oq alfresco-identity-service-1.4.0.zip
+unzip -oq alfresco-identity-service-"$IDENTITY_VERSION".zip
 
 PID=$(pgrep -f "standalone")
 if [ -n "$PID" ]; then
@@ -25,7 +25,7 @@ if [ -n "$PID" ]; then
   pkill -KILL -f "standalone"
 fi
 
-cd alfresco-identity-service-1.4.0/bin || exit
+cd alfresco-identity-service-"$IDENTITY_VERSION"/bin || exit
 
 log_info "Starting the identity service"
 /bin/bash -c './standalone.sh &'
@@ -104,8 +104,8 @@ log_info "Killing identity service processes: $PID"
 pkill -KILL -f "standalone"
 
 cd "$WORK_DIR" || exit
-log_info "Deleting alfresco-identity-service-1.4.0 directory."
-rm -rf alfresco-identity-service-1.4.0
+log_info "Deleting alfresco-identity-service-$IDENTITY_VERSION directory."
+rm -rf alfresco-identity-service-"$IDENTITY_VERSION"
 
 log_info "Done."
 exit 0
