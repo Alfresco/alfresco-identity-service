@@ -1307,6 +1307,10 @@
         "microprofile-jwt"
       ]
     }
+    {{- range .Values.realm.alfresco.extraClients }}
+    {{- $noRoles := omit . "clientRoles" -}}
+, {{ $noRoles | toJson }}
+{{- end }}
   ],
   "clientScopes": [
     {
@@ -1792,10 +1796,6 @@
         "display.on.consent.screen": "true"
       }
     }
-{{- range .Values.realm.alfresco.extraClients }}
-{{- $noRoles := omit . "clientRoles" -}}
-, {{ $noRoles | toJson }}
-{{- end }}
   ],
   "defaultDefaultClientScopes": [
     "role_list",
