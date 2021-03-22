@@ -5,7 +5,7 @@
 
 ### *Alfresco Identity Service 1.3*
 
-#### Bugs
+#### Bugs 
 
 * [<a href='https://issues.alfresco.com/jira/browse/ACS-301'>ACS-301</a>] - Upgrade to Keycloak 11.0.0 alfresco patch
 * [<a href='https://issues.alfresco.com/jira/browse/MNT-21445'>MNT-21445</a>] - Auto user creation
