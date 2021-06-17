@@ -379,7 +379,7 @@ jobs:
       stage: Test
       script: |
         cd test/saml
-        sh upgrade/test-upgrade.sh
+        ./upgrade/test-upgrade.sh
 
     - name: Package and Publish Chart
       stage: Publish_Chart
