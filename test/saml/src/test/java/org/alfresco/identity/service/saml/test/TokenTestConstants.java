@@ -9,13 +9,15 @@ import org.openqa.selenium.By;
 public final class TokenTestConstants
 {
     //Property File Keys
-    public final static String PROP_SAML_USERNAME = "saml.username";
-    public final static String PROP_SAML_PASSWORD = "saml.password";
+    public final static String SAML_USERNAME          = "saml.username";
+    public final static String PROP_SAML_PASSWORD     = "saml.password";
+    public static final String PROP_KEYCLOAK_PROTOCOL = "keycloak.protocol";
     public final static String PROP_KEYCLOAK_HOSTNAME = "keycloak.hostname";
-    public final static String PROP_KEYCLOAK_ISSUER = "keycloak.issuer";
-    public final static String PROP_KEYCLOAK_REALM = "keycloak.realm";
-    public final static String PROP_KEYCLOAK_THEME = "keycloak.theme";
-    public final static String PROP_ENABLE_BROWSER = "enable.browser";
+    public static final String PROP_KEYCLOAK_PORT     = "keycloak.port";
+    public final static String PROP_KEYCLOAK_ISSUER   = "keycloak.issuer";
+    public final static String PROP_KEYCLOAK_REALM    = "keycloak.realm";
+    public final static String PROP_KEYCLOAK_THEME    = "keycloak.theme";
+    public final static String PROP_ENABLE_BROWSER    = "enable.browser";
 
     //Page Elements
     // SAML button selector varies depending on applied theme

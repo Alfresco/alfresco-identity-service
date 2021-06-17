@@ -63,7 +63,7 @@ keycloak:
     create: false
   image:
     repository: quay.io/alfresco/alfresco-identity-service
-    tag: 1.4.0
+    tag: 1.5.0
     pullPolicy: Always
   imagePullSecrets:
       - name: quay-registry-secret
@@ -100,17 +100,3 @@ keycloak:
         memory: "250Mi"
       limits:
         memory: "500Mi"
-    ### Following values are used for backing up and restoring postgres db along with the helm chart
-    restore:
-      image: "postgres:11.1"
-      password_key: "postgresql-password"
-    backup:
-      image: "postgres:11.1"
-      password_key: "postgresql-password"
-
-## Used to run 'kubectl' in kubernetes jobs for backup and restoration purposes
-hyperkube:
-  image:
-    repository: quay.io/coreos/hyperkube
-    tag: v1.9.6_coreos.2
-    pullPolicy: IfNotPresent
