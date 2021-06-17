@@ -57,6 +57,7 @@ before_install:
     export KUBERNETES_VERSION=1.18.9
     curl -fsSL https://dl.k8s.io/v${KUBERNETES_VERSION}/kubernetes-client-$(uname | tr '[:upper:]' '[:lower:]')-amd64.tar.gz | tar xz --strip=3 -C $HOME/bin/ kubernetes/client/bin/kubectl &&
     echo kubectl $(kubectl version --client --short)
+    cp .travis.settings.xml $HOME/.m2/settings.xml
 
 before_script:
   - |
@@ -379,6 +380,7 @@ jobs:
       stage: Test
       script: |
         cd test/saml
+        mvn clean package -DskipTests
         ./upgrade/test-upgrade.sh
 
     - name: Package and Publish Chart
