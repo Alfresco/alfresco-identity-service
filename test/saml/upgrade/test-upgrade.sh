@@ -20,16 +20,11 @@ is_running() {
 }
 
 stop_ids() {
-  p1=$(ps | grep  "identity")
-  p2=$(ps | grep "keycloak")
-  log_info "Process with the name identity: $p1"
-  log_info "Process with the name keycloak: $p2"
-
   if ! is_running; then
     log_info "IDS server is not running."
     exit 0
   else
-    pkill SIGINT -f "${pgrep_name}"
+    pkill -SIGINT -f "${pgrep_name}"
 
     STOPPED="0"
     KILL_MAX_SECONDS=10
@@ -90,13 +85,17 @@ extra_migration_step() {
 # /saml directory
 current_dir=$(pwd)
 workspace="${current_dir}/target/distribution/workspace"
-auth0_app_name="test-upgrade-to-ids-${IDENTITY_VERSION}"
 # Get the host IP
 host_ip=$(ifconfig | grep -E '([0-9]{1,3}\.){3}[0-9]{1,3}' | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
 # Keycloak default port
 port=8080
 protocol="http"
 base_url="${protocol}://${host_ip}:${port}"
+app_name_prefix="local"
+if [ -n "${IDS_BUILD_NAME}" ]; then
+  app_name_prefix="${IDS_BUILD_NAME}"
+fi
+auth0_app_name="${app_name_prefix}-upgrade-to-${IDENTITY_VERSION}"
 
 log_info "Building the current IDS version: ${IDENTITY_VERSION}"
 make build -C ../../distribution

@@ -74,6 +74,7 @@ before_script:
     helm repo update
     echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
     fi
+    export IDS_BUILD_NAME=$(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
 
 jobs:
   include:
@@ -147,7 +148,7 @@ jobs:
       addons:
         chrome: stable
       script: |
-        export namespace=$(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
+        export namespace=${IDS_BUILD_NAME}
         export release_name_ingress=ing-${TRAVIS_BUILD_NUMBER}
         export release_name_ids=ids-${TRAVIS_BUILD_NUMBER}
         export openldap_release=openldap-${TRAVIS_BUILD_NUMBER}
