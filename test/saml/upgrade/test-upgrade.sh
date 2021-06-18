@@ -114,27 +114,27 @@ target="alfresco-identity-service-${IDENTITY_VERSION}"
 
 cd "${workspace}/${source}" || exit 1
 
-log_info "Starting ${source} ..."
 # first add the admin user
 log_info "Add the admin user ..."
 bin/add-user-keycloak.sh -r master -u admin -p admin
 
+log_info "Starting ${source} ..."
 # Start the server in the background
-nohup sh bin/standalone.sh -b "${host_ip}" >/dev/null 2>&1 &
+nohup ./bin/standalone.sh -b "${host_ip}" >/dev/null 2>&1 &
 # wait for the server to startup
 sleep 20
 
 cd "${current_dir}/../scripts" || exit 1
 
 # Check the 'from' version
-sh check-keycloak-version.sh ids_base_url="${base_url}" ids_home="${workspace}/${source}"
+./check-keycloak-version.sh ids_base_url="${base_url}" ids_home="${workspace}/${source}"
 
 # setup Auth0
 log_info "Setup Auth0 ..."
-sh auth0-api.sh create "${auth0_app_name}" "${base_url}"
+./auth0-api.sh create "${auth0_app_name}" "${base_url}"
 
 # Configure SAML
-sh configure-saml-ids.sh app_name="${auth0_app_name}" ids_base_url="${base_url}"
+./configure-saml-ids.sh app_name="${auth0_app_name}" ids_base_url="${base_url}"
 
 # cd to /saml dir
 cd "${current_dir}" || exit 1
@@ -191,7 +191,7 @@ sleep 20
 cd "${current_dir}/../scripts" || exit 1
 
 # Check the 'to' version
-sh check-keycloak-version.sh ids_base_url="${base_url}" ids_home="${workspace}/${target}"
+./check-keycloak-version.sh ids_base_url="${base_url}" ids_home="${workspace}/${target}"
 
 # cd to /saml dir
 cd "${current_dir}" || exit 1
@@ -211,4 +211,4 @@ cd "${current_dir}/../scripts" || exit 1
 
 log_info "Cleanup ..."
 log_info "Deleting Auth0 application: ${auth0_app_name} ..."
-sh auth0-api.sh delete "${auth0_app_name}"
+./auth0-api.sh delete "${auth0_app_name}"

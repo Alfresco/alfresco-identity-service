@@ -381,6 +381,7 @@ jobs:
       script: |
         cd test/saml
         mvn clean package -DskipTests
+        find ../scripts -type f -iname "*.sh" -exec chmod +x {} \;
         ./upgrade/test-upgrade.sh
 
     - name: Package and Publish Chart
