@@ -8,8 +8,11 @@ source "../../distribution/build.properties"
 
 . "../scripts/common.func"
 
+pgrep_name="java"
+
 is_running() {
   RET=$(pgrep -f "$pgrep_name")
+  log_info "Pgrep: $RET"
   if [ -n "$RET" ]; then
     return 0
   else
@@ -84,7 +87,6 @@ extra_migration_step() {
 current_dir=$(pwd)
 workspace="${current_dir}/target/distribution/workspace"
 auth0_app_name="test-upgrade-to-ids-${IDENTITY_VERSION}"
-pgrep_name="java"
 # Get the host IP
 host_ip=$(ifconfig | grep -E '([0-9]{1,3}\.){3}[0-9]{1,3}' | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
 # Keycloak default port
