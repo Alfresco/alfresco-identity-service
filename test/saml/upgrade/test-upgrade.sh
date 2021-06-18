@@ -12,7 +12,6 @@ pgrep_name="java"
 
 is_running() {
   RET=$(pgrep -f "$pgrep_name")
-  log_info "Pgrep: $RET"
   if [ -n "$RET" ]; then
     return 0
   else
@@ -21,6 +20,11 @@ is_running() {
 }
 
 stop_ids() {
+  p1=$(pgrep -f "identity")
+  p2=$(pgrep -f "keycloak")
+  log_info "Process with the name identity: $p1"
+  log_info "Process with the name keycloak: $p2"
+
   if ! is_running; then
     log_info "IDS server is not running."
     exit 0
