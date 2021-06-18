@@ -21,7 +21,7 @@ keycloak:
     httpGet:
       path: /auth/
       port: http
-    initialDelaySeconds: 10
+    initialDelaySeconds: 20
     timeoutSeconds: 10
 
 realm:

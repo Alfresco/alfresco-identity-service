@@ -17,6 +17,10 @@ log_error() {
     exit 1
 }
 
+log_error_no_exit() {
+    echo "error::: $1"
+}
+
 printVarSummary() {
     separator
     echo "Variables Summary"

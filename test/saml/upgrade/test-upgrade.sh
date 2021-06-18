@@ -8,7 +8,7 @@ source "../../distribution/build.properties"
 
 . "../scripts/common.func"
 
-pgrep_name="java"
+pgrep_name="keycloak"
 
 is_running() {
   RET=$(pgrep -f "$pgrep_name")
@@ -20,8 +20,8 @@ is_running() {
 }
 
 stop_ids() {
-  p1=$(pgrep -f "identity")
-  p2=$(pgrep -f "keycloak")
+  p1=$(ps | grep  "identity")
+  p2=$(ps | grep "keycloak")
   log_info "Process with the name identity: $p1"
   log_info "Process with the name keycloak: $p2"
 
@@ -49,7 +49,7 @@ stop_ids() {
       log_info "Regular shutdown of IDS server was not successful. Sending SIGKILL to process."
       pkill -KILL -f "${pgrep_name}"
       if is_running; then
-        log_error "Error stopping IDS."
+        log_error_no_exit "Error stopping IDS."
       else
         log_info "Stopped IDS."
       fi
