@@ -2,6 +2,10 @@
 ## Release Notes - Identity Service
 
 ---
+### *Alfresco Identity Service 1.5.0*
+
+#### Epics
+* [<a href='https://alfresco.atlassian.net/browse/AUTH-532'>AUTH-532</a>] - Upgrade to Keycloak 13.0.1-patch
 
 ### *Alfresco Identity Service 1.4.0*
 
