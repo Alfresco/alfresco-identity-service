@@ -434,7 +434,7 @@ jobs:
         skip_cleanup: true
         region: "eu-west-1"
         local_dir: "deploy_dir"
-        upload-dir: "enterprise/alfresco-identity-service/"
+        upload-dir: "enterprise/alfresco-identity-service/${IDENTITY_VERSION}"
         on:
           all_branches: true
       after_script:
@@ -463,7 +463,7 @@ jobs:
         skip_cleanup: true
         region: "eu-west-1"
         local_dir: "deploy_dir"
-        upload-dir: "release/enterprise/alfresco-identity-service/"
+        upload-dir: "release/enterprise/alfresco-identity-service/${IDENTITY_VERSION}"
         on:
           all_branches: true
     - name: Publish DockerHub
