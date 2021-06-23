@@ -11,10 +11,13 @@ stages:
   - name: Lint
   - name: Build
   - name: Test
+    if: commit_message !~ /\[skip tests\]/
   - name: Publish_Chart
-    if: branch = master OR commit_message = "[publish]"
+    if: branch = master OR commit_message =~ /\[publish\]/
+  - name: Release_Staging
+    if: commit_message =~ /\[staging\]/
   - name: Release
-    if: branch = master AND commit_message = "[release]"
+    if: branch = master AND commit_message =~ /\[release\]/
 
 env:
   global:
@@ -75,6 +78,9 @@ before_script:
     echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
     fi
     export IDS_BUILD_NAME=$(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
+
+after_failure:
+  - aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
 
 jobs:
   include:
@@ -410,7 +416,34 @@ jobs:
         git add ${HELM_REPO}
         git commit -m "${COMMIT_MESSAGE_FIRST_LINE}"
         git push --quiet origin master
-    - name: Publish S3
+    - name: Publish to S3 Staging
+      stage: Release_Staging
+      env:
+        - IDENTITY_VERSION=${IDENTITY_VERSION}
+      before_deploy:
+        - source distribution/build.properties
+        - export IDENTITY_VERSION=${IDENTITY_VERSION}
+        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
+      language: bash
+      deploy:
+        provider: s3
+        access_key_id: "${STAGING_AWS_ACCESS_KEY}"
+        secret_access_key: "${STAGING_AWS_SECRET_KEY}"
+        bucket: "${S3_STAGING_BUCKET}"
+        skip_cleanup: true
+        region: "eu-west-1"
+        local_dir: "deploy_dir"
+        upload-dir: "enterprise/alfresco-identity-service/"
+        on:
+          all_branches: true
+      after_script:
+        - |
+          if [[ "${TRAVIS_COMMIT_MESSAGE}" != *"[release]"* ]]
+          then
+            aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
+          fi
+    - name: Publish to S3 and Nexus
       stage: Release
       env: 
         - IDENTITY_VERSION=${IDENTITY_VERSION}
@@ -424,15 +457,15 @@ jobs:
       language: bash
       deploy:
         provider: s3
-        access_key_id: "${STAGING_AWS_ACCESS_KEY}"
-        secret_access_key: "${STAGING_AWS_SECRET_KEY}"
-        bucket: "${S3_STAGING_BUCKET}"
+        access_key_id: "${RELEASE_AWS_ACCESS_KEY}"
+        secret_access_key: "${RELEASE_AWS_SECRET_KEY}"
+        bucket: "${S3_RELEASE_BUCKET}"
         skip_cleanup: true
         region: "eu-west-1"
         local_dir: "deploy_dir"
-        upload-dir: "enterprise/alfresco-identity-service/"
+        upload-dir: "release/enterprise/alfresco-identity-service/"
         on:
-           all_branches: true
+          all_branches: true
     - name: Publish DockerHub
       stage: Release
       script:
