@@ -454,7 +454,6 @@ jobs:
         - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
         - aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
         - mvn deploy:deploy-file -DgroupId=org.alfresco -DartifactId=alfresco-identity-service -Dversion=${IDENTITY_VERSION} -DgeneratePom=true -Dpackaging=zip -DrepositoryId=nexus -Durl=https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases -Dfile=./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
-      language: bash
       deploy:
         provider: s3
         access_key_id: "${RELEASE_AWS_ACCESS_KEY}"
