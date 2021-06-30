@@ -11,10 +11,13 @@ stages:
   - name: Lint
   - name: Build
   - name: Test
+    if: commit_message !~ /\[skip tests\]/
   - name: Publish_Chart
-    if: branch = master OR commit_message = "[publish]"
+    if: branch = master OR commit_message =~ /\[publish\]/
+  - name: Release_Staging
+    if: commit_message =~ /\[staging\]/
   - name: Release
-    if: branch = master AND commit_message = "[release]"
+    if: branch = master AND commit_message =~ /\[release\]/
 
 env:
   global:
@@ -38,7 +41,7 @@ branches:
 
 before_install:
   - |
-    openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in test/helm/config-files/realmRsaKeys.json.enc -out test/helm/config-files/realmRsaKeys.json -d    
+    openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in test/scripts/config-files/realmRsaKeys.json.enc -out test/scripts/config-files/realmRsaKeys.json -d
     sudo pip install --upgrade awscli
     if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Release" ]]; then
     # cp .travis.settings.xml $HOME/.m2/settings.xml
@@ -57,6 +60,7 @@ before_install:
     export KUBERNETES_VERSION=1.18.9
     curl -fsSL https://dl.k8s.io/v${KUBERNETES_VERSION}/kubernetes-client-$(uname | tr '[:upper:]' '[:lower:]')-amd64.tar.gz | tar xz --strip=3 -C $HOME/bin/ kubernetes/client/bin/kubectl &&
     echo kubectl $(kubectl version --client --short)
+    cp .travis.settings.xml $HOME/.m2/settings.xml
 
 before_script:
   - |
@@ -73,6 +77,10 @@ before_script:
     helm repo update
     echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
     fi
+    export IDS_BUILD_NAME=$(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
+
+after_failure:
+  - aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
 
 jobs:
   include:
@@ -146,7 +154,7 @@ jobs:
       addons:
         chrome: stable
       script: |
-        export namespace=$(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
+        export namespace=${IDS_BUILD_NAME}
         export release_name_ingress=ing-${TRAVIS_BUILD_NUMBER}
         export release_name_ids=ids-${TRAVIS_BUILD_NUMBER}
         export openldap_release=openldap-${TRAVIS_BUILD_NUMBER}
@@ -289,7 +297,7 @@ jobs:
 
         # install ldap
 
-        LDAP_CONFIG_FILE="test/helm/ldap-config.yaml"
+        LDAP_CONFIG_FILE="test/scripts/ldap-config.yaml"
 
         helm upgrade --install $openldap_release https://github.com/geek-cookbook/helm-openldap/releases/download/openldap-1.2.9/openldap-1.2.9.tgz \
         -f $LDAP_CONFIG_FILE \
@@ -330,7 +338,7 @@ jobs:
         pods_ready
 
         # Set IDP Config 
-        HOST=$namespace.dev.alfresco.me ./test/helm/set_idp_config.sh
+        HOST=$namespace.dev.alfresco.me ./test/scripts/set_idp_config.sh
 
         # run identity checks
         docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "identity-test-collection.json" --global-var "identity_host=$namespace.dev.alfresco.me"
@@ -352,9 +360,9 @@ jobs:
         fi
 
         if [[ "${TEST_RESULT}" == "0" ]]; then
-          cd test/helm
-          ./auth0-api.sh create $namespace.dev.alfresco.me
-          ./configure-saml-ids.sh $namespace.dev.alfresco.me
+          cd test/scripts
+          ./auth0-api.sh create $namespace.dev.alfresco.me https://$namespace.dev.alfresco.me
+          ./configure-saml-ids.sh app_name=$namespace.dev.alfresco.me ids_base_url=https://$namespace.dev.alfresco.me
           cd ../saml 
           export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
           export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
@@ -367,7 +375,7 @@ jobs:
         if [[ "${TRAVIS_COMMIT_MESSAGE}" != *"[keep env]"* ]]; then
           helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
           kubectl delete namespace $namespace
-          cd test/helm
+          cd test/scripts
           ./auth0-api.sh delete $namespace.dev.alfresco.me
         fi
 
@@ -375,6 +383,14 @@ jobs:
           echo "Tests failed, exiting"
           exit 1
         fi
+    - name: Test Upgrade
+      stage: Test
+      script: |
+        cd test/saml
+        mvn clean package -DskipTests
+        find ../scripts -type f -iname "*.sh" -exec chmod +x {} \;
+        ./upgrade/test-upgrade.sh
+
     - name: Package and Publish Chart
       stage: Publish_Chart
       script: |
@@ -400,16 +416,15 @@ jobs:
         git add ${HELM_REPO}
         git commit -m "${COMMIT_MESSAGE_FIRST_LINE}"
         git push --quiet origin master
-    - name: Publish S3
-      stage: Release
-      env: 
+    - name: Publish to S3 Staging
+      stage: Release_Staging
+      env:
         - IDENTITY_VERSION=${IDENTITY_VERSION}
-      before_deploy: 
+      before_deploy:
         - source distribution/build.properties
         - export IDENTITY_VERSION=${IDENTITY_VERSION}
         - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
         - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
-        - aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
       language: bash
       deploy:
         provider: s3
@@ -419,9 +434,38 @@ jobs:
         skip_cleanup: true
         region: "eu-west-1"
         local_dir: "deploy_dir"
-        upload-dir: "enterprise/alfresco-identity-service/"
+        upload-dir: "enterprise/alfresco-identity-service/${IDENTITY_VERSION}"
         on:
-           all_branches: true
+          all_branches: true
+      after_script:
+        - |
+          if [[ "${TRAVIS_COMMIT_MESSAGE}" != *"[release]"* ]]
+          then
+            aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
+          fi
+    - name: Publish to S3 and Nexus
+      stage: Release
+      env: 
+        - IDENTITY_VERSION=${IDENTITY_VERSION}
+      before_deploy: 
+        - source distribution/build.properties
+        - export IDENTITY_VERSION=${IDENTITY_VERSION}
+        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
+        - aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
+        - mvn deploy:deploy-file -DgroupId=org.alfresco -DartifactId=alfresco-identity-service -Dversion=${IDENTITY_VERSION} -DgeneratePom=true -Dpackaging=zip -DrepositoryId=nexus -Durl=https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases -Dfile=./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+      language: bash
+      deploy:
+        provider: s3
+        access_key_id: "${RELEASE_AWS_ACCESS_KEY}"
+        secret_access_key: "${RELEASE_AWS_SECRET_KEY}"
+        bucket: "${S3_RELEASE_BUCKET}"
+        skip_cleanup: true
+        region: "eu-west-1"
+        local_dir: "deploy_dir"
+        upload-dir: "release/enterprise/alfresco-identity-service/${IDENTITY_VERSION}"
+        on:
+          all_branches: true
     - name: Publish DockerHub
       stage: Release
       script:

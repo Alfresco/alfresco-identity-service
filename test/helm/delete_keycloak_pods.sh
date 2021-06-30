@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-. "test/helm/common.func"
+. "test/scripts/common.func"
 
 namespace=$(get_namespace)
 

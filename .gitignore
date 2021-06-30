@@ -40,5 +40,5 @@ requirements.lock
 charts/
 
 #Test rsa realms keys
-test/helm/config-files/realmRsaKeys.json
+test/scripts/config-files/realmRsaKeys.json
 

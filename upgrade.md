@@ -3,6 +3,13 @@
 **_NOTE:_** The upgrade of the Alfresco Identity Management Service requires downtime.
 This means that no user will be able to connect to any of the Digital Business Platform components while the upgrade or rollback is being done.
 
+### Migrating to Identity Service 1.5.0
+**Manual migration step needed**
+
+Since Keycloak 13.0.0, the **_SmallRye_** modules have been removed from the underlying WildFly distribution, and the server will not start if the configuration references them. Therefore, to perform server configuration migration, you have to manually remove all the lines that refer to _SmallRye_ modules.
+
+See Keycloak [documentation](https://www.keycloak.org/docs/latest/upgrading/#migrating-to-13-0-0) for what lines to remove from the **_standalone.xml_** file.
+
 
 ### Note: Upgrading from Identity Service 1.2 to a later versions
 Prior to upgrading Identity Service 1.2 to a later version, make sure to first modify the **_First Broker Login_** authentication configuration as follows:
@@ -49,7 +56,7 @@ However, depending on the environment you are using you should follow these high
 The upgrade should be seamless.
 
 
-#### Upgrade to chart 3.0.0
+#### Upgrade to chart >=3.0.0
 
 1. Identify your chart release name and namespace and save them into variables.
 
@@ -73,7 +80,7 @@ helm upgrade $RELEASENAME alfresco-stable/alfresco-identity-service --version=3.
 4. Delete the postgresql pod.
 
 ```bash
-kubectl delete pod $RELEASENAME-postgresql-0 --namespace $RELEASENAMESPACE
+kubectl delete pod $RELEASENAME-postgresql-id-0 --namespace $RELEASENAMESPACE
 ```
 
 The Identity Service should be back up in a few minutes.

@@ -1,13 +1,14 @@
 #!/bin/bash
 
-log_info() {
-    echo "info::: ${1}"
-}
+### Available parameters:
+# - app_name
+# - ids_base_url
+#
+# Example:
+# sh configure-saml-ids.sh app_name=test-app ids_base_url=http://123.0.0.1:8080
+#
 
-log_error() {
-    echo "error::: ${1}"
-    exit 1
-}
+. "common.func"
 
 check_var() {
     if [ -z "${1}" ]; then
@@ -15,21 +16,30 @@ check_var() {
     fi
 }
 
+ARGS=$@
+for arg in $ARGS; do
+    eval "$arg"
+done
+
+
+# shellcheck disable=SC2154
+IDS_BASE_URL="${ids_base_url}"
+# shellcheck disable=SC2154
+NAME="${app_name}"
+
 # AIMS properties
 IDP_ID='saml'
 REALM='alfresco'
 REALM_KEY_PROVIDER_NAME="${IDS_KEY_PROVIDER_NAME:-dbp-sso-rsa}"
 
-SAML_CLIENT_ID="$(./auth0-api.sh getId "${1}")"
-HOST_IP="${1}"
-IDS_BASE_URL="https://${HOST_IP}"
+log_info "Getting Auth0 client-id from the app-name..."
+SAML_CLIENT_ID="$(./auth0-api.sh getId "${NAME}")"
 
-check_var "$HOST_IP"        "HOST_IP"
-check_var "$SAML_CLIENT_ID" "AUTH0_CLIENT_ID"
 check_var "$IDS_BASE_URL" "IDS_BASE_URL"
+check_var "$SAML_CLIENT_ID" "AUTH0_CLIENT_ID"
 
 log_info "Using IDS_BASE_URL '${IDS_BASE_URL}'"
-log_info "Get the admin cli token ..."
+log_info "Client-id: $SAML_CLIENT_ID"
 
 MAX_TRIES=10
 

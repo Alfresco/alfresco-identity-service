@@ -6,11 +6,10 @@
 # It runs after deploy_identity_service.sh, before any tests are run
 #
 
-. "test/helm/common.func"
+. "test/scripts/common.func"
 
 HOST=${HOST:-${bamboo_inject_dbpurl}}
-CONFIG_TEMPLATES_DIR=test/helm
-bamboo_pingfederate_connection_enable=true
+CONFIG_TEMPLATES_DIR=test/scripts
 is_openldap_enabled=true
 
 namespace=$(get_namespace)

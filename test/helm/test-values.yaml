@@ -17,6 +17,13 @@ keycloak:
     - name: KEYCLOAK_IMPORT
       value: /realm/alfresco-realm.json
 
+  livenessProbe: |
+    httpGet:
+      path: /auth/
+      port: http
+    initialDelaySeconds: 20
+    timeoutSeconds: 10
+
 realm:
   alfresco:
     client:
