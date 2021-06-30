@@ -44,7 +44,6 @@ before_install:
     openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in test/scripts/config-files/realmRsaKeys.json.enc -out test/scripts/config-files/realmRsaKeys.json -d
     sudo pip install --upgrade awscli
     if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Release" ]]; then
-    # cp .travis.settings.xml $HOME/.m2/settings.xml
     curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
     sudo mv linux-amd64/helm /usr/local/bin
     helm version
@@ -453,7 +452,8 @@ jobs:
         - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
         - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
         - aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
-        - mvn deploy:deploy-file -DgroupId=org.alfresco -DartifactId=alfresco-identity-service -Dversion=${IDENTITY_VERSION} -DgeneratePom=true -Dpackaging=zip -DrepositoryId=nexus -Durl=https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases -Dfile=./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        - curl -q -u ${MAVEN_USERNAME}:${MAVEN_PASSWORD} --upload-file ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases/org/alfresco/alfresco-identity-service/${IDENTITY_VERSION}/alfresco-identity-service-${IDENTITY_VERSION}.zip
+      language: bash
       deploy:
         provider: s3
         access_key_id: "${RELEASE_AWS_ACCESS_KEY}"
