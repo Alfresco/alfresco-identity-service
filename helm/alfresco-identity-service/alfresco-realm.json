@@ -2615,6 +2615,7 @@
     "oauth2DevicePollingInterval": "5",
     "clientSessionIdleTimeout": "0",
     "clientSessionMaxLifespan": "0",
+    "parRequestUriLifespan": "60",
     "clientOfflineSessionIdleTimeout": "0",
     "cibaInterval": "5"
   },
@@ -2679,6 +2680,6 @@
     {{- end }}
     {{- end }}
   ],
-  "keycloakVersion": "13.0.1",
+  "keycloakVersion": "15.0.2",
   "userManagedAccessAllowed": false
 }
