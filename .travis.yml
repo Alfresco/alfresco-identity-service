@@ -280,7 +280,7 @@ jobs:
               https: http
               http: http
             annotations:
-              external-dns.alpha.kubernetes.io/hostname: "$namespace.dev.alfresco.me"
+              external-dns.alpha.kubernetes.io/hostname: "$namespace.dev.envalfresco.com"
               service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Creator=Platform-Services,Department=Engineering,NoAutomaticShutdown=True,Owner=Platform-Services,Production=False,Purpose=DBP and SSO Testing,Tool=k8sIngress"
               service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
               service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
@@ -304,7 +304,7 @@ jobs:
         --namespace $namespace
 
         # install Identity Service
-        sed -i "s/identity_host/$namespace.dev.alfresco.me/g" test/helm/test-values.yaml
+        sed -i "s/identity_host/$namespace.dev.envalfresco.com/g" test/helm/test-values.yaml
         helm dep up helm/alfresco-identity-service
         helm upgrade --install $release_name_ids helm/alfresco-identity-service \
         --values=test/helm/test-values.yaml \
@@ -318,10 +318,10 @@ jobs:
         DNS_SLEEP_SECONDS=10
 
         echo "Trying to perform a trace DNS query to prevent caching"
-        dig +trace $namespace.dev.alfresco.me @8.8.8.8
+        dig +trace $namespace.dev.envalfresco.com @8.8.8.8
 
         while [ "$DNS_PROPAGATED" -eq 0 ] && [ "$DNS_COUNTER" -le "$DNS_COUNTER_MAX" ]; do
-          host $namespace.dev.alfresco.me 8.8.8.8
+          host $namespace.dev.envalfresco.com 8.8.8.8
           if [ "$?" -eq 1 ]; then
             DNS_COUNTER=$((DNS_COUNTER + 1))
             echo "DNS Not Propagated - Sleeping $DNS_SLEEP_SECONDS seconds"
@@ -332,39 +332,39 @@ jobs:
           fi
         done
 
-        [ $DNS_PROPAGATED -ne 1 ] && echo "DNS entry for $namespace.dev.alfresco.me did not propagate within expected time" && exit 1
+        [ $DNS_PROPAGATED -ne 1 ] && echo "DNS entry for $namespace.dev.envalfresco.com did not propagate within expected time" && exit 1
 
         pods_ready
 
         # Set IDP Config 
-        HOST=$namespace.dev.alfresco.me ./test/scripts/set_idp_config.sh
+        HOST=$namespace.dev.envalfresco.com ./test/scripts/set_idp_config.sh
 
         # run identity checks
-        docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "identity-test-collection.json" --global-var "identity_host=$namespace.dev.alfresco.me"
+        docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "identity-test-collection.json" --global-var "identity_host=$namespace.dev.envalfresco.com"
         TEST_RESULT=$?
         echo "TEST_RESULT=${TEST_RESULT}"
 
         if [[ "${TEST_RESULT}" == "0" ]]; then
-          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "change-keycloak-access-token-lifespan-collection.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
-          HOST=$namespace.dev.alfresco.me ./test/helm/delete_keycloak_pods.sh
-          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "check-keycloak-access-token-lifespan-change-persisted.json" --insecure --global-var "identity_host=$namespace.dev.alfresco.me"
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "change-keycloak-access-token-lifespan-collection.json" --insecure --global-var "identity_host=$namespace.dev.envalfresco.com"
+          HOST=$namespace.dev.envalfresco.com ./test/helm/delete_keycloak_pods.sh
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "check-keycloak-access-token-lifespan-change-persisted.json" --insecure --global-var "identity_host=$namespace.dev.envalfresco.com"
           TEST_RESULT=$?
           echo "TEST_RESULT=${TEST_RESULT}"
         fi
 
         if [[ "${TEST_RESULT}" == "0" ]]; then
-          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --global-var "identity_host=$namespace.dev.alfresco.me"
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --global-var "identity_host=$namespace.dev.envalfresco.com"
           TEST_RESULT=$?
           echo "TEST_RESULT=${TEST_RESULT}"
         fi
 
         if [[ "${TEST_RESULT}" == "0" ]]; then
           cd test/scripts
-          ./auth0-api.sh create $namespace.dev.alfresco.me https://$namespace.dev.alfresco.me
-          ./configure-saml-ids.sh app_name=$namespace.dev.alfresco.me ids_base_url=https://$namespace.dev.alfresco.me
+          ./auth0-api.sh create $namespace.dev.envalfresco.com https://$namespace.dev.envalfresco.com
+          ./configure-saml-ids.sh app_name=$namespace.dev.envalfresco.com ids_base_url=https://$namespace.dev.envalfresco.com
           cd ../saml 
-          export KEYCLOAK_HOSTNAME=$namespace.dev.alfresco.me
-          export KEYCLOAK_ISSUER=https://$namespace.dev.alfresco.me/auth/realms/alfresco
+          export KEYCLOAK_HOSTNAME=$namespace.dev.envalfresco.com
+          export KEYCLOAK_ISSUER=https://$namespace.dev.envalfresco.com/auth/realms/alfresco
           mvn clean test
           TEST_RESULT=$?
           echo "TEST_RESULT=${TEST_RESULT}"
@@ -375,7 +375,7 @@ jobs:
           helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
           kubectl delete namespace $namespace
           cd test/scripts
-          ./auth0-api.sh delete $namespace.dev.alfresco.me
+          ./auth0-api.sh delete $namespace.dev.envalfresco.com
         fi
 
         if [[ "${TEST_RESULT}" == "1" ]]; then
