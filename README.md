@@ -66,6 +66,7 @@ Enter a username and password to create an initial admin user.
 
 This account will be permitted to log in to the master realm’s administration console, from which you will create realms and users and register applications to be secured by Keycloak.
 
+
 The Alfresco realm already has the admin account created and you can reach the realm console with the following url:
 
 http://<IP_ADDRESS>:8080/auth/admin/alfresco/console/
