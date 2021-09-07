@@ -265,6 +265,8 @@ jobs:
           scope:
             enable: true
             namespace: $namespace
+          admissionWebhooks:
+            enabled: false
           config:
             proxy-body-size: "100m"
             generate-request-id: "true"
