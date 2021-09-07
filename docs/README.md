@@ -13,6 +13,7 @@ Aspects of Common Identity and Governance are likely to be the responsibility of
 
 *** 
 
+
 ### Overview
 The Identity Service leverages the open source identity and access management project [Keycloak](https://www.keycloak.org/).  An example
 realm file containing a pre-defined 'alfresco' client and login theme are imported on bootstrap.
