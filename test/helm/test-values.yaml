@@ -19,7 +19,7 @@ keycloak:
   postgresql:
     persistence:
       existingClaim: ""
-      storageClaas: "gp2"
+      storageClass: "gp2"
 
   livenessProbe: |
     httpGet:
