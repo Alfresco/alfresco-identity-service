@@ -16,6 +16,10 @@ keycloak:
       value: admin
     - name: KEYCLOAK_IMPORT
       value: /realm/alfresco-realm.json
+  postgres:
+    persistence:
+      existingClaim: ""
+      storageClaas: "gp2"
 
   livenessProbe: |
     httpGet:
