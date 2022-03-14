@@ -93,7 +93,7 @@ keycloak:
     postgresqlPassword: "keycloak"
     persistence:
       enabled: true
-      existingClaim: "alfresco-volume-claim"
+      existingClaim: ""
       subPath: "alfresco-identity-service/database-data"
     resources:
       requests:
