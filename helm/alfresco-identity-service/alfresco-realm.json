@@ -2635,12 +2635,9 @@
       },
       "credentials": [
         {
-          "id" : "fd75d058-af80-4d44-a739-2ca8ac4bd5a1",
           "type" : "password",
-          "createdDate" : 1528478610540,
-          "secretData" : "{\"value\":\"gAkpVxgn2kV/PltEMn5bQKZckZ0T7sM2pcl8KYoeudzcEU5FtJp6Gahp4p2w9RjtTvuQQUeC/RTyEq3/MC97gQ==\",\"salt\":\"tCyusFbZ5At7hDbfg1O60w==\"}",
-          "credentialData" : "{\"hashIterations\":27500,\"algorithm\":\"pbkdf2-sha256\",\"additionalParameters\":{}}"
-        } 
+          "value" : "{{ .Values.realm.alfresco.adminPassword}}"
+        }
       ],
       "disableableCredentialTypes": [ 
         "password" 
