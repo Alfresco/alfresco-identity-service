@@ -1,3 +1,9 @@
+import:
+  - source: Alfresco/alfresco-build-tools:.travis.awscli_install.yml@v1.2.1
+  - source: Alfresco/alfresco-build-tools:.travis.aws-iam-authenticator_install.yml@v1.2.1
+  - source: Alfresco/alfresco-build-tools:.travis.kubernetes_install.yml@v1.2.1
+  - source: Alfresco/alfresco-build-tools:.travis.helm_install.yml@v1.2.1
+
 language: java
 jdk: openjdk11
 
@@ -25,8 +31,6 @@ env:
     - BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-${TRAVIS_BRANCH}}
     - HELM_REPO_BASE_URL=https://kubernetes-charts.alfresco.com
     - HELM_REPO=${HELM_REPO:-incubator}
-    - KUBERNETES_VERSION=1.18.4
-    - HELM_VERSION=${HELM_VERSION:-3.2.4}
 
 cache:
   directories:
@@ -42,39 +46,15 @@ branches:
 before_install:
   - |
     openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in test/scripts/config-files/realmRsaKeys.json.enc -out test/scripts/config-files/realmRsaKeys.json -d
-    sudo pip install --upgrade awscli
-    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Release" ]]; then
-    curl https://get.helm.sh/helm-v${HELM_VERSION}-linux-amd64.tar.gz | tar zx
-    sudo mv linux-amd64/helm /usr/local/bin
-    helm version
-
-    curl -o aws-iam-authenticator https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator
-    curl -o aws-iam-authenticator.sha256 https://amazon-eks.s3.us-west-2.amazonaws.com/1.16.8/2020-04-16/bin/linux/amd64/aws-iam-authenticator.sha256
-    openssl sha1 -sha256 aws-iam-authenticator
-    chmod +x ./aws-iam-authenticator
-    mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
-    export PATH=$PATH:$HOME/bin
     aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
-    fi
-    export KUBERNETES_VERSION=1.18.9
-    curl -fsSL https://dl.k8s.io/v${KUBERNETES_VERSION}/kubernetes-client-$(uname | tr '[:upper:]' '[:lower:]')-amd64.tar.gz | tar xz --strip=3 -C $HOME/bin/ kubernetes/client/bin/kubectl &&
-    echo kubectl $(kubectl version --client --short)
     cp .travis.settings.xml $HOME/.m2/settings.xml
 
 before_script:
   - |
-    if [[ ${TRAVIS_BUILD_STAGE_NAME} != "Test Windows" ]] && [[ ${TRAVIS_BUILD_STAGE_NAME} != "Release" ]]; then
-    REPO_NAME=${TRAVIS_REPO_SLUG##*/}
-    PROJECT_NAME=alfresco-identity-service
-    helm repo add alfresco ${HELM_REPO_BASE_URL}/stable
-    helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-    helm repo add alfresco-incubator ${HELM_REPO_BASE_URL}/${HELM_REPO}
+    export PROJECT_NAME=alfresco-identity-service
     if [[ "${TRAVIS_BRANCH}" == "master" ]] && [[ "${TRAVIS_COMMIT_MESSAGE}" == *"[release]"* ]]
     then
       export HELM_REPO=stable
-    fi
-    helm repo update
-    echo using PROJECT_NAME=${PROJECT_NAME},BRANCH=${BRANCH},HELM_REPO=${HELM_REPO}
     fi
     export IDS_BUILD_NAME=$(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
 
@@ -91,11 +71,12 @@ jobs:
     - name: Build
       stage: Build
       script: |
-        cd distribution
+        source distribution/build.properties
+        export IDENTITY_VERSION=${IDENTITY_VERSION}        
+        echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
         # build and package
+        cd distribution
         make || { echo "Command failed with error code $?"; sleep 1; exit 1; }
-        # security scan the build
-        source build.properties
         # upload ZIP file to S3 bucket
         aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.md5 s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
         aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
@@ -103,11 +84,10 @@ jobs:
       stage: Test
       script: |
         source distribution/build.properties
-        export IDENTITY_VERSION=${IDENTITY_VERSION}
+        export IDENTITY_VERSION=${IDENTITY_VERSION}        
         echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
         aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
-        chmod +x distribution/tests/endpoints.sh
-        distribution/tests/endpoints.sh
+        ./distribution/tests/endpoints.sh
       #after_script: |
         # empty the artifacts bucket (in case there were previous failed builds)
         # aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
@@ -118,42 +98,43 @@ jobs:
       env: 
         - OS=Windows
         - AWSCLI_PATH="C:\Program Files\Amazon\AWSCLIV2"
-        - IDENTITY_VERSION=${IDENTITY_VERSION}
-      before_install:
-        - echo "skipping before_install"
-      before_script:
-        - echo "skipping before_script"
-      install:
-        - choco install awscli
-      script:
-        - source distribution/build.properties
-        - export IDENTITY_VERSION=${IDENTITY_VERSION}
-        - echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
-        - export PATH=$AWSCLI_PATH:$PATH
-        - echo $PATH
-        - aws.exe configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
-        - aws.exe configure set aws_secret_access_key ${AWS_ACCESS_KEY_ID}
-        - aws.exe configure set default.region ${AWS_DEFAULT_REGION}
-        - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
-        - aws.exe s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip
-        - aws.exe s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
-        - unzip alfresco-identity-service-${IDENTITY_VERSION}.zip
-        - cd alfresco-identity-service-${IDENTITY_VERSION}/bin
-        - pwd
-        - dir
-        - export JAVA_HOME=${JAVA_HOME:-/c/jdk}
-        - export PATH=${JAVA_HOME}/bin:${PATH}
-        - choco install jdk8 -params 'installdir=c:\\jdk' -y        
-        - powershell -Command Get-ExecutionPolicy
-        - powershell -Command 'Set-ExecutionPolicy unrestricted'
-        - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
-        - powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
+      before_install: |
+        echo "skipping before_install"
+      before_script: |
+        echo "skipping before_script"
+      install: |
+        choco install awscli
+      script: |
+        source distribution/build.properties
+        export IDENTITY_VERSION=${IDENTITY_VERSION}
+        echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
+        export PATH=$AWSCLI_PATH:$PATH
+        echo $PATH
+        aws configure set aws_access_key_id ${AWS_SECRET_ACCESS_KEY}
+        aws configure set aws_secret_access_key ${AWS_ACCESS_KEY_ID}
+        aws configure set default.region ${AWS_DEFAULT_REGION}
+        aws s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/
+        aws s3 ls s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+        unzip alfresco-identity-service-${IDENTITY_VERSION}.zip
+        cd alfresco-identity-service-${IDENTITY_VERSION}/bin
+        pwd
+        dir
+        export JAVA_HOME=${JAVA_HOME:-/c/jdk}
+        export PATH=${JAVA_HOME}/bin:${PATH}
+        choco install jdk8 -params 'installdir=c:\\jdk' -y        
+        powershell -Command Get-ExecutionPolicy
+        powershell -Command 'Set-ExecutionPolicy unrestricted'
+        powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
+        powershell -Command /c/Users/travis/build/Alfresco/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
     - name: Test Helm Chart
       stage: Test
       addons:
         chrome: stable
       script: |
         export namespace=${IDS_BUILD_NAME}
+        export domain=dev.envalfresco.com
+        export HOST=$namespace.$domain
         export release_name_ingress=ing-${TRAVIS_BUILD_NUMBER}
         export release_name_ids=ids-${TRAVIS_BUILD_NUMBER}
         export openldap_release=openldap-${TRAVIS_BUILD_NUMBER}
@@ -269,7 +250,7 @@ jobs:
               https: http
               http: http
             annotations:
-              external-dns.alpha.kubernetes.io/hostname: "$namespace.dev.envalfresco.com"
+              external-dns.alpha.kubernetes.io/hostname: "$HOST"
               service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Creator=Platform-Services,Department=Engineering,NoAutomaticShutdown=True,Owner=Platform-Services,Production=False,Purpose=DBP and SSO Testing,Tool=k8sIngress"
               service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
               service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
@@ -279,26 +260,25 @@ jobs:
               service.beta.kubernetes.io/aws-load-balancer-security-groups: $AWS_SG
         EOR
 
-        # install ingress
-        helm upgrade --install $release_name_ingress ingress-nginx/ingress-nginx --version=3.7.1 -f ingressvalues.yaml \
-        --namespace $namespace
+        # install ingress-nginx
+        helm upgrade --install $release_name_ingress --repo https://kubernetes.github.io/ingress-nginx ingress-nginx --version=3.7.1 -f ingressvalues.yaml \
+          --wait \
+          --namespace $namespace
 
-        # install ldap
-
-        LDAP_CONFIG_FILE="test/scripts/ldap-config.yaml"
-
-        helm upgrade --install $openldap_release https://github.com/geek-cookbook/helm-openldap/releases/download/openldap-1.2.9/openldap-1.2.9.tgz \
-        -f $LDAP_CONFIG_FILE \
-        --wait \
-        --namespace $namespace
+        # install openldap
+        helm upgrade --install $openldap_release --repo https://geek-cookbook.github.io/helm-openldap openldap --version 1.2.9 \
+          -f test/scripts/ldap-config.yaml \
+          --wait \
+          --namespace $namespace
 
         # install Identity Service
-        sed -i "s/identity_host/$namespace.dev.envalfresco.com/g" test/helm/test-values.yaml
         helm dep up helm/alfresco-identity-service
         helm upgrade --install $release_name_ids helm/alfresco-identity-service \
-        --values=test/helm/test-values.yaml \
-        --wait \
-        --namespace $namespace
+          --set ingress.hostName=$HOST \
+          --set realm.alfresco.client.redirectUris[0]="https://${HOST}\*" \
+          --set realm.alfresco.client.webOrigins[0]="https://${HOST}\*" \
+          --wait \
+          --namespace $namespace
 
         # check dns and pods
         DNS_PROPAGATED=0
@@ -307,10 +287,10 @@ jobs:
         DNS_SLEEP_SECONDS=10
 
         echo "Trying to perform a trace DNS query to prevent caching"
-        dig +trace $namespace.dev.envalfresco.com @8.8.8.8
+        dig +trace $HOST @8.8.8.8
 
         while [ "$DNS_PROPAGATED" -eq 0 ] && [ "$DNS_COUNTER" -le "$DNS_COUNTER_MAX" ]; do
-          host $namespace.dev.envalfresco.com 8.8.8.8
+          host $HOST 8.8.8.8
           if [ "$?" -eq 1 ]; then
             DNS_COUNTER=$((DNS_COUNTER + 1))
             echo "DNS Not Propagated - Sleeping $DNS_SLEEP_SECONDS seconds"
@@ -321,39 +301,40 @@ jobs:
           fi
         done
 
-        [ $DNS_PROPAGATED -ne 1 ] && echo "DNS entry for $namespace.dev.envalfresco.com did not propagate within expected time" && exit 1
+        [ $DNS_PROPAGATED -ne 1 ] && echo "DNS entry for $HOST did not propagate within expected time" && exit 1
 
         pods_ready
 
         # Set IDP Config 
-        HOST=$namespace.dev.envalfresco.com ./test/scripts/set_idp_config.sh
+        ./test/scripts/set_idp_config.sh
+        postman_image=postman/newman_alpine33:3.9.2
 
         # run identity checks
-        docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "identity-test-collection.json" --global-var "identity_host=$namespace.dev.envalfresco.com"
+        docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "identity-test-collection.json" --global-var "identity_host=$HOST"
         TEST_RESULT=$?
         echo "TEST_RESULT=${TEST_RESULT}"
 
         if [[ "${TEST_RESULT}" == "0" ]]; then
-          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "change-keycloak-access-token-lifespan-collection.json" --insecure --global-var "identity_host=$namespace.dev.envalfresco.com"
-          HOST=$namespace.dev.envalfresco.com ./test/helm/delete_keycloak_pods.sh
-          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "check-keycloak-access-token-lifespan-change-persisted.json" --insecure --global-var "identity_host=$namespace.dev.envalfresco.com"
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "change-keycloak-access-token-lifespan-collection.json" --insecure --global-var "identity_host=$HOST"
+          ./test/helm/delete_keycloak_pods.sh
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "check-keycloak-access-token-lifespan-change-persisted.json" --insecure --global-var "identity_host=$HOST"
           TEST_RESULT=$?
           echo "TEST_RESULT=${TEST_RESULT}"
         fi
 
         if [[ "${TEST_RESULT}" == "0" ]]; then
-          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host postman/newman_alpine33:3.9.2 run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --global-var "identity_host=$namespace.dev.envalfresco.com"
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --global-var "identity_host=$HOST"
           TEST_RESULT=$?
           echo "TEST_RESULT=${TEST_RESULT}"
         fi
 
         if [[ "${TEST_RESULT}" == "0" ]]; then
           cd test/scripts
-          ./auth0-api.sh create $namespace.dev.envalfresco.com https://$namespace.dev.envalfresco.com
-          ./configure-saml-ids.sh app_name=$namespace.dev.envalfresco.com ids_base_url=https://$namespace.dev.envalfresco.com
+          ./auth0-api.sh create $HOST https://$HOST
+          ./configure-saml-ids.sh app_name=$HOST ids_base_url=https://$HOST
           cd ../saml 
-          export KEYCLOAK_HOSTNAME=$namespace.dev.envalfresco.com
-          export KEYCLOAK_ISSUER=https://$namespace.dev.envalfresco.com/auth/realms/alfresco
+          export KEYCLOAK_HOSTNAME=$HOST
+          export KEYCLOAK_ISSUER=https://$HOST/auth/realms/alfresco
           mvn clean test
           TEST_RESULT=$?
           echo "TEST_RESULT=${TEST_RESULT}"
@@ -364,7 +345,7 @@ jobs:
           helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
           kubectl delete namespace $namespace
           cd test/scripts
-          ./auth0-api.sh delete $namespace.dev.envalfresco.com
+          ./auth0-api.sh delete $HOST
         fi
 
         if [[ "${TEST_RESULT}" == "1" ]]; then
@@ -406,13 +387,12 @@ jobs:
         git push --quiet origin master
     - name: Publish to S3 Staging
       stage: Release_Staging
-      env:
-        - IDENTITY_VERSION=${IDENTITY_VERSION}
-      before_deploy:
-        - source distribution/build.properties
-        - export IDENTITY_VERSION=${IDENTITY_VERSION}
-        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
-        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
+      before_deploy: |
+        source distribution/build.properties
+        export IDENTITY_VERSION=${IDENTITY_VERSION}
+        echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
+        aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
       language: bash
       deploy:
         provider: s3
@@ -433,15 +413,14 @@ jobs:
           fi
     - name: Publish to S3 and Nexus
       stage: Release
-      env: 
-        - IDENTITY_VERSION=${IDENTITY_VERSION}
-      before_deploy: 
-        - source distribution/build.properties
-        - export IDENTITY_VERSION=${IDENTITY_VERSION}
-        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
-        - aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
-        - aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
-        - curl -q -u ${MAVEN_USERNAME}:${MAVEN_PASSWORD} --upload-file ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases/org/alfresco/alfresco-identity-service/${IDENTITY_VERSION}/alfresco-identity-service-${IDENTITY_VERSION}.zip
+      before_deploy: |
+        source distribution/build.properties
+        export IDENTITY_VERSION=${IDENTITY_VERSION}
+        echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
+        aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+        aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
+        aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/build-${TRAVIS_BUILD_NUMBER}/ --recursive
+        curl -q -u ${MAVEN_USERNAME}:${MAVEN_PASSWORD} --upload-file ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases/org/alfresco/alfresco-identity-service/${IDENTITY_VERSION}/alfresco-identity-service-${IDENTITY_VERSION}.zip
       language: bash
       deploy:
         provider: s3
@@ -456,13 +435,14 @@ jobs:
           all_branches: true
     - name: Publish DockerHub
       stage: Release
-      script:
-        - source distribution/build.properties
-        - export IDENTITY_VERSION=${IDENTITY_VERSION}
-        - export PRIVATE_IMAGE=quay.io/alfresco/alfresco-identity-service:${IDENTITY_VERSION}
-        - export PUBLIC_IMAGE=alfresco/alfresco-identity-service:${IDENTITY_VERSION}
-        - echo "$DOCKER_PASSWORD_QUAY" | docker login quay.io -u "$DOCKER_USERNAME_QUAY" --password-stdin
-        - docker pull ${PRIVATE_IMAGE}
-        - docker tag ${PRIVATE_IMAGE} ${PUBLIC_IMAGE}
-        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-        - docker push ${PUBLIC_IMAGE}
+      script: |
+        source distribution/build.properties
+        export IDENTITY_VERSION=${IDENTITY_VERSION}
+        echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
+        export PRIVATE_IMAGE=quay.io/alfresco/alfresco-identity-service:${IDENTITY_VERSION}
+        export PUBLIC_IMAGE=alfresco/alfresco-identity-service:${IDENTITY_VERSION}
+        echo "$DOCKER_PASSWORD_QUAY" | docker login quay.io -u "$DOCKER_USERNAME_QUAY" --password-stdin
+        docker pull ${PRIVATE_IMAGE}
+        docker tag ${PRIVATE_IMAGE} ${PUBLIC_IMAGE}
+        echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        docker push ${PUBLIC_IMAGE}
