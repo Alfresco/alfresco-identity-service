@@ -46,7 +46,7 @@ branches:
 before_install:
   - |
     openssl aes-256-cbc -K $encrypted_e69bec42ae64_key -iv $encrypted_e69bec42ae64_iv -in test/scripts/config-files/realmRsaKeys.json.enc -out test/scripts/config-files/realmRsaKeys.json -d
-    aws eks update-kubeconfig --name acs-cluster --region=eu-west-1
+    aws eks update-kubeconfig --name acs-cluster
     cp .travis.settings.xml $HOME/.m2/settings.xml
 
 before_script:
@@ -357,7 +357,6 @@ jobs:
       script: |
         cd test/saml
         mvn clean package -DskipTests
-        find ../scripts -type f -iname "*.sh" -exec chmod +x {} \;
         ./upgrade/test-upgrade.sh
 
     - name: Package and Publish Chart
