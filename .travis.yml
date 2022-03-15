@@ -3,6 +3,7 @@ import:
   - source: Alfresco/alfresco-build-tools:.travis.aws-iam-authenticator_install.yml@v1.2.1
   - source: Alfresco/alfresco-build-tools:.travis.kubernetes_install.yml@v1.2.1
   - source: Alfresco/alfresco-build-tools:.travis.helm_install.yml@v1.2.1
+  - source: Alfresco/alfresco-build-tools:.travis.pre-commit.yml@v1.2.1
 
 language: java
 jdk: openjdk11
@@ -14,7 +15,7 @@ services:
   - docker
 
 stages:
-  - name: Lint
+  - name: lint
   - name: Build
   - name: Test
     if: commit_message !~ /\[skip tests\]/
@@ -63,11 +64,6 @@ after_failure:
 
 jobs:
   include:
-    - name: Lint chart
-      stage: Lint
-      script: |
-        helm dep up helm/${PROJECT_NAME}
-        helm lint helm/${PROJECT_NAME}
     - name: Build
       stage: Build
       script: |
