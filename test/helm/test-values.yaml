@@ -9,18 +9,6 @@ global:
     host: identity_host
 
 keycloak:
-  extraEnv: |
-    - name: KEYCLOAK_USER
-      value: admin
-    - name: KEYCLOAK_PASSWORD
-      value: admin
-    - name: KEYCLOAK_IMPORT
-      value: /realm/alfresco-realm.json
-  postgresql:
-    persistence:
-      existingClaim: ""
-      storageClass: "gp2"
-
   livenessProbe: |
     httpGet:
       path: /auth/
@@ -34,32 +22,4 @@ realm:
       redirectUris:
         - "https://identity_host*"
       webOrigins:
-        - "*"
-    extraGroups:
-    - name: testgroup
-      path: "/testgroup"
-    extraUsers:
-    - username: testuser
-      enabled: true
-      totp: false
-      emailVerified: false
-      firstName: test
-      lastName: test
-      email: test@test.com
-      credentials:
-        - type: password
-          value: password
-      disableableCredentialTypes:
-      - password
-      realmRoles:
-      - uma_authorization
-      - user
-      - offline_access
-      - test_role
-      clientRoles:
-        account:
-        - manage-account
-        - view-profile
-      groups:
-      - "/admin"
-      - "/testgroup"
+        - "https://identity_host*"
