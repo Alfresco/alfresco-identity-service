@@ -231,5 +231,3 @@
 * [<a href='https://issues.alfresco.com/jira/browse/AUTH-205'>AUTH-205</a>] - Test Identity Service Logout
 
 * [<a href='https://issues.alfresco.com/jira/browse/AUTH-206'>AUTH-206</a>] - Document Keycloak deployment scenario
-
-

@@ -41,4 +41,3 @@ charts/
 
 #Test rsa realms keys
 test/scripts/config-files/realmRsaKeys.json
-
