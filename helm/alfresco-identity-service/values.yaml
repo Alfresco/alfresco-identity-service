@@ -1,5 +1,6 @@
 ingress:
   enabled: true
+  pathType: Prefix
   path: /auth
   annotations:
     kubernetes.io/ingress.class: "nginx"
@@ -84,7 +85,6 @@ keycloak:
       value: admin
     - name: KEYCLOAK_IMPORT
       value: /realm/alfresco-realm.json
-  ###
   postgresql:
     enabled: true
     nameOverride: postgresql-id
