@@ -1,10 +1,10 @@
 # alfresco-identity-service
 
-![Version: 5.0.0](https://img.shields.io/badge/Version-5.0.0-informational?style=flat-square) ![AppVersion: 1.6.0](https://img.shields.io/badge/AppVersion-1.6.0-informational?style=flat-square)
+![Version: 5.1.0](https://img.shields.io/badge/Version-5.1.0-informational?style=flat-square) ![AppVersion: 1.6.0](https://img.shields.io/badge/AppVersion-1.6.0-informational?style=flat-square)
 
 The Alfresco Identity Service will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication.
 
-**Homepage:** <https://github.com/Alfresco/alfresco-identity-service/helm>
+**Homepage:** <https://github.com/Alfresco/alfresco-identity-service/tree/master/helm/alfresco-identity-service>
 
 ## Maintainers
 
@@ -14,12 +14,13 @@ The Alfresco Identity Service will become the central component responsible for 
 
 ## Source Code
 
-* <https://github.com/Alfresco/alfresco-identity-service/helm>
+* <https://github.com/Alfresco/alfresco-identity-service>
 
 ## Requirements
 
 | Repository | Name | Version |
 |------------|------|---------|
+| https://charts.bitnami.com/bitnami | common | 1.11.3 |
 | https://codecentric.github.io/helm-charts | keycloak | 15.0.0 |
 
 ## Values
@@ -33,6 +34,7 @@ The Alfresco Identity Service will become the central component responsible for 
 | ingress.annotations."nginx.ingress.kubernetes.io/session-cookie-name" | string | `"identity_affinity_route"` |  |
 | ingress.enabled | bool | `true` |  |
 | ingress.path | string | `"/auth"` |  |
+| ingress.pathType | string | `"Prefix"` |  |
 | keycloak.extraEnv | string | `"- name: KEYCLOAK_USER\n  value: admin\n- name: KEYCLOAK_PASSWORD\n  value: admin\n- name: KEYCLOAK_IMPORT\n  value: /realm/alfresco-realm.json\n"` |  |
 | keycloak.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/realm/\"\n  readOnly: true\n"` |  |
 | keycloak.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n"` |  |
