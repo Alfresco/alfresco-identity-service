@@ -8,7 +8,7 @@ This means that no user will be able to connect to any of the Digital Business P
 
 Since Keycloak 13.0.0, the **_SmallRye_** modules have been removed from the underlying WildFly distribution, and the server will not start if the configuration references them. Therefore, to perform server configuration migration, you have to manually remove all the lines that refer to _SmallRye_ modules.
 
-See Keycloak [documentation](https://www.keycloak.org/docs/latest/upgrading/#migrating-to-13-0-0) for what lines to remove from the **_standalone.xml_** file.
+See Keycloak [documentation](https://www.keycloak.org/docs/16.1/upgrading/#migrating-to-13-0-0) for what lines to remove from the **_standalone.xml_** file.
 
 
 ### Note: Upgrading from Identity Service 1.2 to a later versions
