@@ -29,7 +29,7 @@ Prior to upgrading Identity Service 1.2 to a later version, make sure to first m
 
 ### General upgrade procedure
 
-For upgrading Alfresco Identity Management Service, follow Keycloak's [upgrade procedure](https://www.keycloak.org/docs/latest/upgrading/).
+For upgrading Alfresco Identity Management Service, follow Keycloak's [upgrade procedure](https://www.keycloak.org/docs/16.1/upgrading/).
 
 However, depending on the environment you are using you should follow these high-level steps:
 
@@ -39,7 +39,7 @@ However, depending on the environment you are using you should follow these high
 
 3. Back up the database. For detailed information on how to back up the database, see the documentation for the relational database you are using.
 
-4. Upgrade Keycloak [server](https://www.keycloak.org/docs/latest/upgrading/#_install_new_version).
+4. Upgrade Keycloak [server](https://www.keycloak.org/docs/16.1/upgrading/#_install_new_version).
 
    - Testing the upgrade in a non-production environment first, to prevent any installation issues from being exposed in production, is a best practice.
 
