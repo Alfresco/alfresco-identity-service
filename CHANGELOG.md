@@ -2,6 +2,16 @@
 ## Release Notes - Identity Service
 
 ---
+### *Alfresco Identity Service 1.7.0*
+
+#### Epics
+* [<a href='https://alfresco.atlassian.net/browse/AUTH-544'>AUTH-544</a>] - Upgrade to Keycloak 16.1.1-patch
+
+### *Alfresco Identity Service 1.6.0*
+
+#### Epics
+* [<a href='https://alfresco.atlassian.net/browse/AUTH-543'>AUTH-543</a>] - Upgrade to Keycloak 15.0.2-patch
+
 ### *Alfresco Identity Service 1.5.0*
 
 #### Epics

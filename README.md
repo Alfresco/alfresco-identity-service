@@ -18,34 +18,34 @@ This guide helps you get started with the Identity Service. It covers simple sta
 
 #### Installing and booting
 
-  1. Download the Identity Service zip alfresco-identity-service-1.5.0.zip from the Support Portal at http://support.alfresco.com
+  1. Download the Identity Service zip alfresco-identity-service-1.7.0.zip from the Support Portal at http://support.alfresco.com
 
   2. Place the file in a directory you choose and use unzip utility to extract it.
 
   Linux/Unix
   ```bash
-  $ unzip alfresco-identity-service-1.5.0.zip
+  $ unzip alfresco-identity-service-1.7.0.zip
   ```
 
   Windows
   ```bash
-  > unzip alfresco-identity-service-1.5.0.zip
+  > unzip alfresco-identity-service-1.7.0.zip
   ```
 
   3. Cd to the bin directory of the server distribution and run the standalone boot script.
 
   Linux/Unix
   ```bash
-  $ cd alfresco-identity-service-1.5.0/bin
+  $ cd alfresco-identity-service-1.7.0/bin
   $ ./standalone.sh -b <IP_ADDRESS>
   ```
   Windows bat
   ```bash
-  > ...\alfresco-identity-service-1.5.0\bin\standalone.bat -b <IP_ADDRESS>
+  > ...\alfresco-identity-service-1.7.0\bin\standalone.bat -b <IP_ADDRESS>
   ```
   Windows powershell
   ```bash
-  > ...\alfresco-identity-service-1.5.0\bin\standalone.ps1 -b <IP_ADDRESS>
+  > ...\alfresco-identity-service-1.7.0\bin\standalone.ps1 -b <IP_ADDRESS>
   ```
   **_NOTE:_** To bind to all public interfaces use `0.0.0.0` as the value of IP_ADDRESS otherwise specify the address of the specific interface you want to use.
 
@@ -210,13 +210,13 @@ In addition, for high availability, Keycloak supports clustering.  For more info
 [Keycloak Stable chart Readme](https://github.com/codecentric/helm-charts/tree/master/charts/keycloak#high-availability-and-clustering)
 
 
-[Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/latest/server_installation/#standalone-clustered-configuration)
+[Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/16.1/server_installation/#standalone-clustered-configuration)
 
 
-[Keycloak Clustering](https://www.keycloak.org/docs/latest/server_installation/#_clustering)
+[Keycloak Clustering](https://www.keycloak.org/docs/16.1/server_installation/#_clustering)
 
 
-**_NOTE:_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/latest/server_installation/#sticky-sessions) are used so keep that in mind if you choose to use a different ingress type than nginx.
+**_NOTE:_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/16.1/server_installation/#sticky-sessions) are used so keep that in mind if you choose to use a different ingress type than nginx.
 
 ## Customizing the Realm
 
@@ -265,21 +265,21 @@ helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
 
 For further details see [Setting a Custom Realm](https://github.com/codecentric/helm-charts/tree/master/charts/keycloak#setting-a-custom-realm).
 
-Once Keycloak is up and running, login to the [Management Console](https://www.keycloak.org/docs/latest/server_admin/index.html#admin-console) to configure the required realm.
+Once Keycloak is up and running, login to the [Management Console](https://www.keycloak.org/docs/16.1/server_admin/index.html#using-the-admin-console) to configure the required realm.
 
 #### Manually
 
-1. [Add a realm](http://www.keycloak.org/docs/latest/server_admin/index.html#_create-realm) named "Alfresco"
+1. [Add a realm](https://www.keycloak.org/docs/16.1/server_admin/index.html#proc-creating-a-realm_server_administration_guide) named "Alfresco"
 
-2. [Create an OIDC client](http://www.keycloak.org/docs/latest/server_admin/index.html#oidc-clients) named "alfresco" within the Alfresco realm
+2. [Create an OIDC client](https://www.keycloak.org/docs/16.1/server_admin/index.html#_oidc_clients) named "alfresco" within the Alfresco realm
 
-3. [Create a group](http://www.keycloak.org/docs/latest/server_admin/index.html#groups) named "admin"
+3. [Create a group](https://www.keycloak.org/docs/16.1/server_admin/index.html#proc-managing-groups_server_administration_guide) named "admin"
 
-4. [Add a new user](http://www.keycloak.org/docs/latest/server_admin/index.html#_create-new-user) with a username of "testuser", email of "test@test.com" and first and last name of "test"
+4. [Add a new user](https://www.keycloak.org/docs/16.1/server_admin/index.html#proc-creating-user_server_administration_guide) with a username of "testuser", email of "test@test.com" and first and last name of "test"
 
 #### Using the Sample Realm File
 
-1. Go to the [Add Realm](http://www.keycloak.org/docs/latest/server_admin/index.html#_create-realm) page and click the "Select File" button next to the **Import** label.
+1. Go to the [Add Realm](https://www.keycloak.org/docs/16.1/server_admin/index.html#proc-creating-a-realm_server_administration_guide) page and click the "Select File" button next to the **Import** label.
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
 
