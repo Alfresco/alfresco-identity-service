@@ -1,10 +1,10 @@
 import:
-  - source: Alfresco/alfresco-build-tools:.travis.awscli_install.yml@v1.2.1
-  - source: Alfresco/alfresco-build-tools:.travis.aws-iam-authenticator_install.yml@v1.2.1
-  - source: Alfresco/alfresco-build-tools:.travis.kubernetes_install.yml@v1.2.1
-  - source: Alfresco/alfresco-build-tools:.travis.helm_install.yml@v1.2.1
-  - source: Alfresco/alfresco-build-tools:.travis.helm-docs_install.yml@v1.2.1
-  - source: Alfresco/alfresco-build-tools:.travis.pre-commit.yml@v1.2.1
+  - source: Alfresco/alfresco-build-tools:.travis.awscli_install.yml@v1.5.0
+  - source: Alfresco/alfresco-build-tools:.travis.aws-iam-authenticator_install.yml@v1.5.0
+  - source: Alfresco/alfresco-build-tools:.travis.kubernetes_install.yml@v1.5.0
+  - source: Alfresco/alfresco-build-tools:.travis.helm_install.yml@v1.5.0
+  - source: Alfresco/alfresco-build-tools:.travis.helm-docs_install.yml@v1.5.0
+  - source: Alfresco/alfresco-build-tools:.travis.pre-commit.yml@v1.5.0
 
 language: java
 jdk: openjdk11
@@ -29,7 +29,6 @@ stages:
 
 env:
   global:
-    - HELM_DOCS_VERSION=1.7.0
     - TRAVIS_WAIT_TIMEOUT=${TRAVIS_WAIT_TIMEOUT:-30}
     - BRANCH=${TRAVIS_PULL_REQUEST_BRANCH:-${TRAVIS_BRANCH}}
     - HELM_REPO_BASE_URL=https://kubernetes-charts.alfresco.com

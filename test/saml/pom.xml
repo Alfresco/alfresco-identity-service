@@ -24,7 +24,7 @@
     <maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
     <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
     <!-- IDS version where to test the upgrade scenario to the version defined in the build.properties file. E.g. upgrade IDS-1.4.0 to IDS-1.5.0 -->
-    <identity-service-from.version>1.6.0</identity-service-from.version>
+    <identity-service-from.version>1.7.0</identity-service-from.version>
   </properties>
 
   <scm>
