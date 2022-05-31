@@ -14,11 +14,11 @@ Any variation from these technologies and versions may affect the end result. If
 This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of Keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs/) .
 
 #### Prerequisites
-  1. Java 8 or 11 JDK
+  1. Java 11 JDK
 
 #### Installing and booting
 
-  1. Download the Identity Service zip alfresco-identity-service-1.7.0.zip from the Support Portal at http://support.alfresco.com
+  1. Download the Identity Service zip alfresco-identity-service-1.8.0.zip from the Support Portal at http://support.alfresco.com
 
   2. Place the file in a directory you choose and use unzip utility to extract it.
 
