@@ -2,6 +2,36 @@
 ## Release Notes - Identity Service
 
 ---
+### *Alfresco Identity Service 1.8.0*
+
+#### Epics
+* [<a href='https://alfresco.atlassian.net/browse/AUTH-545'>AUTH-545</a>] - Upgrade to Keycloak 18.0.0-patch
+
+### *Alfresco Identity Service 1.7.0*
+
+#### Epics
+* [<a href='https://alfresco.atlassian.net/browse/AUTH-544'>AUTH-544</a>] - Upgrade to Keycloak 16.1.1-patch
+
+### *Alfresco Identity Service 1.6.0*
+
+#### Epics
+* [<a href='https://alfresco.atlassian.net/browse/AUTH-543'>AUTH-543</a>] - Upgrade to Keycloak 15.0.2-patch
+
+### *Alfresco Identity Service 1.5.0*
+
+#### Epics
+* [<a href='https://alfresco.atlassian.net/browse/AUTH-532'>AUTH-532</a>] - Upgrade to Keycloak 13.0.1-patch
+
+### *Alfresco Identity Service 1.4.0*
+
+#### Epics
+* [<a href='https://alfresco.atlassian.net/browse/AUTH-493'>ACS-493</a>] - Upgrade to Keycloak 12.0.3-patch
+
+
+#### Bugs
+* [<a href='https://alfresco.atlassian.net/browse/ACA-4286'>ACA-4286</a>] - Fix Alfresco login theme
+* Change versioning to SemVer v2
+
 
 ### *Alfresco Identity Service 1.3*
 
@@ -216,5 +246,3 @@
 * [<a href='https://issues.alfresco.com/jira/browse/AUTH-205'>AUTH-205</a>] - Test Identity Service Logout
 
 * [<a href='https://issues.alfresco.com/jira/browse/AUTH-206'>AUTH-206</a>] - Document Keycloak deployment scenario
-
-

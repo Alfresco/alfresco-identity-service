@@ -1,5 +1,6 @@
 ingress:
   enabled: true
+  pathType: Prefix
   path: /auth
   annotations:
     kubernetes.io/ingress.class: "nginx"
@@ -10,10 +11,10 @@ ingress:
 
 realm:
   alfresco:
+    adminPassword: admin
     client:
       redirectUris:
-        - "http://localhost*"
-        - "https://localhost*"
+        - "*"
       webOrigins:
         - "http://localhost*"
         - "https://localhost*"
@@ -26,6 +27,10 @@ realm:
     extraGroups:
       - name: testgroup
         path: "/testgroup"
+        attributes: {}
+        realmRoles: []
+        clientRoles: {}
+        subGroups: []
     extraUsers:
       - username: testuser
         enabled: true
@@ -36,13 +41,7 @@ realm:
         email: test@test.com
         credentials:
           - type: password
-            hashedSaltedValue: "+A2UrlK6T33IHVutjQj9k8S8kMco1IMnmCTngEg+PE+2vO4jJScux6wcltsRIYILv5ggcS3PI7tbsynq5u39sQ=="
-            salt: "IyVlItIo27bmACSLi4yQkA=="
-            hashIterations: 20000
-            counter: 0
-            algorithm: pbkdf2
-            digits: 0
-            period: 0
+            value: password
         disableableCredentialTypes:
           - password
         realmRoles:
@@ -61,60 +60,41 @@ realm:
 keycloak:
   rbac:
     create: false
-  keycloak:
-    image:
-      repository: alfresco/alfresco-identity-service
-      tag: 1.4.0-SNAPSHOT
-      pullPolicy: Always
-      pullSecrets:
-        - quay-registry-secret
-    serviceAccount:
-      create: true
-    username: admin
-    password: admin
-    service:
-      port: 80
-    extraVolumes: |
-      - name: realm-secret
-        secret:
-          secretName: realm-secret
-    extraVolumeMounts: |
-      - name: realm-secret
-        mountPath: "/realm/"
-        readOnly: true
-    extraArgs: "-Dkeycloak.import=/realm/alfresco-realm.json"
-    persistence:
-      deployPostgres: true
-      dbVendor: postgres
-      dbPassword: keycloak
-  ### Since conditions in the requirements file are global values
-  ### the next entry actually decides if the postgress chart is being installed or not.
-  persistence:
-    deployPostgres: true
-  ###
+  image:
+    repository: quay.io/alfresco/alfresco-identity-service
+    tag: 1.8.0
+    pullPolicy: Always
+  imagePullSecrets:
+      - name: quay-registry-secret
+  serviceAccount:
+    create: true
+  service:
+    httpPort: 80
+  extraVolumes: |
+    - name: realm-secret
+      secret:
+        secretName: realm-secret
+  extraVolumeMounts: |
+    - name: realm-secret
+      mountPath: "/realm/"
+      readOnly: true
+  extraEnv: |
+    - name: KEYCLOAK_USER
+      value: admin
+    - name: KEYCLOAK_PASSWORD
+      value: admin
+    - name: KEYCLOAK_IMPORT
+      value: /realm/alfresco-realm.json
   postgresql:
+    enabled: true
     nameOverride: postgresql-id
     postgresqlPassword: "keycloak"
     persistence:
       enabled: true
-      existingClaim: "alfresco-volume-claim"
+      existingClaim: ""
       subPath: "alfresco-identity-service/database-data"
     resources:
       requests:
         memory: "250Mi"
       limits:
         memory: "500Mi"
-    ### Following values are used for backing up and restoring postgres db along with the helm chart
-    restore:
-      image: "postgres:11.1"
-      password_key: "postgresql-password"
-    backup:
-      image: "postgres:11.1"
-      password_key: "postgresql-password"
-
-## Used to run 'kubectl' in kubernetes jobs for backup and restoration purposes
-hyperkube:
-  image:
-    repository: quay.io/coreos/hyperkube
-    tag: v1.9.6_coreos.2
-    pullPolicy: IfNotPresent

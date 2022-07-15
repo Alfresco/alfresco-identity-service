@@ -13,6 +13,7 @@ Aspects of Common Identity and Governance are likely to be the responsibility of
 
 *** 
 
+
 ### Overview
 The Identity Service leverages the open source identity and access management project [Keycloak](https://www.keycloak.org/).  An example
 realm file containing a pre-defined 'alfresco' client and login theme are imported on bootstrap.
@@ -20,7 +21,7 @@ realm file containing a pre-defined 'alfresco' client and login theme are import
 Client Applications can obtain a JSON Web Token (JWT) via OpenID Connect which can then be presented in a Bearer Authorization header
 in an HTTP request against REST APIs of Alfresco components such as Process Services and Content Services.
 
-The primary deployment mechanism is via a Kubernetes Helm chart, and typically as part of the [alfresco-infrastructure chart](https://github.com/Alfresco/alfresco-infrastructure-deployment).
+The primary deployment mechanism is via a Kubernetes Helm chart.
 
 *** 
 
@@ -91,7 +92,7 @@ See the [config directory](config) for details on common configurations.
 
 The Keycloak chart supports specifying [multiple replicas](https://github.com/codecentric/helm-charts/blob/master/charts/keycloak#high-availability-and-clustering).
 
-See Keycloak's documentation on configuring [high availability and clustering](https://www.keycloak.org/docs/7.0/server_installation/index.html#_clustering).
+See Keycloak's documentation on configuring [high availability and clustering](https://www.keycloak.org/docs/latest/server_installation/index.html#_clustering).
 
 Also see the Identity Service [README](https://github.com/Alfresco/alfresco-identity-service#multiple-replicas-high-availability-and-clustering).
 
@@ -99,7 +100,7 @@ Also see the Identity Service [README](https://github.com/Alfresco/alfresco-iden
 
 ### Security Considerations
 
-See Keycloak's [Server Admin documentation](https://www.keycloak.org/docs/7.0/server_admin/index.html).
+See Keycloak's [Server Admin documentation](https://www.keycloak.org/docs/latest/server_admin/index.html).
 
 *** 
 

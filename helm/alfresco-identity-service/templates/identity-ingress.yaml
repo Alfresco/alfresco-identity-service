@@ -1,5 +1,7 @@
 {{- if .Values.ingress.enabled }}
-apiVersion: extensions/v1beta1
+{{- $serviceName :=  printf "%s-%s" (include "keycloak.fullname" .) "http" -}}
+{{- $servicePort := .Values.keycloak.service.httpPort -}}
+apiVersion: {{ template "common.capabilities.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
   name: {{ template "alfresco-identity.fullname" . }}
@@ -17,7 +19,8 @@ spec:
   {{- end }}
       paths:
       - path: {{ .Values.ingress.path }}
-        backend: 
-          serviceName: {{ template "keycloak.fullname" . }}-http
-          servicePort: {{ .Values.keycloak.keycloak.service.port }}
+        {{- if eq "true" (include "common.ingress.supportsPathType" .) }}
+        pathType: {{ .Values.ingress.pathType }}
+        {{- end }}
+        backend: {{- include "common.ingress.backend" (dict "serviceName" $serviceName "servicePort" $servicePort "context" $) | nindent 10 }}
 {{- end }}

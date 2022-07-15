@@ -20,7 +20,7 @@
 							"var jsonData = pm.response.json();",
 							"",
 							"pm.test(\"Token is bearer token\", function () {",
-							"    pm.expect(jsonData.token_type).to.eql(\"bearer\");",
+							"    pm.expect(jsonData.token_type.toLowerCase()).to.eql(\"bearer\");",
 							"});",
 							"",
 							"pm.test(\"Response contains access token\", function () {",
@@ -214,7 +214,7 @@
 		{
 			"id": "7f530e2c-9a2c-4046-8cdd-ce92a09d7000",
 			"key": "identityServiceUrl",
-			"value": "alfresco-identity-service.{{dbpurl}}/auth",
+			"value": "{{identity_host}}/auth",
 			"type": "string"
 		},
 		{

@@ -1,23 +1,45 @@
 # Upgrading Identity Service
 
-## Upgrading from Identity Service 1.2 to 1.3
+**_NOTE:_** The upgrade of the Alfresco Identity Management Service requires downtime.
+This means that no user will be able to connect to any of the Digital Business Platform components while the upgrade or rollback is being done.
 
-  **_NOTE:_** The upgrade of the Alfresco Identity Management Service requires downtime. 
-  This means that no user will be able to connect to any of the Digital Business Platform components while the upgrade or rollback is being done.
+### Migrating to Identity Service 1.5.0
+**Manual migration step needed**
+
+Since Keycloak 13.0.0, the **_SmallRye_** modules have been removed from the underlying WildFly distribution, and the server will not start if the configuration references them. Therefore, to perform server configuration migration, you have to manually remove all the lines that refer to _SmallRye_ modules.
+
+See Keycloak [documentation](https://www.keycloak.org/docs/18.0/upgrading/#migrating-to-13-0-0) for what lines to remove from the **_standalone.xml_** file.
+
+
+### Note: Upgrading from Identity Service 1.2 to a later versions
+Prior to upgrading Identity Service 1.2 to a later version, make sure to first modify the **_First Broker Login_** authentication configuration as follows:
+
+1. Logging into the admin console and select **Alfresco** realm
+
+2. From the left menu, click **Authentication** to open the authentication config page
+
+3. Select **First Broker Login** from the dropdown menu
+
+4. Make sure the **Create User If Unique(create unique user config)** flow is set to **ALTERNATIVE**
+
+![First Broker Login page](docs/resource/images/first-broker-login.png)
+
+5. Follow the steps in the [General upgrade procedure](#General-upgrade-procedure) section
+
 
 ### General upgrade procedure
 
-For upgrading Alfresco Identity Management Service we are mainly following the Keycloak upgrade procedure.
-We will be explaining how to do it if you are using our out of the box distribution or Kubernetes deployment.
-However depending on the environment you are using you should follow these high-level steps:
+For upgrading Alfresco Identity Management Service, follow Keycloak's [upgrade procedure](https://www.keycloak.org/docs/18.0/upgrading/).
 
-1. Prior to applying the upgrade, [handle any open transactions](https://www.keycloak.org/docs/4.8/server_admin/#user-session-management) and delete the data/tx-object-store/ transaction directory.
+However, depending on the environment you are using you should follow these high-level steps:
+
+1. Prior to applying the upgrade, handle any open transactions and delete the data/tx-object-store/ transaction directory.
 
 2. Back up the old installation (configuration, themes, and so on).
 
 3. Back up the database. For detailed information on how to back up the database, see the documentation for the relational database you are using.
 
-4. Upgrade Keycloak server.
+4. Upgrade Keycloak [server](https://www.keycloak.org/docs/18.0/upgrading/#_install_new_version).
 
    - Testing the upgrade in a non-production environment first, to prevent any installation issues from being exposed in production, is a best practice.
 
@@ -27,86 +49,38 @@ However depending on the environment you are using you should follow these high-
 
 5. If you need to revert the upgrade, first restore the old installation, and then restore the database from the backup copy.
 
-Within the next sections we will go through a simple distribution and Kubernetes upgrade plus rollback.
+### Upgrading Identity Service in Kubernetes with PostgreSQL database
 
-  **_NOTE:_** In depth documentation on Keycloak upgrade can be found [here](https://www.keycloak.org/docs/7.0/upgrading/index.html#_upgrading).
+#### Upgrade from chart >=1.1.0 to 2.1.0
 
-### Kubernetes
+The upgrade should be seamless.
 
-#### Generic Information
 
-To do the upgrade in Kubernetes we are taking advantage of Kubernetes jobs and Helm hooks.
+#### Upgrade to chart >=3.0.0
 
-These are the steps we are following for a smooth upgrade transition without any manual intervention:
-
-1. Pre-Upgrade job is running to remove the Keycloak statefulset, thus killing of any existent user session.
-2. Pre-Upgrade job is running to create an extra volume for backing up the PostgreSQL database.
-3. Pre-Upgrade job to do the backup of the database.
-4. Pre-Upgrade job to delete the database deployment so that it does not clash with the new PostgreSQL deployment.
-5. Post-Upgrade job to scale the new Keycloak to 0 replicas so we can restore the database initially.
-6. Post-Upgrade job to restore the database data.
-7. Post-Upgrade job to re-scale Keycloak back to 1 replica so that it can start using the new data.
-
-This process leaves us with an additional volume containing the database backup.
-That volume will be used in the case a rollback is done but will be deleted when the entire release is being deleted.
-
-For the rollback process we are using the following jobs:
-
-1. Pre-rollback job to kill off the current statefulsets.
-2. Post-rollback job to scale Keycloak to 0 replicas.
-3. Post-rollback job to restore the database from backup.
-4. Post-rollback job to scale Keycloak to 1 replica.
-
-#### How to upgrade
-
-  **_NOTE:_** This upgrade works only from 1.2 to 1.3 version of the Alfresco Identity Management Service .
-
-1. Identify your infrastructure chart deployment and save it in a variable.
+1. Identify your chart release name and namespace and save them into variables.
 
 ```bash
-export RELEASENAME=knobby-wolf
+export RELEASENAME=<Your-Release-Name>
+export RELEASENAMESPACE=<Your-Release-Namespace>
 ```
 
-2. Run the helm upgrade command using the new version of the infrastructure chart that contains Alfresco Identity Management Service 1.3.
-If you however have the Digital Business Platform Helm Chart installed you will need to upgrade to a newer DBP chart which contains Alfresco Identity Management Service 1.3.
+2. Delete the postgresql StatefulSets.
 
 ```bash
-helm upgrade $RELEASENAME alfresco-incubator/alfresco-infrastructure --version 5.2.0
+kubectl delete statefulsets.apps $RELEASENAME-postgresql-id --cascade=false --namespace $RELEASENAMESPACE
 ```
 
-3. A series of jobs will be running to do the upgrade after which you will be able to access the AIMS server at the same location. The AIMS service should be back up in a few minutes.
-
-#### How to Rollback
-
-1. If for any reason the upgrade to 1.3 failed, or you just want to rollback to 1.2 issue the following command:
+3. Upgrade Identity Service.
 
 ```bash
-helm rollback --force --recreate-pods --cleanup-on-fail $RELEASENAME 1
+helm upgrade $RELEASENAME alfresco-stable/alfresco-identity-service --version=3.0.0 --namespace $RELEASENAMESPACE
 ```
 
-The AIMS service will be back to its original state in a few minutes.
-
-### ZIP Distribution
-
-#### Upgrade example for Identity Service with PostgreSQL database
-
-1. Backup the old installation by performing:
+4. Delete the postgresql pod.
 
 ```bash
-pg_dump --clean --no-owner --no-acl -h ${POSTGRES_HOST} -p ${POSTGRES_PORT}  -U ${POSTGRES_USER} ${POSTGRES_DATABASE} | grep -v -E '(DROP\ SCHEMA\ public|CREATE\ SCHEMA\ public|COMMENT\ ON\ SCHEMA\ public|DROP\ EXTENSION\ plpgsql|CREATE\ EXTENSION\ IF\ NOT\ EXISTS\ plpgsql|COMMENT\ ON\ EXTENSION\ plpgsql)' > /backup/backup.sql
+kubectl delete pod $RELEASENAME-postgresql-id-0 --namespace $RELEASENAMESPACE
 ```
-	
-2. Remove old data and stop the PostgreSQL instance.
 
-3. Stop the Identity Service 1.2 server.
-
-4. Open Identity Service 1.3 distribution zip and configure accordingly to the database that will be used (for this example PostgreSQL).
-   For detailed information on how to set up the desired database this visit the official documentation of Keycloak [here](https://www.keycloak.org/docs/10.0/server_installation/#_database).
-   
-5. Start the database and restore data by executing the following command:
-
-```bash
-psql -h ${POSTGRES_HOST} -p ${POSTGRES_PORT} -d ${POSTGRES_DATABASE} -U ${POSTGRES_USER} -f /backup/backup.sql
-``` 
-
-6. Start Identity Service 1.3 as described [here](https://github.com/Alfresco/alfresco-identity-service/blob/master/README.md#installing-and-booting).
+The Identity Service should be back up in a few minutes.

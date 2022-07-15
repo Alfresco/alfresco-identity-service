@@ -1,0 +1,10 @@
+{
+   "name": "LastName",
+   "identityProviderAlias": "saml",
+   "identityProviderMapper": "saml-user-attribute-idp-mapper",
+   "config": {
+      "user.attribute": "LastName",
+      "attribute.friendly.name": "LastName",
+      "attribute.name": "LastName"
+   }
+}
