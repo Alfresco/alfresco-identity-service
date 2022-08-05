@@ -73,6 +73,8 @@ http://<IP_ADDRESS>:8080/auth/admin/alfresco/console/
 
 #### Modifying the valid redirect URIs
 
+**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/latest/securing_apps/#redirect-uris).
+
   1. After logging in to the Alfresco realm follow the left side menu and choose clients.
   2. Choose the Alfresco client from the client list.
   3. In the client settings window you will have to fill in your appropriate redirect URI's for the Content and Process applications.
@@ -153,6 +155,8 @@ The above steps will deploy _alfresco-identity-service_ with the **default examp
 (Note that APS expects the email as the username)
 
 #### Changing Alfresco Client redirectUris
+
+**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/latest/securing_apps/#redirect-uris).
 
 You can override the default redirectUri of `http://localhost*` for your environment with the `alfresco-identity-service.client.alfresco.redirectUris` property:
 

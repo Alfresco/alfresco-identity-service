@@ -54,7 +54,7 @@ The Alfresco Identity Service will become the central component responsible for 
 | keycloak.service.httpPort | int | `80` |  |
 | keycloak.serviceAccount.create | bool | `true` |  |
 | realm.alfresco.adminPassword | string | `"admin"` |  |
-| realm.alfresco.client.redirectUris[0] | string | `"*"` |  |
+| realm.alfresco.client.redirectUris[0] | string | `"*"` | For security reasons, override the default value and use URIs to be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/latest/securing_apps/#redirect-uris). |
 | realm.alfresco.client.webOrigins[0] | string | `"http://localhost*"` |  |
 | realm.alfresco.client.webOrigins[1] | string | `"https://localhost*"` |  |
 | realm.alfresco.extraGroups[0].attributes | object | `{}` |  |
