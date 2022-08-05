@@ -1,4 +1,5 @@
 #!/bin/bash
+set -o errexit
 
 # Util methods
 log_info() {
@@ -10,24 +11,22 @@ log_error() {
   exit 1
 }
 
+
+echo "\n************************************"
+log_info "Configuring ACS ..."
+echo "************************************"
+
 ### Variables
 BASE_URL="${HOST_IP:-http://localhost}:8080"
 ADMIN_USERNAME="${ACS_ADMIN_USERNAME:-admin}"
 ADMIN_PASSWORD="${ACS_ADMIN_PASSWORD:-admin}"
 AUTH="$ADMIN_USERNAME:$ADMIN_PASSWORD"
-# User to be created in ACS
-DEFAULT_USERNAME="${ACS_DEFAULT_USERNAME:-ajay}"
-DEFAULT_FIRSTNAME="${ACS_DEFAULT_FIRSTNAME:-Alan}"
-DEFAULT_LASTNAME="${ACS_DEFAULT_LASTNAME:-Jay}"
-DEFAULT_EMAIL="${ACS_DEFAULT_EMAIL:-ajay@ss.com}"
-DEFAULT_PASSWORD="${ACS_DEFAULT_PASSWORD:-password}"
 
 log_info "Using ACS base URL: $BASE_URL"
 log_info "Using Admin username: $ADMIN_USERNAME"
 
-
 # Create the user
-log_info "Creating user '$DEFAULT_USERNAME' ..."
+log_info "Creating user '$DEFAULT_USERNAME' in ACS ..."
 STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "$BASE_URL/alfresco/api/-default-/public/alfresco/versions/1/people" -u "$AUTH" \
   -H 'Content-Type: application/json' \
   -H 'cache-control: no-cache' \

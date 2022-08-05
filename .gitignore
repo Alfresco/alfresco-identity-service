@@ -2,6 +2,9 @@
 *.class
 target/
 
+# Mac
+.DS_Store
+
 # Log file
 *.log
 
