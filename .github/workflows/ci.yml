@@ -105,13 +105,15 @@ jobs:
           $env:IDENTITY_VERSION = $Props.'IDENTITY_VERSION'
           echo "IDENTITY_VERSION=$env:IDENTITY_VERSION"
           aws s3 ls s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/
-          aws s3 ls s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/alfresco-identity-service-$env:IDENTITY_VERSION.zip
           aws s3 cp s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/alfresco-identity-service-$env:IDENTITY_VERSION.zip .
           unzip alfresco-identity-service-$env:IDENTITY_VERSION.zip
           cd alfresco-identity-service-$env:IDENTITY_VERSION/bin
           pwd
           dir
+          echo "----- $env:GITHUB_WORKSPACE ------"
+          dir $env:GITHUB_WORKSPACE
+          echo "----- $env:GITHUB_WORKSPACE ------"
           powershell -Command Get-ExecutionPolicy
           powershell -Command 'Set-ExecutionPolicy unrestricted'
-          powershell -Command $env:GITHUB_WORKSPACE/alfresco-identity-service/distribution/tests/endpoints_ps.ps1
-          powershell -Command $env:GITHUB_WORKSPACE/alfresco-identity-service/distribution/tests/endpoints_bat.ps1
+          powershell -Command $env:GITHUB_WORKSPACE/distribution/tests/endpoints_ps.ps1
+          powershell -Command $env:GITHUB_WORKSPACE/distribution/tests/endpoints_bat.ps1
