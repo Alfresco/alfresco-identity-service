@@ -16,7 +16,7 @@ env:
   MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
   HELM_REPO_BASE_URL: https://kubernetes-charts.alfresco.com
   HELM_REPO: incubator
-  HELM_DOCS_VERSION: 1.10.0
+  HELM_DOCS_VERSION: 1.11.0
   AWS_REGION: eu-west-1
 
 jobs:
@@ -26,8 +26,7 @@ jobs:
     steps:
       - name: "Install helm-docs"
         run: |
-          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
-          brew install norwoodj/tap/helm-docs
+          curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_$(uname)_x86_64.tar.gz | sudo tar xz -C /usr/local/bin/ helm-docs
           helm-docs --version
       - uses: Alfresco/alfresco-build-tools/.github/actions/pre-commit@v1.34.2
 
