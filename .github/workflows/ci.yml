@@ -26,6 +26,7 @@ jobs:
     steps:
       - name: "Install helm-docs"
         run: |
+          eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
           brew install norwoodj/tap/helm-docs
           helm-docs --version
       - uses: Alfresco/alfresco-build-tools/.github/actions/pre-commit@v1.34.2
