@@ -101,14 +101,14 @@ jobs:
           echo $env:GITHUB_RUN_NUMBER
       - name: "Test"
         run: |
-          source distribution/build.properties
-          export IDENTITY_VERSION=${IDENTITY_VERSION}
-          echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
+          $Props = convertfrom-stringdata (get-content ./distribution/build.properties -raw)
+          $env:IDENTITY_VERSION = $Props.'IDENTITY_VERSION'
+          echo "IDENTITY_VERSION=$env:IDENTITY_VERSION"
           aws s3 ls s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/
-          aws s3 ls s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/alfresco-identity-service-${IDENTITY_VERSION}.zip
-          aws s3 cp s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/alfresco-identity-service-${IDENTITY_VERSION}.zip .
-          unzip alfresco-identity-service-${IDENTITY_VERSION}.zip
-          cd alfresco-identity-service-${IDENTITY_VERSION}/bin
+          aws s3 ls s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/alfresco-identity-service-$env:IDENTITY_VERSION.zip
+          aws s3 cp s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/alfresco-identity-service-$env:IDENTITY_VERSION.zip .
+          unzip alfresco-identity-service-$env:IDENTITY_VERSION.zip
+          cd alfresco-identity-service-$env:IDENTITY_VERSION/bin
           pwd
           dir
           powershell -Command Get-ExecutionPolicy
