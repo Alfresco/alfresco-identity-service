@@ -104,9 +104,9 @@ jobs:
           source distribution/build.properties
           export IDENTITY_VERSION=${IDENTITY_VERSION}
           echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
-          aws s3 ls s3://$env:S3_ARTIFACTS_BUCKET/ci-${BUILD_NUMBER}/
-          aws s3 ls s3://$env:S3_ARTIFACTS_BUCKET/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip
-          aws s3 cp s3://$env:S3_ARTIFACTS_BUCKET/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+          aws s3 ls s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/
+          aws s3 ls s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/alfresco-identity-service-${IDENTITY_VERSION}.zip
+          aws s3 cp s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/alfresco-identity-service-${IDENTITY_VERSION}.zip .
           unzip alfresco-identity-service-${IDENTITY_VERSION}.zip
           cd alfresco-identity-service-${IDENTITY_VERSION}/bin
           pwd
