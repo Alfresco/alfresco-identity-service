@@ -9,7 +9,7 @@ on:
       - feature/ACS-4606_migrate-to-GHA # TODO: remove after testing is completed
   workflow_dispatch:
   schedule:
-    - cron:  '0 5 * * 3'
+    - cron: "0 5 * * 3"
 
 env:
   MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
