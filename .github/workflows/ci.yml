@@ -97,7 +97,7 @@ jobs:
           aws-region: ${{ env.AWS_REGION }}
       - name: "Get BUILD_NUMBER"
         run: |
-          echo "BUILD_NUMBER=$env:GITHUB_RUN_NUMBER" >> "$GITHUB_ENV"
+          echo "BUILD_NUMBER=$env:GITHUB_RUN_NUMBER" | Out-File -FilePath $env:GITHUB_ENV -Append
           echo $env:GITHUB_RUN_NUMBER
       - name: "Test"
         run: |
