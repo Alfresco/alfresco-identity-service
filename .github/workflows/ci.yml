@@ -16,7 +16,7 @@ env:
   MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
   HELM_REPO_BASE_URL: https://kubernetes-charts.alfresco.com
   HELM_REPO: incubator
-  HELM_DOCS_VERSION: "1.10.0"
+  HELM_DOCS_VERSION: 1.11.0
   AWS_REGION: eu-west-1
 
 jobs:
