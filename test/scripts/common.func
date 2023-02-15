@@ -69,7 +69,7 @@ check_cluster_resources() {
 }
 
 get_namespace(){
-   echo $(echo ${TRAVIS_BRANCH} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${TRAVIS_BUILD_NUMBER}
+   echo $(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
 }
 
 create_secrets(){
