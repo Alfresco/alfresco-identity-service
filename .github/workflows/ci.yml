@@ -505,6 +505,12 @@ jobs:
       - name: "Publish to S3 Staging"
         id: publish
         run: aws s3 cp --acl private --recursive ./deploy_dir s3://${S3_STAGING_BUCKET}/enterprise/alfresco-identity-service/${IDENTITY_VERSION}
-      - name: "Clean S3 after failure"
+      - uses: aws-actions/configure-aws-credentials@v1
+        if: ${{ (always() && steps.publish.outcome == 'failure') || !contains(github.event.head_commit.message, '[release]') }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
+          aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: "Clean up S3_ARTIFACTS_BUCKET"
         if: ${{ (always() && steps.publish.outcome == 'failure') || !contains(github.event.head_commit.message, '[release]') }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
