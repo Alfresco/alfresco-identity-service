@@ -393,6 +393,9 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
           aws-region: ${{ env.AWS_REGION }}
+      - name: "Prepare test environment"
+        run: |
+          openssl aes-256-cbc -K ${{ secrets.ENCRYPTED_E69BEC42AE64_KEY }} -iv ${{ secrets.ENCRYPTED_E69BEC42AE64_IV }} -in test/scripts/config-files/realmRsaKeys.json.enc -out test/scripts/config-files/realmRsaKeys.json -d
       - name: "Set IDS_BUILD_NAME"
         run: |
           IDS_BUILD_NAME=$(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
