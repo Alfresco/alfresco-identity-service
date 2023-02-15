@@ -377,3 +377,33 @@ jobs:
       - name: "Clean S3 after failure"
         if: ${{ always() && steps.test.outcome == 'failure' }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
+
+  test_upgrade:
+    name: "Test Upgrade"
+    runs-on: ubuntu-latest
+    needs: build
+    if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - name: "Configure AWS credentials"
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
+          aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: "Set IDS_BUILD_NAME"
+        run: |
+          IDS_BUILD_NAME=$(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
+          echo "IDS_BUILD_NAME=$IDS_BUILD_NAME" >> "$GITHUB_ENV"
+          echo $IDS_BUILD_NAME
+      - name: "Test"
+        id: test
+        run: |
+          cd test/saml
+          mvn clean package -DskipTests
+          ./upgrade/test-upgrade.sh
+      - name: "Clean S3 after failure"
+        if: ${{ always() && steps.test.outcome == 'failure' }}
+        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
