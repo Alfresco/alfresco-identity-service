@@ -442,10 +442,10 @@ jobs:
           fi
           echo "HELM_REPO=$HELM_REPO" >> "$GITHUB_ENV"
           echo $HELM_REPO
-      - name: "Publish"
+      - name: "Publish Helm Chart"
         id: publish
         run: |
-          if [[ "${BRANCH_NAME}" != "feature/ACS-4606_migrate-to-GHA" ]]; then
+          if [[ "${BRANCH_NAME}" != "master" ]]; then
             CHART_VERSION=$(cat helm/${PROJECT_NAME}/Chart.yaml | grep version: | awk '{print $2}')
             # Only modify the chart version if it doesn't have '-M*' at the end
             if [[ "${CHART_VERSION}" != *"-M"* ]]; then
@@ -466,7 +466,35 @@ jobs:
           cd charts
           git add ${HELM_REPO}
           git commit -m "${COMMIT_MESSAGE_FIRST_LINE}"
-          #git push --quiet origin master
+          git push --quiet origin master
       - name: "Clean S3 after failure"
         if: ${{ always() && steps.publish.outcome == 'failure' }}
+        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
+
+  staging_release:
+    name: "Publish to S3 Staging"
+    runs-on: ubuntu-latest
+    needs: publish
+    if: >
+      !failure() &&
+      contains(github.event.head_commit.message, '[staging]') &&
+      github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_S3_STAGING_ACCESS_KEY }}
+          aws-secret-access-key: ${{ secrets.AWS_S3_STAGING_SECRET_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: "Publish to S3 Staging"
+        id: publish
+        run: |
+          source distribution/build.properties
+          export IDENTITY_VERSION=${IDENTITY_VERSION}
+          echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
+          aws s3 cp --copy-props none --acl private --recursive s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ s3://${S3_STAGING_BUCKET}/enterprise/alfresco-identity-service/${IDENTITY_VERSION}
+      - name: "Clean S3 after failure"
+        if: ${{ (always() && steps.publish.outcome == 'failure') || !contains(github.event.head_commit.message, '[release]') }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
