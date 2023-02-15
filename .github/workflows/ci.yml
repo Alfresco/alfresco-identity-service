@@ -433,6 +433,7 @@ jobs:
         with:
           username: ${{ secrets.BOT_GITHUB_USERNAME }}
           email: ${{ secrets.BOT_GITHUB_EMAIL }}
+          global: true
       - name: "Set HELM_REPO"
         run: |
           if [[ "${BRANCH_NAME}" == "master" ]] && [[ "${{ github.event.head_commit.message }}" == *"[release]"* ]]
