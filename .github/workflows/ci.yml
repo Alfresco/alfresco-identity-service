@@ -30,7 +30,6 @@ jobs:
   pre-commit:
     name: "Pre-commit"
     runs-on: ubuntu-latest
-    continue-on-error: true # error matches Travis one, ignoring it for now
     steps:
       - name: "Install helm-docs"
         run: |
