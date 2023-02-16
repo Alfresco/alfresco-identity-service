@@ -12,8 +12,9 @@ on:
     - cron: "0 5 * * 3"
 
 env:
-  S3_STAGING_BUCKET: alfresco-artefacts-staging
   S3_ARTIFACTS_BUCKET: ${{ secrets.S3_ARTIFACTS_BUCKET }}
+  S3_STAGING_BUCKET: alfresco-artefacts-staging
+  S3_RELEASE_BUCKET: ${{ secrets.S3_RELEASE_BUCKET }}
   AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
   AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
   MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
@@ -62,7 +63,7 @@ jobs:
           # upload ZIP file to S3 bucket
           aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.md5 s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/
           aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/
-      - name: "Clean S3 after failure"
+      - name: "Clean up S3 after failure"
         if: ${{ always() && steps.build.outcome == 'failure' }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
@@ -88,7 +89,7 @@ jobs:
           echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
           aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
           ./distribution/tests/endpoints.sh
-      - name: "Clean S3 after failure"
+      - name: "Clean up S3 after failure"
         if: ${{ always() && steps.test.outcome == 'failure' }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
@@ -123,7 +124,7 @@ jobs:
           powershell -Command 'Set-ExecutionPolicy unrestricted'
           powershell -Command $env:GITHUB_WORKSPACE/distribution/tests/endpoints_ps.ps1
           powershell -Command $env:GITHUB_WORKSPACE/distribution/tests/endpoints_bat.ps1
-      - name: "Clean S3 after failure"
+      - name: "Clean up S3 after failure"
         if: ${{ always() && steps.test.outcome == 'failure' }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
@@ -373,7 +374,7 @@ jobs:
             echo "Tests failed, exiting"
             exit 1
           fi
-      - name: "Clean S3 after failure"
+      - name: "Clean up S3 after failure"
         if: ${{ always() && steps.test.outcome == 'failure' }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
@@ -405,7 +406,7 @@ jobs:
           cd test/saml
           mvn clean package -DskipTests
           ./upgrade/test-upgrade.sh
-      - name: "Clean S3 after failure"
+      - name: "Clean up S3 after failure"
         if: ${{ always() && steps.test.outcome == 'failure' }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
@@ -467,7 +468,7 @@ jobs:
           git add ${HELM_REPO}
           git commit -m "${COMMIT_MESSAGE_FIRST_LINE}"
           git push --quiet origin master
-      - name: "Clean S3 after failure"
+      - name: "Clean up S3 after failure"
         if: ${{ always() && steps.publish.outcome == 'failure' }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
@@ -514,3 +515,90 @@ jobs:
       - name: "Clean up S3_ARTIFACTS_BUCKET"
         if: ${{ (always() && steps.publish.outcome == 'failure') || !contains(github.event.head_commit.message, '[release]') }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
+
+  release:
+    name: "Publish to S3 and Nexus"
+    runs-on: ubuntu-latest
+    needs: staging_release
+    if: >
+      !failure() &&
+      github.ref_name == 'master' &&
+      contains(github.event.head_commit.message, '[release]') &&
+      github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - name: "Set IDENTITY_VERSION"
+        run: |
+          source distribution/build.properties
+          echo "IDENTITY_VERSION=$IDENTITY_VERSION" >> "$GITHUB_ENV"
+          echo $IDENTITY_VERSION
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
+          aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: "Prepare deploy_dir"
+        id: prepare
+        run: |
+          aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
+          aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
+          aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
+      - name: "Publish to Nexus"
+        run: curl -q -u ${MAVEN_USERNAME}:${MAVEN_PASSWORD} --upload-file ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases/org/alfresco/alfresco-identity-service/${IDENTITY_VERSION}/alfresco-identity-service-${IDENTITY_VERSION}.zip
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_S3_RELEASE_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_S3_RELEASE_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: "Publish to S3"
+        run: aws s3 cp --acl private --recursive ./deploy_dir s3://${S3_RELEASE_BUCKET}/release/enterprise/alfresco-identity-service/${IDENTITY_VERSION}
+      - uses: aws-actions/configure-aws-credentials@v1
+        if: ${{ (always() && steps.prepare.outcome == 'failure') }}
+        with:
+          aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
+          aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: "Clean up S3 after failure"
+        if: ${{ (always() && steps.prepare.outcome == 'failure') }}
+        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
+
+  release_docker:
+    name: "Publish Docker image"
+    runs-on: ubuntu-latest
+    needs: staging_release
+    if: >
+      !failure() &&
+      github.ref_name == 'master' &&
+      contains(github.event.head_commit.message, '[release]') &&
+      github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - name: "Login to DockerHub Registry"
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: docker.io
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: "Login to Quay.io Docker Registry"
+        uses: docker/login-action@v2.1.0
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      - name: "Set IDENTITY_VERSION"
+        run: |
+          source distribution/build.properties
+          echo "IDENTITY_VERSION=$IDENTITY_VERSION" >> "$GITHUB_ENV"
+          echo $IDENTITY_VERSION
+      - name: "Publish Docker image"
+        id: publish
+        run: |
+          export PRIVATE_IMAGE=quay.io/alfresco/alfresco-identity-service:${IDENTITY_VERSION}
+          export PUBLIC_IMAGE=alfresco/alfresco-identity-service:${IDENTITY_VERSION}
+          docker pull ${PRIVATE_IMAGE}
+          docker tag ${PRIVATE_IMAGE} ${PUBLIC_IMAGE}
+          docker push ${PUBLIC_IMAGE}
