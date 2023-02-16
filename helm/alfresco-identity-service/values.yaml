@@ -13,6 +13,7 @@ realm:
   alfresco:
     adminPassword: admin
     client:
+      # -- For security reasons, override the default value and use URIs to be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/latest/securing_apps/#redirect-uris).
       redirectUris:
         - "*"
       webOrigins:
