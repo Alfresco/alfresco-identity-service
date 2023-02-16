@@ -593,7 +593,6 @@ jobs:
           echo "IDENTITY_VERSION=$IDENTITY_VERSION" >> "$GITHUB_ENV"
           echo $IDENTITY_VERSION
       - name: "Publish Docker image"
-        id: publish
         run: |
           export PRIVATE_IMAGE=quay.io/alfresco/alfresco-identity-service:${IDENTITY_VERSION}
           export PUBLIC_IMAGE=alfresco/alfresco-identity-service:${IDENTITY_VERSION}
