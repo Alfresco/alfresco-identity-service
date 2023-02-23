@@ -53,7 +53,7 @@ jobs:
         id: build
         run: |
           source distribution/build.properties
-          export IDENTITY_VERSION=${IDENTITY_VERSION}        
+          export IDENTITY_VERSION=${IDENTITY_VERSION}
           echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
           # build and package
           cd distribution
@@ -83,7 +83,7 @@ jobs:
         id: test
         run: |
           source distribution/build.properties
-          export IDENTITY_VERSION=${IDENTITY_VERSION}        
+          export IDENTITY_VERSION=${IDENTITY_VERSION}
           echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
           aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
           ./distribution/tests/endpoints.sh
@@ -413,7 +413,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: [test_linux, test_windows, test_helm, test_upgrade]
     if: >
-      !failure() &&
+      !(failure() || cancelled()) &&
       (github.ref_name == 'master' || contains(github.event.head_commit.message, '[publish]')) &&
       github.event_name != 'pull_request'
     steps:
@@ -475,7 +475,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: publish_chart
     if: >
-      !failure() &&
+      !(failure() || cancelled()) &&
       contains(github.event.head_commit.message, '[staging]') &&
       github.event_name != 'pull_request'
     steps:
@@ -519,7 +519,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: staging_release
     if: >
-      !failure() &&
+      !(failure() || cancelled()) &&
       github.ref_name == 'master' &&
       contains(github.event.head_commit.message, '[release]') &&
       github.event_name != 'pull_request'
@@ -567,7 +567,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: staging_release
     if: >
-      !failure() &&
+      !(failure() || cancelled()) &&
       github.ref_name == 'master' &&
       contains(github.event.head_commit.message, '[release]') &&
       github.event_name != 'pull_request'
