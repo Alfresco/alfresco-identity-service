@@ -267,7 +267,7 @@ helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
   --namespace $DESIREDNAMESPACE
 ```
 
-For further details see [Setting a Custom Realm](s).
+For further details see [Setting a Custom Realm](https://github.com/codecentric/helm-charts/tree/keycloak-18.0.0/charts/keycloak#setting-a-custom-realm).
 
 Once Keycloak is up and running, login to the [Management Console](https://www.keycloak.org/docs/18.0/server_admin/index.html#using-the-admin-console) to configure the required realm.
 
