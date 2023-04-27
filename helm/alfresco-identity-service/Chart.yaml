@@ -1,7 +1,7 @@
 apiVersion: v2
 name: alfresco-identity-service
-version: 7.0.0
-appVersion: 1.8.0
+version: 7.0.1
+appVersion: 1.8.0.1
 description: The Alfresco Identity Service will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication.
 keywords:
   - alfresco
