@@ -11,41 +11,41 @@ Any variation from these technologies and versions may affect the end result. If
 ### Standalone Distribution
 
 #### Overview
-This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of Keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs/) .
+This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of Keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/archive/documentation-18.0.html) .
 
 #### Prerequisites
   1. Java 11 JDK
 
 #### Installing and booting
 
-  1. Download the Identity Service zip alfresco-identity-service-1.8.0.zip from the Support Portal at http://support.alfresco.com
+  1. Download the Identity Service zip alfresco-identity-service-1.8.0.1.zip from the Support Portal at http://support.alfresco.com
 
   2. Place the file in a directory you choose and use unzip utility to extract it.
 
   Linux/Unix
   ```bash
-  $ unzip alfresco-identity-service-1.8.0.zip
+  $ unzip alfresco-identity-service-1.8.0.1.zip
   ```
 
   Windows
   ```bash
-  > unzip alfresco-identity-service-1.8.0.zip
+  > unzip alfresco-identity-service-1.8.0.1.zip
   ```
 
   3. Cd to the bin directory of the server distribution and run the standalone boot script.
 
   Linux/Unix
   ```bash
-  $ cd alfresco-identity-service-1.8.0/bin
+  $ cd alfresco-identity-service-1.8.0.1/bin
   $ ./standalone.sh -b <IP_ADDRESS>
   ```
   Windows bat
   ```bash
-  > ...\alfresco-identity-service-1.8.0\bin\standalone.bat -b <IP_ADDRESS>
+  > ...\alfresco-identity-service-1.8.0.1\bin\standalone.bat -b <IP_ADDRESS>
   ```
   Windows powershell
   ```bash
-  > ...\alfresco-identity-service-1.8.0\bin\standalone.ps1 -b <IP_ADDRESS>
+  > ...\alfresco-identity-service-1.8.0.1\bin\standalone.ps1 -b <IP_ADDRESS>
   ```
   **_NOTE:_** To bind to all public interfaces use `0.0.0.0` as the value of IP_ADDRESS otherwise specify the address of the specific interface you want to use.
 
@@ -73,7 +73,7 @@ http://<IP_ADDRESS>:8080/auth/admin/alfresco/console/
 
 #### Modifying the valid redirect URIs
 
-**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/latest/securing_apps/#redirect-uris).
+**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/18.0/securing_apps/#redirect-uris).
 
   1. After logging in to the Alfresco realm follow the left side menu and choose clients.
   2. Choose the Alfresco client from the client list.
@@ -156,7 +156,7 @@ The above steps will deploy _alfresco-identity-service_ with the **default examp
 
 #### Changing Alfresco Client redirectUris
 
-**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/latest/securing_apps/#redirect-uris).
+**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/18.0/securing_apps/#redirect-uris).
 
 You can override the default redirectUri of `http://localhost*` for your environment with the `alfresco-identity-service.client.alfresco.redirectUris` property:
 
@@ -211,7 +211,7 @@ For added resilience, we rely on support in the Keycloak chart for specifying mu
 In addition, for high availability, Keycloak supports clustering.  For more information on how to configure high availability and clustering, you can consult this additional documentation.  
 
 
-[Keycloak Stable chart Readme](https://github.com/codecentric/helm-charts/tree/master/charts/keycloak#high-availability-and-clustering)
+[Keycloak Stable chart Readme](https://github.com/codecentric/helm-charts/tree/keycloak-18.0.0/charts/keycloak#high-availability-and-clustering)
 
 
 [Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/18.0/server_installation/#standalone-clustered-configuration)
@@ -267,7 +267,7 @@ helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
   --namespace $DESIREDNAMESPACE
 ```
 
-For further details see [Setting a Custom Realm](https://github.com/codecentric/helm-charts/tree/master/charts/keycloak#setting-a-custom-realm).
+For further details see [Setting a Custom Realm](s).
 
 Once Keycloak is up and running, login to the [Management Console](https://www.keycloak.org/docs/18.0/server_admin/index.html#using-the-admin-console) to configure the required realm.
 
