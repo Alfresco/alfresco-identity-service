@@ -58,12 +58,12 @@ realm:
           - "/admin"
           - "/testgroup"
 
-keycloak:
+keycloakx:
   rbac:
     create: false
   image:
     repository: quay.io/alfresco/alfresco-identity-service
-    tag: 1.8.0.1
+    tag: 2.0.0
     pullPolicy: Always
   imagePullSecrets:
       - name: quay-registry-secret
@@ -80,9 +80,9 @@ keycloak:
       mountPath: "/realm/"
       readOnly: true
   extraEnv: |
-    - name: KEYCLOAK_USER
+    - name: KEYCLOAK_ADMIN
       value: admin
-    - name: KEYCLOAK_PASSWORD
+    - name: KEYCLOAK_ADMIN_PASSWORD
       value: admin
     - name: KEYCLOAK_IMPORT
       value: /realm/alfresco-realm.json

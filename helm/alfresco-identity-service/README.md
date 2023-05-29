@@ -1,6 +1,6 @@
 # alfresco-identity-service
 
-![Version: 7.0.1](https://img.shields.io/badge/Version-7.0.1-informational?style=flat-square) ![AppVersion: 1.8.0.1](https://img.shields.io/badge/AppVersion-1.8.0.1-informational?style=flat-square)
+![Version: 7.1.0](https://img.shields.io/badge/Version-7.1.0-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 The Alfresco Identity Service will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication.
 
@@ -40,7 +40,7 @@ The Alfresco Identity Service will become the central component responsible for 
 | keycloak.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n"` |  |
 | keycloak.image.pullPolicy | string | `"Always"` |  |
 | keycloak.image.repository | string | `"quay.io/alfresco/alfresco-identity-service"` |  |
-| keycloak.image.tag | string | `"1.8.0.1"` |  |
+| keycloak.image.tag | string | `"2.0.0"` |  |
 | keycloak.imagePullSecrets[0].name | string | `"quay-registry-secret"` |  |
 | keycloak.postgresql.enabled | bool | `true` |  |
 | keycloak.postgresql.nameOverride | string | `"postgresql-id"` |  |
