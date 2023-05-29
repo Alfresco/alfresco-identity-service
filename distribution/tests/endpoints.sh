@@ -28,7 +28,7 @@ fi
 cd alfresco-identity-service-"$IDENTITY_VERSION"/bin || exit
 
 log_info "Starting the identity service"
-/bin/bash -c './kc.sh start-dev --import-realm &'
+/bin/bash -c './kc.sh start-dev --import-realm --http-relative-path="/auth" &'
 
 SERVICEUP=0
 # counters
@@ -48,7 +48,7 @@ while [ $SERVICEUP -eq 0 ] && [ "$COUNTER" -le "$COUNTER_MAX" ]; do
     COUNTER=$((COUNTER + 1))
   fi
 done
-[ $SERVICEUP -ne 1 ] && log_error "Identity Service timedout"
+[ $SERVICEUP -ne 1 ] && log_error "Identity Service timed out"
 
 # Start the tests
 echo ""
