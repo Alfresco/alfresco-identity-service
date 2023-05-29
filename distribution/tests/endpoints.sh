@@ -19,16 +19,16 @@ WORK_DIR=$(pwd)
 
 unzip -oq alfresco-identity-service-"$IDENTITY_VERSION".zip
 
-PID=$(pgrep -f "standalone")
+PID=$(pgrep -f "kc")
 if [ -n "$PID" ]; then
   log_info "Killing existing process."
-  pkill -KILL -f "standalone"
+  pkill -KILL -f "kc"
 fi
 
 cd alfresco-identity-service-"$IDENTITY_VERSION"/bin || exit
 
 log_info "Starting the identity service"
-/bin/bash -c './standalone.sh &'
+/bin/bash -c './kc.sh start-dev --import-realm &'
 
 SERVICEUP=0
 # counters

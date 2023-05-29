@@ -85,7 +85,7 @@ keycloakx:
     - name: KEYCLOAK_ADMIN_PASSWORD
       value: admin
     - name: KEYCLOAK_IMPORT
-      value: /realm/alfresco-realm.json
+      value: /data/import/alfresco-realm.json
   postgresql:
     enabled: true
     nameOverride: postgresql-id

@@ -1,4 +1,4 @@
-$appid = Start-Process ./standalone.bat -windowstyle hidden -passthru
+$appid = Start-Process ./kc.bat -argumentlist "start-dev --import-realm" -windowstyle hidden -passthru
 
 function checkStatus {
     if ($args[0] -notmatch $args[1]) {
