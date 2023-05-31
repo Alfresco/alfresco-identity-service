@@ -64,7 +64,6 @@ keycloakx:
     - "start"
     - "--import-realm"
     - "--http-relative-path=/auth"
-    - "--auto-build"
   rbac:
     create: false
   image:
