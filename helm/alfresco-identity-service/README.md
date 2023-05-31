@@ -40,7 +40,7 @@ The Alfresco Identity Service will become the central component responsible for 
 | keycloakx.command[2] | string | `"--import-realm"` |  |
 | keycloakx.command[3] | string | `"--http-relative-path=/auth"` |  |
 | keycloakx.extraEnv | string | `"- name: KEYCLOAK_ADMIN\n  value: admin\n- name: KEYCLOAK_ADMIN_PASSWORD\n  value: admin\n- name: KEYCLOAK_IMPORT\n  value: /data/import/alfresco-realm.json\n- name: JAVA_OPTS_APPEND\n  value: >-\n    -Djgroups.dns.query={{ include \"keycloak.fullname\" . }}-headless\n"` |  |
-| keycloakx.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/realm/\"\n  readOnly: true\n"` |  |
+| keycloakx.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/opt/keycloak/data/import/\"\n  readOnly: true\n"` |  |
 | keycloakx.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n"` |  |
 | keycloakx.image.pullPolicy | string | `"Always"` |  |
 | keycloakx.image.repository | string | `"quay.io/alfresco/alfresco-identity-service"` |  |

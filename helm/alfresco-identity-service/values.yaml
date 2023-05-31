@@ -82,7 +82,7 @@ keycloakx:
         secretName: realm-secret
   extraVolumeMounts: |
     - name: realm-secret
-      mountPath: "/realm/"
+      mountPath: "/opt/keycloak/data/import/"
       readOnly: true
   extraEnv: |
     - name: KEYCLOAK_ADMIN
