@@ -299,6 +299,10 @@ jobs:
             --set ingress.hostName=$HOST \
             --set realm.alfresco.client.redirectUris[0]="https://${HOST}\*" \
             --set realm.alfresco.client.webOrigins[0]="https://${HOST}\*" \
+            --set keycloakx.command[0]="/opt/keycloak/bin/kc.sh" \
+            --set keycloakx.command[1]="start" \
+            --set keycloakx.command[2]="--import-realm" \
+            --set keycloakx.command[3]="--http-relative-path=/auth" \
             --set keycloakx.command[4]="--hostname=${HOST}" \
             --wait \
             --namespace $namespace
