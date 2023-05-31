@@ -35,6 +35,11 @@ The Alfresco Identity Service will become the central component responsible for 
 | ingress.enabled | bool | `true` |  |
 | ingress.path | string | `"/auth"` |  |
 | ingress.pathType | string | `"Prefix"` |  |
+| keycloakx.command[0] | string | `"/opt/keycloak/bin/kc.sh"` |  |
+| keycloakx.command[1] | string | `"start"` |  |
+| keycloakx.command[2] | string | `"--import-realm"` |  |
+| keycloakx.command[3] | string | `"--http-relative-path=/auth"` |  |
+| keycloakx.command[4] | string | `"--auto-build"` |  |
 | keycloakx.extraEnv | string | `"- name: KEYCLOAK_ADMIN\n  value: admin\n- name: KEYCLOAK_ADMIN_PASSWORD\n  value: admin\n- name: KEYCLOAK_IMPORT\n  value: /data/import/alfresco-realm.json\n"` |  |
 | keycloakx.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/realm/\"\n  readOnly: true\n"` |  |
 | keycloakx.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n"` |  |
