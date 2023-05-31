@@ -244,8 +244,9 @@ keycloakx:
       value: admin
     - name: KEYCLOAK_ADMIN_PASSWORD
       value: admin
-    - name: KEYCLOAK_IMPORT
-      value: /realm/realm.json
+    - name: JAVA_OPTS_APPEND
+      value: >-
+        -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
 ```
 
 **_NOTE:_** The above settings use the default _admin/admin_ for keycloak username and password, you can replace those with your own values.
