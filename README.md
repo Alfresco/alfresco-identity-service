@@ -244,6 +244,8 @@ keycloakx:
       value: admin
     - name: KEYCLOAK_ADMIN_PASSWORD
       value: admin
+    - name: KEYCLOAK_IMPORT
+      value: /data/import/alfresco-realm.json
     - name: JAVA_OPTS_APPEND
       value: >-
         -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
