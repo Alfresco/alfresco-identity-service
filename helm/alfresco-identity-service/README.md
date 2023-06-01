@@ -21,8 +21,8 @@ The Alfresco Identity Service will become the central component responsible for 
 | Repository | Name | Version |
 |------------|------|---------|
 | https://charts.bitnami.com/bitnami | common | 1.11.3 |
-| https://codecentric.github.io/helm-charts | keycloakx | 2.2.1 |
 | https://charts.bitnami.com/bitnami | postgresql | 11.9.13 |
+| https://codecentric.github.io/helm-charts | keycloakx | 2.2.1 |
 
 ## Values
 
