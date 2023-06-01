@@ -70,8 +70,7 @@
 									"key": "password",
 									"value": "{{testUserPassword}}",
 									"type": "text"
-								}
-								,
+								},
 								{
 									"key": "scope",
 									"value": "openid",
