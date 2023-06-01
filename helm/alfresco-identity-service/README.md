@@ -41,7 +41,7 @@ The Alfresco Identity Service will become the central component responsible for 
 | keycloakx.command[2] | string | `"--import-realm"` |  |
 | keycloakx.command[3] | string | `"--http-relative-path=/auth"` |  |
 | keycloakx.database.database | string | `"keycloak"` |  |
-| keycloakx.database.hostname | string | `"{{ include \"postgresql.primary.fullname\" . }}.{{ .Release.Namespace }}.svc.cluster.local"` |  |
+| keycloakx.database.hostname | string | `"kc-postgresql"` |  |
 | keycloakx.database.password | string | `"keycloak"` |  |
 | keycloakx.database.port | int | `5432` |  |
 | keycloakx.database.username | string | `"keycloak"` |  |
@@ -59,9 +59,10 @@ The Alfresco Identity Service will become the central component responsible for 
 | keycloakx.serviceAccount.create | bool | `true` |  |
 | postgresql.auth.database | string | `"keycloak"` |  |
 | postgresql.auth.password | string | `"keycloak"` |  |
-| postgresql.auth.resources.limits.memory | string | `"500Mi"` |  |
-| postgresql.auth.resources.requests.memory | string | `"250Mi"` |  |
 | postgresql.auth.username | string | `"keycloak"` |  |
+| postgresql.fullnameOverride | string | `"kc-postgresql"` |  |
+| postgresql.resources.limits.memory | string | `"500Mi"` |  |
+| postgresql.resources.requests.memory | string | `"250Mi"` |  |
 | realm.alfresco.adminPassword | string | `"admin"` |  |
 | realm.alfresco.client.redirectUris | list | `["*"]` | For security reasons, override the default value and use URIs to be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/latest/securing_apps/#redirect-uris). |
 | realm.alfresco.client.webOrigins[0] | string | `"http://localhost*"` |  |
