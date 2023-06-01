@@ -39,6 +39,13 @@ The Alfresco Identity Service will become the central component responsible for 
 | keycloakx.command[1] | string | `"start"` |  |
 | keycloakx.command[2] | string | `"--import-realm"` |  |
 | keycloakx.command[3] | string | `"--http-relative-path=/auth"` |  |
+| keycloakx.database.database | string | `"keycloak"` |  |
+| keycloakx.database.hostname. | string | `nil` |  |
+| keycloakx.database.password | string | `"keycloak"` |  |
+| keycloakx.database.port | int | `5432` |  |
+| keycloakx.database.username | string | `"keycloak"` |  |
+| keycloakx.database.vendor | string | `"postgres"` |  |
+| keycloakx.dbchecker.enabled | bool | `true` |  |
 | keycloakx.extraEnv | string | `"- name: KEYCLOAK_ADMIN\n  value: admin\n- name: KEYCLOAK_ADMIN_PASSWORD\n  value: admin\n- name: KEYCLOAK_IMPORT\n  value: /data/import/alfresco-realm.json\n- name: JAVA_OPTS_APPEND\n  value: >-\n    -Djgroups.dns.query={{ include \"keycloak.fullname\" . }}-headless\n"` |  |
 | keycloakx.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/opt/keycloak/data/import/\"\n  readOnly: true\n"` |  |
 | keycloakx.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n"` |  |
@@ -46,17 +53,14 @@ The Alfresco Identity Service will become the central component responsible for 
 | keycloakx.image.repository | string | `"quay.io/alfresco/alfresco-identity-service"` |  |
 | keycloakx.image.tag | string | `"2.0.0"` |  |
 | keycloakx.imagePullSecrets[0].name | string | `"quay-registry-secret"` |  |
-| keycloakx.postgresql.enabled | bool | `true` |  |
-| keycloakx.postgresql.nameOverride | string | `"postgresql-id"` |  |
-| keycloakx.postgresql.persistence.enabled | bool | `true` |  |
-| keycloakx.postgresql.persistence.existingClaim | string | `""` |  |
-| keycloakx.postgresql.persistence.subPath | string | `"alfresco-identity-service/database-data"` |  |
-| keycloakx.postgresql.postgresqlPassword | string | `"keycloak"` |  |
-| keycloakx.postgresql.resources.limits.memory | string | `"500Mi"` |  |
-| keycloakx.postgresql.resources.requests.memory | string | `"250Mi"` |  |
 | keycloakx.rbac.create | bool | `false` |  |
 | keycloakx.service.httpPort | int | `80` |  |
 | keycloakx.serviceAccount.create | bool | `true` |  |
+| postgresql.auth.database | string | `"keycloak"` |  |
+| postgresql.auth.password | string | `"keycloak"` |  |
+| postgresql.auth.resources.limits.memory | string | `"500Mi"` |  |
+| postgresql.auth.resources.requests.memory | string | `"250Mi"` |  |
+| postgresql.auth.username | string | `"keycloak"` |  |
 | realm.alfresco.adminPassword | string | `"admin"` |  |
 | realm.alfresco.client.redirectUris | list | `["*"]` | For security reasons, override the default value and use URIs to be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/latest/securing_apps/#redirect-uris). |
 | realm.alfresco.client.webOrigins[0] | string | `"http://localhost*"` |  |
