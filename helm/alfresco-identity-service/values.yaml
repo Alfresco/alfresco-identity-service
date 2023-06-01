@@ -94,24 +94,7 @@ keycloakx:
     - name: JAVA_OPTS_APPEND
       value: >-
         -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
-  dbchecker:
-    enabled: true
-  database:
-    vendor: postgres
-    hostname: &pghostname kc-postgresql
-    port: 5432
-    username: keycloak
-    password: keycloak
-    database: keycloak
 
 postgresql:
-  auth:
-    username: keycloak
-    password: keycloak
-    database: keycloak
-  resources:
-    requests:
-      memory: "250Mi"
-    limits:
-      memory: "500Mi"
-  fullnameOverride: *pghostname
+  # -- Flag introduced for testing purposes, to actually run this with postgresql follow the approach explained [here](https://github.com/codecentric/helm-charts/blob/keycloakx-2.2.1/charts/keycloakx/examples/postgresql/readme.md).
+  enabled: false

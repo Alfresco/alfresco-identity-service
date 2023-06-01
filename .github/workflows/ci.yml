@@ -296,6 +296,7 @@ jobs:
           # install Identity Service
           helm dep up helm/alfresco-identity-service
           helm upgrade --install $release_name_ids helm/alfresco-identity-service \
+            --values helm/alfresco-identity-service/ci/ci-values.yaml \
             --set ingress.hostName=$HOST \
             --set realm.alfresco.client.redirectUris[0]="https://${HOST}\*" \
             --set realm.alfresco.client.webOrigins[0]="https://${HOST}\*" \
