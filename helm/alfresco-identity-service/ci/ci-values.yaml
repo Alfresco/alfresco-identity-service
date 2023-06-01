@@ -1,0 +1,23 @@
+keycloakx:
+  dbchecker:
+    enabled: true
+  database:
+    vendor: postgres
+    hostname: &pghostname kc-postgresql
+    port: 5432
+    username: keycloak
+    password: keycloak
+    database: keycloak
+
+postgresql:
+  enabled: true
+  auth:
+    username: keycloak
+    password: keycloak
+    database: keycloak
+  resources:
+    requests:
+      memory: "250Mi"
+    limits:
+      memory: "500Mi"
+  fullnameOverride: *pghostname
