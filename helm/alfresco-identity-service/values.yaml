@@ -94,14 +94,21 @@ keycloakx:
     - name: JAVA_OPTS_APPEND
       value: >-
         -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
-  postgresql:
+  dbchecker:
     enabled: true
-    nameOverride: postgresql-id
-    postgresqlPassword: "keycloak"
-    persistence:
-      enabled: true
-      existingClaim: ""
-      subPath: "alfresco-identity-service/database-data"
+  database:
+    vendor: postgres
+    hostname: {{ printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace | quote }}
+    port: 5432
+    username: keycloak
+    password: keycloak
+    database: keycloak
+
+postgresql:
+  auth:
+    username: keycloak
+    password: keycloak
+    database: keycloak
     resources:
       requests:
         memory: "250Mi"
