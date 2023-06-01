@@ -40,7 +40,7 @@ The Alfresco Identity Service will become the central component responsible for 
 | keycloakx.command[2] | string | `"--import-realm"` |  |
 | keycloakx.command[3] | string | `"--http-relative-path=/auth"` |  |
 | keycloakx.database.database | string | `"keycloak"` |  |
-| keycloakx.database.hostname. | string | `nil` |  |
+| keycloakx.database.hostname | string | `"{{ include \"postgresql.primary.fullname\" . }}.{{ .Release.Namespace }}.svc.cluster.local"` |  |
 | keycloakx.database.password | string | `"keycloak"` |  |
 | keycloakx.database.port | int | `5432` |  |
 | keycloakx.database.username | string | `"keycloak"` |  |
