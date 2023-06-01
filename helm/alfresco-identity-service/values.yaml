@@ -98,7 +98,7 @@ keycloakx:
     enabled: true
   database:
     vendor: postgres
-    hostname: {{ printf "%s-postgresql.%s.svc.cluster.local" .Release.Name .Release.Namespace | quote }}
+    hostname: '{{ include "postgresql.primary.fullname" . }}.{{ .Release.Namespace }}.svc.cluster.local'
     port: 5432
     username: keycloak
     password: keycloak
