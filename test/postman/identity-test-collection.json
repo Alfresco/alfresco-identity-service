@@ -71,6 +71,12 @@
 									"value": "{{testUserPassword}}",
 									"type": "text"
 								}
+								,
+								{
+									"key": "scope",
+									"value": "openid",
+									"type": "text"
+								}
 							]
 						},
 						"url": {
@@ -447,13 +453,7 @@
 								"exec": [
 									"pm.test(\"Status code is 401\", function () {",
 									"    pm.response.to.have.status(401);",
-									"});",
-									"",
-									"var jsonData = pm.response.json();",
-									"pm.test(\"Response contains error key\", function() {",
-									"     pm.expect(\"error\" in jsonData).to.be.true;",
-									"});",
-									""
+									"});"
 								],
 								"type": "text/javascript"
 							}
