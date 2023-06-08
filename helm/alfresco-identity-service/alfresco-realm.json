@@ -485,13 +485,7 @@
     "profiles": []
   },
   "clientPolicies": {
-    "policies": [
-      {
-        "name": "builtin-default-policy",
-        "builtin": true,
-        "enable": false
-      }
-    ]
+    "policies": []
   },
   "scopeMappings": [
     {
