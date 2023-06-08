@@ -207,16 +207,12 @@ For added resilience, we rely on support in the Keycloak chart for specifying mu
 In addition, for high availability, Keycloak supports clustering.  For more information on how to configure high availability and clustering, you can consult this additional documentation.  
 
 
-[Keycloak Stable chart Readme](https://github.com/codecentric/helm-charts/tree/keycloak-18.0.0/charts/keycloak#high-availability-and-clustering)
+[Keycloak-X chart Readme](https://github.com/codecentric/helm-charts/blob/keycloakx-2.2.1/charts/keycloakx/README.md#high-availability-and-clustering)
 
 
-[Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/21.1.1/server_installation/#standalone-clustered-configuration)
+[Configuring Keycloak for production](https://www.keycloak.org/server/configuration-production)
 
-
-[Keycloak Clustering](https://www.keycloak.org/docs/21.1.1/server_installation/#_clustering)
-
-
-**_NOTE:_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/21.1.1/server_installation/#sticky-sessions) are used so keep that in mind if you choose to use a different ingress type than nginx.
+**_NOTE:_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/server/reverseproxy#_enable_sticky_sessions) are used so keep that in mind if you choose to use a different ingress type than nginx.
 
 ## Customizing the Realm
 
