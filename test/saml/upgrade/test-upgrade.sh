@@ -175,7 +175,7 @@ log_info "List all files of ${target}/data"
 ls -lh "${target}"/data/
 
 log_info "Copy db files within ${source}/standalone into ${target}/data/h2 directory"
-cp -rf "${source}"/standalone/data/*.db "${target}"/data/h2/
+mkdir -p "${target}"/data/h2 && cp -rf "${source}"/standalone/data/*.db "${target}"/data/h2/
 
 # if the source is required to be upgraded to 1.5.0 or greater then perform additional steps
 #extra_migration_step "${source_version}"
@@ -186,7 +186,8 @@ ls -lh "${target}"/data/h2
 cd "${target}" || exit 1
 
 # Start the server in the background
-nohup sh bin/kc.sh --start-dev --import-realm --http-relative-path="/auth" >/dev/null 2>&1 &
+#nohup sh bin/kc.sh --start-dev --import-realm --http-relative-path="/auth" >/dev/null 2>&1 &
+sh bin/kc.sh --start-dev --import-realm --http-relative-path="/auth"
 # wait for the server to startup
 sleep 20
 

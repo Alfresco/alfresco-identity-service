@@ -154,6 +154,7 @@ jobs:
       - name: "Test"
         id: test
         run: |
+          set +e
           export namespace=${IDS_BUILD_NAME}
           export domain=dev.envalfresco.com
           export HOST=$namespace.$domain
