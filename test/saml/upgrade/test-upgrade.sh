@@ -89,6 +89,7 @@ migrate_h2_database() {
   log_info "Creating new h2 database from zip file..."
   java -cp h2-2.1.214.jar org.h2.tools.RunScript -url jdbc:h2:${dbdir}/keycloakdb -user sa -password password -script ./h2db.zip -options compression zip FROM_1X
   rm -f h2db.zip
+  rm -f $dbdir/keycloak.*
   log_info "h2 1.x -> 2.x migration successful!"
 }
 
@@ -203,7 +204,7 @@ ls -lh "${target}"/data/h2
 cd "${target}" || exit 1
 
 # Start the server in the background
-nohup bash bin/kc.sh start --import-realm --http-relative-path="/auth" --hostname="${host_ip}" & #>/dev/null 2>&1
+nohup bash bin/kc.sh start-dev --import-realm --http-relative-path="/auth" & #>/dev/null 2>&1
 # wait for the server to startup
 sleep 20
 
