@@ -171,25 +171,22 @@ ls -lh "${source}"/standalone/data/tx-object-store
 log_info "List all files of ${source}/standalone directory"
 ls -lh "${source}"/standalone/
 
-log_info "List all files of ${target}/standalone"
-ls -lh "${target}"/standalone/
+log_info "List all files of ${target}/data"
+ls -lh "${target}"/data/
 
-log_info "Copy all files/dirs of ${source}/standalone into ${target}/standalone directory"
-cp -rf "${source}"/standalone/* "${target}"/standalone/
+log_info "Copy db files within ${source}/standalone into ${target}/data/h2 directory"
+cp -rf "${source}"/standalone/data/*.db "${target}"/data/h2/
 
 # if the source is required to be upgraded to 1.5.0 or greater then perform additional steps
-extra_migration_step "${source_version}"
+#extra_migration_step "${source_version}"
 
-log_info "List all files of ${target}/standalone directory after copy of old IDS"
-ls -lh "${target}"/standalone/
+log_info "List all files of ${target}/data/h2 directory after copy of old IDS"
+ls -lh "${target}"/data/h2
 
 cd "${target}" || exit 1
 
-log_info "Executing the Standalone Mode Upgrade Script..."
-bin/jboss-cli.sh --file=bin/migrate-standalone.cli
-
 # Start the server in the background
-nohup sh bin/standalone.sh -b "${host_ip}" >/dev/null 2>&1 &
+nohup sh bin/kc.sh --start-dev --import-realm --http-relative-path="/auth" >/dev/null 2>&1 &
 # wait for the server to startup
 sleep 20
 
