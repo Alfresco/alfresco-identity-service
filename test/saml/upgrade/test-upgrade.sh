@@ -78,6 +78,20 @@ extra_migration_step() {
   sed '/smallrye/d' "${target}"/standalone/configuration/standalone.xml >standalone-temp.xml && mv standalone-temp.xml "${target}"/standalone/configuration/standalone.xml
 }
 
+# This is required if upgrading from a version of Keycloak which relies on h2 v1.x
+migrate_h2_database() {
+  wget https://repo1.maven.org/maven2/com/h2database/h2/2.1.214/h2-2.1.214.jar
+  wget https://repo1.maven.org/maven2/com/h2database/h2/1.4.196/h2-1.4.196.jar
+  dbfile="${target}/data/h2/keycloak.mv.db"
+  log_info "Exporting old h2 database to zip file..."
+  java -cp h2-1.4.196.jar org.h2.tools.Script -url jdbc:h2:${target}/data/h2/keycloak -user sa -password sa -script h2db.zip -options compression zip
+  rm -f $dbfile
+  log_info "Creating new h2 database from zip file..."
+  java -cp h2-2.1.214.jar org.h2.tools.RunScript -url jdbc:h2:${target}/data/h2/keycloakdb -user sa -password password -script ./h2db.zip -options compression zip FROM_1X
+  rm -f h2db.zip
+  log_info "h2 1.x -> 2.x migration successful!"
+}
+
 ############################
 #         Variables        #
 ############################
@@ -180,13 +194,16 @@ mkdir -p "${target}"/data/h2 && cp -rf "${source}"/standalone/data/*.db "${targe
 # if the source is required to be upgraded to 1.5.0 or greater then perform additional steps
 #extra_migration_step "${source_version}"
 
+# if the previous version of Keycloak relies on h2 v1.x, whereas the newer version requires v2.x
+migrate_h2_database
+
 log_info "List all files of ${target}/data/h2 directory after copy of old IDS"
 ls -lh "${target}"/data/h2
 
 cd "${target}" || exit 1
 
 # Start the server in the background
-nohup bash bin/kc.sh start-dev --import-realm --http-relative-path="/auth" --hostname="${host_ip}" & #>/dev/null 2>&1
+nohup bash bin/kc.sh start --import-realm --http-relative-path="/auth" --hostname="${host_ip}" & #>/dev/null 2>&1
 # wait for the server to startup
 sleep 20
 
