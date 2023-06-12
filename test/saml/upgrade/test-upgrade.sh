@@ -187,7 +187,7 @@ cd "${target}" || exit 1
 
 # Start the server in the background
 #nohup sh bin/kc.sh --start-dev --import-realm --http-relative-path="/auth" >/dev/null 2>&1 &
-sh bin/kc.sh --start-dev --import-realm --http-relative-path="/auth"
+./bin/kc.sh --start-dev --import-realm --http-relative-path="/auth"
 # wait for the server to startup
 sleep 20
 
