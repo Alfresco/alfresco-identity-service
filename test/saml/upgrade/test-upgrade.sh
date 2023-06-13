@@ -160,6 +160,7 @@ log_info "Setup Auth0 ..."
 cd "${current_dir}" || exit 1
 # Run the test
 mvn test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}"
+TESTS_RESULT=$?
 
 log_info "The test was successful. Stopping IDS server..."
 # Stop the 'from' version and do an upgrade
@@ -204,7 +205,7 @@ ls -lh "${target}"/data/h2
 cd "${target}" || exit 1
 
 # Start the server in the background
-nohup bash bin/kc.sh start-dev --import-realm --http-relative-path="/auth" & #>/dev/null 2>&1
+nohup bash bin/kc.sh start-dev --import-realm --http-relative-path="/auth" >/dev/null 2>&1 &
 # wait for the server to startup
 sleep 20
 
@@ -218,13 +219,19 @@ cd "${current_dir}" || exit 1
 
 # Run the test with the existing user. The user created in the first test run above
 mvn test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}"
+RETURN_CODE=$?
+if [[ "$RETURN_CODE" -ne 0 ]] ; then
+  TESTS_RESULT=$RETURN_CODE
+fi
 
 # Run the test with a new user. A user that does not exist in Keycloak yet
 mvn test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}" -Dsaml.username=user2 -Dsaml.password=Passw0rd
+RETURN_CODE=$?
+if [[ "$RETURN_CODE" -ne 0 ]] ; then
+  TESTS_RESULT=$RETURN_CODE
+fi
 
-log_info "The tests were successful. Stopping IDS server..."
-# Stop the 'to' version
-stop_ids
+log_info "The tests completed with the following aggregated exit code: ${TESTS_RESULT}"
 
 # Delete Auth0 application
 cd "${current_dir}/../scripts" || exit 1
@@ -232,3 +239,5 @@ cd "${current_dir}/../scripts" || exit 1
 log_info "Cleanup ..."
 log_info "Deleting Auth0 application: ${auth0_app_name} ..."
 ./auth0-api.sh delete "${auth0_app_name}"
+
+exit $TESTS_RESULT
