@@ -218,7 +218,7 @@ cd "${current_dir}/../scripts" || exit 1
 cd "${current_dir}" || exit 1
 
 # Run the test with the existing user. The user created in the first test run above
-mvn test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="1234"
+mvn test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}"
 RETURN_CODE=$?
 if [[ "$RETURN_CODE" -ne 0 ]] ; then
   TESTS_RESULT=$RETURN_CODE
