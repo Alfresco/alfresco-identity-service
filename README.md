@@ -37,11 +37,11 @@ This guide helps you get started with the Identity Service. It covers simple sta
   Linux/Unix
   ```bash
   $ cd alfresco-identity-service-2.0.0/bin
-  $ ./kc.sh start --import-realm --http-relative-path="/auth" -b <IP_ADDRESS>
+  $ ./kc.sh start --import-realm --http-relative-path="/auth" --hostname=<HOSTNAME> --https-certificate-file=<PATH_TO_CERT_FILE> --https-certificate-key-file=<PATH_TO_CERT_KEY_FILE>
   ```
   Windows bat
   ```bash
-  > ...\alfresco-identity-service-2.0.0\bin\kc.bat start --import-realm --http-relative-path=/auth -b <IP_ADDRESS>
+  > ...\alfresco-identity-service-2.0.0\bin\kc.bat start --import-realm --http-relative-path=/auth --https-certificate-file=<PATH_TO_CERT_FILE> --https-certificate-key-file=<PATH_TO_CERT_KEY_FILE>
   ```
   **_NOTE:_** To bind to all public interfaces use `0.0.0.0` as the value of IP_ADDRESS otherwise specify the address of the specific interface you want to use.
 
