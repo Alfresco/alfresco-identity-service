@@ -69,7 +69,7 @@ http://<IP_ADDRESS>:8080/auth/admin/alfresco/console/
 
 #### Modifying the valid redirect URIs
 
-**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/21.1.1/securing_apps/#redirect-uris).
+**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/21.1.2/securing_apps/#redirect-uris).
 
   1. After logging in to the Alfresco realm follow the left side menu and choose clients.
   2. Choose the Alfresco client from the client list.
@@ -152,7 +152,7 @@ The above steps will deploy _alfresco-identity-service_ with the **default examp
 
 #### Changing Alfresco Client redirectUris
 
-**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/21.1.1/securing_apps/#redirect-uris).
+**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/21.1.2/securing_apps/#redirect-uris).
 
 You can override the default redirectUri of `http://localhost*` for your environment with the `alfresco-identity-service.client.alfresco.redirectUris` property:
 
@@ -264,21 +264,21 @@ helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
 
 For further details see [Setting a Custom Realm](https://github.com/codecentric/helm-charts/tree/keycloak-18.0.0/charts/keycloak#setting-a-custom-realm).
 
-Once Keycloak is up and running, login to the [Management Console](https://www.keycloak.org/docs/21.1.1/server_admin/index.html#using-the-admin-console) to configure the required realm.
+Once Keycloak is up and running, login to the [Management Console](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#using-the-admin-console) to configure the required realm.
 
 #### Manually
 
-1. [Add a realm](https://www.keycloak.org/docs/21.1.1/server_admin/index.html#proc-creating-a-realm_server_administration_guide) named "Alfresco"
+1. [Add a realm](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#proc-creating-a-realm_server_administration_guide) named "Alfresco"
 
-2. [Create an OIDC client](https://www.keycloak.org/docs/21.1.1/server_admin/index.html#_oidc_clients) named "alfresco" within the Alfresco realm
+2. [Create an OIDC client](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#_oidc_clients) named "alfresco" within the Alfresco realm
 
-3. [Create a group](https://www.keycloak.org/docs/21.1.1/server_admin/index.html#proc-managing-groups_server_administration_guide) named "admin"
+3. [Create a group](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#proc-managing-groups_server_administration_guide) named "admin"
 
-4. [Add a new user](https://www.keycloak.org/docs/21.1.1/server_admin/index.html#proc-creating-user_server_administration_guide) with a username of "testuser", email of "test@test.com" and first and last name of "test"
+4. [Add a new user](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#proc-creating-user_server_administration_guide) with a username of "testuser", email of "test@test.com" and first and last name of "test"
 
 #### Using the Sample Realm File
 
-1. Go to the [Add Realm](https://www.keycloak.org/docs/21.1.1/server_admin/index.html#proc-creating-a-realm_server_administration_guide) page and click the "Select File" button next to the **Import** label.
+1. Go to the [Add Realm](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#proc-creating-a-realm_server_administration_guide) page and click the "Select File" button next to the **Import** label.
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
 

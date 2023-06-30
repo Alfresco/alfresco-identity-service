@@ -5,7 +5,7 @@
 ### *Alfresco Identity Service 2.0.0*
 
 #### Epics
-* [<a href='https://alfresco.atlassian.net/browse/ACS-5122'>ACS-5122</a>] - Upgrade to Keycloak 21.1.1-patch
+* [<a href='https://alfresco.atlassian.net/browse/ACS-5122'>ACS-5122</a>] - Upgrade to Keycloak 21.1.2-patch
 
 ### *Alfresco Identity Service 2.0.0*
 
