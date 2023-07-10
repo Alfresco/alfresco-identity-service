@@ -200,7 +200,7 @@ For added resilience, we rely on support in the Keycloak chart for specifying mu
 
 ```bash
 
-  --set alfresco-identity-service.keycloak.replicas=3
+  --set alfresco-identity-service.keycloakx.replicas=3
 
 ```
 
