@@ -41,7 +41,7 @@ This guide helps you get started with the Identity Service. It covers simple sta
   ```
   Windows bat
   ```bash
-  > ...\alfresco-identity-service-2.0.0\bin\kc.bat start --import-realm --http-relative-path=/auth --https-certificate-file=<PATH_TO_CERT_FILE> --https-certificate-key-file=<PATH_TO_CERT_KEY_FILE>
+  > ...\alfresco-identity-service-2.0.0\bin\kc.bat start --import-realm --http-relative-path=/auth --hostname=<HOSTNAME> --https-certificate-file=<PATH_TO_CERT_FILE> --https-certificate-key-file=<PATH_TO_CERT_KEY_FILE>
   ```
 
 This is deployed with the **default example realm applied** which results in default values of:
