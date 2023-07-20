@@ -11,43 +11,38 @@ Any variation from these technologies and versions may affect the end result. If
 ### Standalone Distribution
 
 #### Overview
-This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of Keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/archive/documentation-18.0.html) .
+This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of Keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs) .
 
 #### Prerequisites
   1. Java 11 JDK
 
 #### Installing and booting
 
-  1. Download the Identity Service zip alfresco-identity-service-1.8.0.1.zip from the Support Portal at http://support.alfresco.com
+  1. Download the Identity Service zip alfresco-identity-service-2.0.0.zip from the Support Portal at http://support.alfresco.com
 
   2. Place the file in a directory you choose and use unzip utility to extract it.
 
   Linux/Unix
   ```bash
-  $ unzip alfresco-identity-service-1.8.0.1.zip
+  $ unzip alfresco-identity-service-2.0.0.zip
   ```
 
   Windows
   ```bash
-  > unzip alfresco-identity-service-1.8.0.1.zip
+  > unzip alfresco-identity-service-2.0.0.zip
   ```
 
   3. Cd to the bin directory of the server distribution and run the standalone boot script.
 
   Linux/Unix
   ```bash
-  $ cd alfresco-identity-service-1.8.0.1/bin
-  $ ./standalone.sh -b <IP_ADDRESS>
+  $ cd alfresco-identity-service-2.0.0/bin
+  $ ./kc.sh start --import-realm --http-relative-path="/auth" --hostname=<HOSTNAME> --https-certificate-file=<PATH_TO_CERT_FILE> --https-certificate-key-file=<PATH_TO_CERT_KEY_FILE>
   ```
   Windows bat
   ```bash
-  > ...\alfresco-identity-service-1.8.0.1\bin\standalone.bat -b <IP_ADDRESS>
+  > ...\alfresco-identity-service-2.0.0\bin\kc.bat start --import-realm --http-relative-path=/auth --hostname=<HOSTNAME> --https-certificate-file=<PATH_TO_CERT_FILE> --https-certificate-key-file=<PATH_TO_CERT_KEY_FILE>
   ```
-  Windows powershell
-  ```bash
-  > ...\alfresco-identity-service-1.8.0.1\bin\standalone.ps1 -b <IP_ADDRESS>
-  ```
-  **_NOTE:_** To bind to all public interfaces use `0.0.0.0` as the value of IP_ADDRESS otherwise specify the address of the specific interface you want to use.
 
 This is deployed with the **default example realm applied** which results in default values of:
 
@@ -73,7 +68,7 @@ http://<IP_ADDRESS>:8080/auth/admin/alfresco/console/
 
 #### Modifying the valid redirect URIs
 
-**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/18.0/securing_apps/#redirect-uris).
+**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/21.1.2/securing_apps/#redirect-uris).
 
   1. After logging in to the Alfresco realm follow the left side menu and choose clients.
   2. Choose the Alfresco client from the client list.
@@ -156,7 +151,7 @@ The above steps will deploy _alfresco-identity-service_ with the **default examp
 
 #### Changing Alfresco Client redirectUris
 
-**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/18.0/securing_apps/#redirect-uris).
+**Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/21.1.2/securing_apps/#redirect-uris).
 
 You can override the default redirectUri of `http://localhost*` for your environment with the `alfresco-identity-service.client.alfresco.redirectUris` property:
 
@@ -204,23 +199,19 @@ For added resilience, we rely on support in the Keycloak chart for specifying mu
 
 ```bash
 
-  --set alfresco-identity-service.keycloak.replicas=3
+  --set alfresco-identity-service.keycloakx.replicas=3
 
 ```
 
 In addition, for high availability, Keycloak supports clustering.  For more information on how to configure high availability and clustering, you can consult this additional documentation.  
 
 
-[Keycloak Stable chart Readme](https://github.com/codecentric/helm-charts/tree/keycloak-18.0.0/charts/keycloak#high-availability-and-clustering)
+[Keycloak-X chart Readme](https://github.com/codecentric/helm-charts/blob/keycloakx-2.2.1/charts/keycloakx/README.md#high-availability-and-clustering)
 
 
-[Keycloak Standalone Clustered configuration](https://www.keycloak.org/docs/18.0/server_installation/#standalone-clustered-configuration)
+[Configuring Keycloak for production](https://www.keycloak.org/server/configuration-production)
 
-
-[Keycloak Clustering](https://www.keycloak.org/docs/18.0/server_installation/#_clustering)
-
-
-**_NOTE:_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/docs/18.0/server_installation/#sticky-sessions) are used so keep that in mind if you choose to use a different ingress type than nginx.
+**_NOTE:_** Be aware that Keycloak recommends that [sticky sessions](https://www.keycloak.org/server/reverseproxy#_enable_sticky_sessions) are used so keep that in mind if you choose to use a different ingress type than nginx.
 
 ## Customizing the Realm
 
@@ -242,14 +233,17 @@ kubectl create secret generic realm-secret \
 3. Create a yaml file with following settings. The file name can be anything, for example: **custom-values.yaml**
 
 ```yaml
-keycloak:
+keycloakx:
   extraEnv: |
-    - name: KEYCLOAK_USER
+    - name: KEYCLOAK_ADMIN
       value: admin
-    - name: KEYCLOAK_PASSWORD
+    - name: KEYCLOAK_ADMIN_PASSWORD
       value: admin
     - name: KEYCLOAK_IMPORT
-      value: /realm/realm.json
+      value: /data/import/alfresco-realm.json
+    - name: JAVA_OPTS_APPEND
+      value: >-
+        -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
 ```
 
 **_NOTE:_** The above settings use the default _admin/admin_ for keycloak username and password, you can replace those with your own values.
@@ -269,21 +263,21 @@ helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
 
 For further details see [Setting a Custom Realm](https://github.com/codecentric/helm-charts/tree/keycloak-18.0.0/charts/keycloak#setting-a-custom-realm).
 
-Once Keycloak is up and running, login to the [Management Console](https://www.keycloak.org/docs/18.0/server_admin/index.html#using-the-admin-console) to configure the required realm.
+Once Keycloak is up and running, login to the [Management Console](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#using-the-admin-console) to configure the required realm.
 
 #### Manually
 
-1. [Add a realm](https://www.keycloak.org/docs/18.0/server_admin/index.html#proc-creating-a-realm_server_administration_guide) named "Alfresco"
+1. [Add a realm](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#proc-creating-a-realm_server_administration_guide) named "Alfresco"
 
-2. [Create an OIDC client](https://www.keycloak.org/docs/18.0/server_admin/index.html#_oidc_clients) named "alfresco" within the Alfresco realm
+2. [Create an OIDC client](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#_oidc_clients) named "alfresco" within the Alfresco realm
 
-3. [Create a group](https://www.keycloak.org/docs/18.0/server_admin/index.html#proc-managing-groups_server_administration_guide) named "admin"
+3. [Create a group](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#proc-managing-groups_server_administration_guide) named "admin"
 
-4. [Add a new user](https://www.keycloak.org/docs/18.0/server_admin/index.html#proc-creating-user_server_administration_guide) with a username of "testuser", email of "test@test.com" and first and last name of "test"
+4. [Add a new user](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#proc-creating-user_server_administration_guide) with a username of "testuser", email of "test@test.com" and first and last name of "test"
 
 #### Using the Sample Realm File
 
-1. Go to the [Add Realm](https://www.keycloak.org/docs/18.0/server_admin/index.html#proc-creating-a-realm_server_administration_guide) page and click the "Select File" button next to the **Import** label.
+1. Go to the [Add Realm](https://www.keycloak.org/docs/21.1.2/server_admin/index.html#proc-creating-a-realm_server_administration_guide) page and click the "Select File" button next to the **Import** label.
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
 

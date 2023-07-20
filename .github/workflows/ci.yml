@@ -6,6 +6,8 @@ on:
       - master
       - AUTH-**
       - OPSEXP-**
+      - feature/**
+      - fix/**
   workflow_dispatch:
   schedule:
     - cron: "0 5 * * 3"
@@ -152,6 +154,7 @@ jobs:
       - name: "Test"
         id: test
         run: |
+          set +e
           export namespace=${IDS_BUILD_NAME}
           export domain=dev.envalfresco.com
           export HOST=$namespace.$domain
@@ -294,9 +297,15 @@ jobs:
           # install Identity Service
           helm dep up helm/alfresco-identity-service
           helm upgrade --install $release_name_ids helm/alfresco-identity-service \
+            --values helm/alfresco-identity-service/ci/ci-values.yaml \
             --set ingress.hostName=$HOST \
             --set realm.alfresco.client.redirectUris[0]="https://${HOST}\*" \
             --set realm.alfresco.client.webOrigins[0]="https://${HOST}\*" \
+            --set keycloakx.command[0]="/opt/keycloak/bin/kc.sh" \
+            --set keycloakx.command[1]="start" \
+            --set keycloakx.command[2]="--import-realm" \
+            --set keycloakx.command[3]="--http-relative-path=/auth" \
+            --set keycloakx.command[4]="--hostname=${HOST}" \
             --wait \
             --namespace $namespace
 

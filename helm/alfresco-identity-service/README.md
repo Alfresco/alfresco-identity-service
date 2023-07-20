@@ -1,6 +1,6 @@
 # alfresco-identity-service
 
-![Version: 7.0.1](https://img.shields.io/badge/Version-7.0.1-informational?style=flat-square) ![AppVersion: 1.8.0.1](https://img.shields.io/badge/AppVersion-1.8.0.1-informational?style=flat-square)
+![Version: 8.0.0](https://img.shields.io/badge/Version-8.0.0-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
 
 The Alfresco Identity Service will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication.
 
@@ -21,7 +21,8 @@ The Alfresco Identity Service will become the central component responsible for 
 | Repository | Name | Version |
 |------------|------|---------|
 | https://charts.bitnami.com/bitnami | common | 1.11.3 |
-| https://codecentric.github.io/helm-charts | keycloak | 18.0.0 |
+| https://charts.bitnami.com/bitnami | postgresql | 11.9.13 |
+| https://codecentric.github.io/helm-charts | keycloakx | 2.2.1 |
 
 ## Values
 
@@ -35,24 +36,21 @@ The Alfresco Identity Service will become the central component responsible for 
 | ingress.enabled | bool | `true` |  |
 | ingress.path | string | `"/auth"` |  |
 | ingress.pathType | string | `"Prefix"` |  |
-| keycloak.extraEnv | string | `"- name: KEYCLOAK_USER\n  value: admin\n- name: KEYCLOAK_PASSWORD\n  value: admin\n- name: KEYCLOAK_IMPORT\n  value: /realm/alfresco-realm.json\n"` |  |
-| keycloak.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/realm/\"\n  readOnly: true\n"` |  |
-| keycloak.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n"` |  |
-| keycloak.image.pullPolicy | string | `"Always"` |  |
-| keycloak.image.repository | string | `"quay.io/alfresco/alfresco-identity-service"` |  |
-| keycloak.image.tag | string | `"1.8.0.1"` |  |
-| keycloak.imagePullSecrets[0].name | string | `"quay-registry-secret"` |  |
-| keycloak.postgresql.enabled | bool | `true` |  |
-| keycloak.postgresql.nameOverride | string | `"postgresql-id"` |  |
-| keycloak.postgresql.persistence.enabled | bool | `true` |  |
-| keycloak.postgresql.persistence.existingClaim | string | `""` |  |
-| keycloak.postgresql.persistence.subPath | string | `"alfresco-identity-service/database-data"` |  |
-| keycloak.postgresql.postgresqlPassword | string | `"keycloak"` |  |
-| keycloak.postgresql.resources.limits.memory | string | `"500Mi"` |  |
-| keycloak.postgresql.resources.requests.memory | string | `"250Mi"` |  |
-| keycloak.rbac.create | bool | `false` |  |
-| keycloak.service.httpPort | int | `80` |  |
-| keycloak.serviceAccount.create | bool | `true` |  |
+| keycloakx.command[0] | string | `"/opt/keycloak/bin/kc.sh"` |  |
+| keycloakx.command[1] | string | `"start"` |  |
+| keycloakx.command[2] | string | `"--import-realm"` |  |
+| keycloakx.command[3] | string | `"--http-relative-path=/auth"` |  |
+| keycloakx.extraEnv | string | `"- name: KEYCLOAK_ADMIN\n  value: admin\n- name: KEYCLOAK_ADMIN_PASSWORD\n  value: admin\n- name: KEYCLOAK_IMPORT\n  value: /data/import/alfresco-realm.json\n- name: JAVA_OPTS_APPEND\n  value: >-\n    -Djgroups.dns.query={{ include \"keycloak.fullname\" . }}-headless\n"` |  |
+| keycloakx.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/opt/keycloak/data/import/\"\n  readOnly: true\n"` |  |
+| keycloakx.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n"` |  |
+| keycloakx.image.pullPolicy | string | `"Always"` |  |
+| keycloakx.image.repository | string | `"quay.io/alfresco/alfresco-identity-service"` |  |
+| keycloakx.image.tag | string | `"2.0.0"` |  |
+| keycloakx.imagePullSecrets[0].name | string | `"quay-registry-secret"` |  |
+| keycloakx.rbac.create | bool | `false` |  |
+| keycloakx.service.httpPort | int | `80` |  |
+| keycloakx.serviceAccount.create | bool | `true` |  |
+| postgresql.enabled | bool | `false` | Flag introduced for testing purposes, to actually run this with postgresql follow the approach explained [here](https://github.com/codecentric/helm-charts/blob/keycloakx-2.2.1/charts/keycloakx/examples/postgresql/readme.md). |
 | realm.alfresco.adminPassword | string | `"admin"` |  |
 | realm.alfresco.client.redirectUris | list | `["*"]` | For security reasons, override the default value and use URIs to be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/latest/securing_apps/#redirect-uris). |
 | realm.alfresco.client.webOrigins[0] | string | `"http://localhost*"` |  |

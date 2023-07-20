@@ -2,7 +2,12 @@
 ## Release Notes - Identity Service
 
 ---
-### *Alfresco Identity Service 1.8.0.1*
+### *Alfresco Identity Service 2.0.0*
+
+#### Epics
+* [<a href='https://alfresco.atlassian.net/browse/ACS-5122'>ACS-5122</a>] - Upgrade to Keycloak 21.1.2-patch
+
+### *Alfresco Identity Service 2.0.0*
 
 #### Epics
 * [<a href='https://alfresco.atlassian.net/browse/AUTH-546'>AUTH-546</a>] - Upgrade to Keycloak 18.0.2-patch-theme-0.3.5

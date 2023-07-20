@@ -1,7 +1,7 @@
 apiVersion: v2
 name: alfresco-identity-service
-version: 7.0.1
-appVersion: 1.8.0.1
+version: 8.0.0
+appVersion: 2.0.0
 description: The Alfresco Identity Service will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication.
 keywords:
   - alfresco
@@ -13,9 +13,13 @@ sources:
 maintainers:
   - name: Alfresco
 dependencies:
-  - name: keycloak
-    version: 18.0.0
+  - name: keycloakx
+    version: 2.2.1
     repository: https://codecentric.github.io/helm-charts
   - name: common
     version: 1.11.3
     repository: https://charts.bitnami.com/bitnami
+  - name: postgresql
+    version: 11.9.13
+    repository: https://charts.bitnami.com/bitnami
+    condition: postgresql.enabled

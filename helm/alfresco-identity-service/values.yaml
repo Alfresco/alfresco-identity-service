@@ -58,15 +58,20 @@ realm:
           - "/admin"
           - "/testgroup"
 
-keycloak:
+keycloakx:
+  command:
+    - "/opt/keycloak/bin/kc.sh"
+    - "start"
+    - "--import-realm"
+    - "--http-relative-path=/auth"
   rbac:
     create: false
   image:
     repository: quay.io/alfresco/alfresco-identity-service
-    tag: 1.8.0.1
+    tag: 2.0.0
     pullPolicy: Always
   imagePullSecrets:
-      - name: quay-registry-secret
+    - name: quay-registry-secret
   serviceAccount:
     create: true
   service:
@@ -77,25 +82,19 @@ keycloak:
         secretName: realm-secret
   extraVolumeMounts: |
     - name: realm-secret
-      mountPath: "/realm/"
+      mountPath: "/opt/keycloak/data/import/"
       readOnly: true
   extraEnv: |
-    - name: KEYCLOAK_USER
+    - name: KEYCLOAK_ADMIN
       value: admin
-    - name: KEYCLOAK_PASSWORD
+    - name: KEYCLOAK_ADMIN_PASSWORD
       value: admin
     - name: KEYCLOAK_IMPORT
-      value: /realm/alfresco-realm.json
-  postgresql:
-    enabled: true
-    nameOverride: postgresql-id
-    postgresqlPassword: "keycloak"
-    persistence:
-      enabled: true
-      existingClaim: ""
-      subPath: "alfresco-identity-service/database-data"
-    resources:
-      requests:
-        memory: "250Mi"
-      limits:
-        memory: "500Mi"
+      value: /data/import/alfresco-realm.json
+    - name: JAVA_OPTS_APPEND
+      value: >-
+        -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
+
+postgresql:
+  # -- Flag introduced for testing purposes, to actually run this with postgresql follow the approach explained [here](https://github.com/codecentric/helm-charts/blob/keycloakx-2.2.1/charts/keycloakx/examples/postgresql/readme.md).
+  enabled: false

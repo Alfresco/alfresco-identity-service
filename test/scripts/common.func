@@ -248,7 +248,7 @@ wait_for_url_200_status() {
   # counters limit
   URL_CHECK_COUNTER_MAX=120
   # sleep seconds
-  URL_CHECK_SLEEP_SECONDS=10
+  URL_CHECK_SLEEP_SECONDS=1
 
   url=$1
 

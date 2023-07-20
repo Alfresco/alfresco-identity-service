@@ -98,28 +98,18 @@ helm repo add codecentric https://codecentric.github.io/helm-charts
 
 helm repo update
 helm dependency update ${CHART_DIR}
+mkdir -p $DISTRIBUTION_NAME/data/import
 helm template ${CHART_DIR} \
   -f ${CHART_DIR}/values.yaml \
   --show-only templates/realm-secret.yaml \
   --set realm.alfresco.client.redirectUris='{*}' |
   grep '\"alfresco-realm.json\"' | awk '{ print $2}' |
-  sed -e 's/\"$//' -e 's/^\"//' | base64 --decode | jq '.' >$DISTRIBUTION_NAME/realm/alfresco-realm.json
+  sed -e 's/\"$//' -e 's/^\"//' | base64 --decode | jq '.' >$DISTRIBUTION_NAME/data/import/alfresco-realm.json
 
 echo "Recreate Distro Readme file"
 cp -rf README.html $DISTRIBUTION_NAME/
 sed -ie "s/IDVERSION/$IDENTITY_VERSION/" $DISTRIBUTION_NAME/README.html
 sed -ie "s/KVERSION/$KEYCLOAK_VERSION/" $DISTRIBUTION_NAME/README.html
-
-# unix settings
-echo '# Alfresco realm import ' >>$DISTRIBUTION_NAME/bin/standalone.conf
-echo 'JAVA_OPTS="$JAVA_OPTS -Dkeycloak.import=$JBOSS_HOME/realm/alfresco-realm.json"' >>$DISTRIBUTION_NAME/bin/standalone.conf
-
-# windows settings
-echo 'rem # Alfresco realm import ' >>$DISTRIBUTION_NAME/bin/standalone.conf.bat
-echo -e "set \"JAVA_OPTS=%JAVA_OPTS% -Dkeycloak.import=%~dp0..\\\realm\\\alfresco-realm.json\"\n:JAVA_OPTS_SET" >>$DISTRIBUTION_NAME/bin/standalone.conf.bat
-
-echo '# Alfresco realm import ' >>$DISTRIBUTION_NAME/bin/standalone.conf.ps1
-echo "\$JAVA_OPTS += \"-Dkeycloak.import=\$pwd\\\..\\\realm\\\alfresco-realm.json\"" >>$DISTRIBUTION_NAME/bin/standalone.conf.ps1
 
 # zip the configured distro
 zip -rq $DISTRIBUTION_NAME.zip $DISTRIBUTION_NAME

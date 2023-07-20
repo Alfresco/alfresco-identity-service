@@ -1,6 +1,6 @@
 {{- if .Values.ingress.enabled }}
 {{- $serviceName :=  printf "%s-%s" (include "keycloak.fullname" .) "http" -}}
-{{- $servicePort := .Values.keycloak.service.httpPort -}}
+{{- $servicePort := .Values.keycloakx.service.httpPort -}}
 apiVersion: {{ template "common.capabilities.ingress.apiVersion" . }}
 kind: Ingress
 metadata:
