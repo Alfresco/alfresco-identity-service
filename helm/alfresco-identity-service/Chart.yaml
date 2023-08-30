@@ -7,7 +7,7 @@ keywords:
   - alfresco
   - keycloak
   - identity-service
-home: https://github.com/Alfresco/alfresco-identity-service/tree/master/helm/alfresco-identity-service
+home: https://github.com/Alfresco/alfresco-identity-service/tree/release/2.0.x/helm/alfresco-identity-service
 sources:
   - https://github.com/Alfresco/alfresco-identity-service
 maintainers:

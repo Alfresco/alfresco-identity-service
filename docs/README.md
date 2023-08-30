@@ -33,7 +33,7 @@ The primary deployment mechanism is via a Kubernetes Helm chart.
 * License: Apache 2
 * Issue Tracker: https://issues.alfresco.com/jira/projects/AUTH
 * Documentation: TODO
-* Contributions: https://github.com/Alfresco/alfresco-identity-service/blob/master/CONTRIBUTING.md
+* Contributions: https://github.com/Alfresco/alfresco-identity-service/blob/release/2.0.x/CONTRIBUTING.md
 
 *** 
 
