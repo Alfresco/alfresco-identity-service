@@ -52,7 +52,7 @@ TOKEN=$(curl --insecure --silent --show-error -X POST "https://${HOST}/auth/real
 # if is_openldap_enabled; then
     log_info "Adding LDAP config"
 
-    jq '.config.connectionUrl[0]="ldap://'openldap-$BUILD_NUMBER':389"' ${CONFIG_TEMPLATES_DIR}/ldap-auth-defn.json \
+    jq '.config.connectionUrl[0]="ldap://'openldap':389"' ${CONFIG_TEMPLATES_DIR}/ldap-auth-defn.json \
         > ./ldap-auth-defn.json
 
     curl --insecure -v --silent --show-error -X POST "https://${HOST}/auth/admin/realms/alfresco/components" \
