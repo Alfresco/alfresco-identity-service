@@ -2,7 +2,7 @@
 
 The *Alfresco Identity Service* will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication. This project contains the open-source core of this service.
 
-For installing and [upgrading](https://github.com/Alfresco/alfresco-identity-service/blob/master/upgrade.md) the Identity Service you can choose either a Kubernetes distribution or a standalone distribution. Both methods are described in the following sections.
+For installing and [upgrading](https://github.com/Alfresco/alfresco-identity-service/blob/release/2.0.x/upgrade.md) the Identity Service you can choose either a Kubernetes distribution or a standalone distribution. Both methods are described in the following sections.
 
 Check the [Kubernetes deployment prerequisites](https://github.com/Alfresco/alfresco-dbp-deployment/blob/master/README-prerequisite.md) and [standalone prerequisites](#prerequisites) before you start.
 

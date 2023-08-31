@@ -8,6 +8,7 @@ on:
       - OPSEXP-**
       - feature/**
       - fix/**
+      - release/**
   workflow_dispatch:
   schedule:
     - cron: "0 5 * * 3"
@@ -423,7 +424,7 @@ jobs:
     needs: [test_linux, test_windows, test_helm, test_upgrade]
     if: >
       !(failure() || cancelled()) &&
-      (github.ref_name == 'master' || contains(github.event.head_commit.message, '[publish]')) &&
+      (github.ref_name == 'master' || startsWith(github.ref_name, 'release/') || contains(github.event.head_commit.message, '[publish]')) &&
       github.event_name != 'pull_request'
     steps:
       - uses: actions/checkout@v3
@@ -444,7 +445,7 @@ jobs:
           global: true
       - name: "Set HELM_REPO"
         run: |
-          if [[ "${BRANCH_NAME}" == "master" ]] && [[ "${{ github.event.head_commit.message }}" == *"[release]"* ]]
+          if [[ "${BRANCH_NAME}" =~ ^master$|^release/.+$ ]] && [[ "${{ github.event.head_commit.message }}" == *"[release]"* ]]
           then
             export HELM_REPO=stable
           fi
@@ -453,7 +454,7 @@ jobs:
       - name: "Publish Helm Chart"
         id: publish
         run: |
-          if [[ "${BRANCH_NAME}" != "master" ]]; then
+          if [[ ! "${BRANCH_NAME}" =~ ^master$|^release/.+$ ]]; then
             CHART_VERSION=$(cat helm/${PROJECT_NAME}/Chart.yaml | grep version: | awk '{print $2}')
             # Only modify the chart version if it doesn't have '-M*' at the end
             if [[ "${CHART_VERSION}" != *"-M"* ]]; then
@@ -529,7 +530,7 @@ jobs:
     needs: staging_release
     if: >
       !(failure() || cancelled()) &&
-      github.ref_name == 'master' &&
+      (github.ref_name == 'master' || startsWith(github.ref_name, 'release/')) &&
       contains(github.event.head_commit.message, '[release]') &&
       github.event_name != 'pull_request'
     steps:
@@ -577,7 +578,7 @@ jobs:
     needs: staging_release
     if: >
       !(failure() || cancelled()) &&
-      github.ref_name == 'master' &&
+      (github.ref_name == 'master' || startsWith(github.ref_name, 'release/')) &&
       contains(github.event.head_commit.message, '[release]') &&
       github.event_name != 'pull_request'
     steps:

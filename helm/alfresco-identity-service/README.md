@@ -4,7 +4,7 @@
 
 The Alfresco Identity Service will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication.
 
-**Homepage:** <https://github.com/Alfresco/alfresco-identity-service/tree/master/helm/alfresco-identity-service>
+**Homepage:** <https://github.com/Alfresco/alfresco-identity-service/tree/release/2.0.x/helm/alfresco-identity-service>
 
 ## Maintainers
 
