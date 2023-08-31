@@ -55,13 +55,13 @@ check_cluster_resources() {
   memalloc=$(echo "$util" | grep % | awk '{print $2}' | grep Mi | awk -v awkvar="$memory_units" '{ sum += $1 } END { if (NR > 0) { print sum/(NR*awkvar) } }' | awk '{printf "%.0f",$1}')
   cpualloc=$(echo "$util" | grep % | awk '{print $2}' | grep m | awk -v awkvar="$processing_units" '{ sum += $1 } END { if (NR > 0) { print sum/(NR*awkvar) } }' | awk '{printf "%.0f",$1}')
 
-  if (( $memalloc > $allocation_threshold )); then 
-    echo "The cluster is at "$memalloc"% memory allocation, please clean up first!" 
+  if (( $memalloc > $allocation_threshold )); then
+    echo "The cluster is at "$memalloc"% memory allocation, please clean up first!"
     exit 1
-  else 
+  else
     echo "Memory allocation on the cluster is "$memalloc"%"
   fi
-  if (( $cpualloc > $allocation_threshold )); then 
+  if (( $cpualloc > $allocation_threshold )); then
     echo "The cluster is at "$cpualloc"% cpu allocation, please clean up first!"
     exit 1
   else echo "CPU allocation on the cluster is "$cpualloc"%"
@@ -69,7 +69,7 @@ check_cluster_resources() {
 }
 
 get_namespace(){
-   echo $(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
+   echo "default"
 }
 
 create_secrets(){
@@ -182,10 +182,10 @@ wait_for_dns_propagation() {
  DNS_COUNTER_MAX=90
  # sleep seconds
  DNS_SLEEP_SECONDS=10
- 
+
  log_info "Trying to perform a trace DNS query to prevent caching"
  dig +trace $hostname @8.8.8.8
- 
+
  while [ "$DNS_PROPAGATED" -eq 0 ] && [ "$DNS_COUNTER" -le "$DNS_COUNTER_MAX" ]; do
    host $hostname 8.8.8.8
    if [ "$?" -eq 1 ]; then
@@ -209,7 +209,7 @@ wait_for_all_pod_readiness() {
   PODS_COUNTER_MAX=120
   # sleep seconds
   PODS_SLEEP_SECONDS=10
-  
+
   namespace=$(get_namespace)
 
   log_info "Validate that all the pods in the deployment are ready"
@@ -229,10 +229,10 @@ wait_for_all_pod_readiness() {
      if [ "$PODS_COUNTER" -ge "$PODS_COUNTER_MAX" ]; then
       failedPods=$(kubectl get pods --namespace "$namespace" | grep '0/1' | awk '{print $1}')
       log_info "\nThe following pods were not ready:\n"
-      for failedpod in $failedPods; do 
+      for failedpod in $failedPods; do
         log_info "$failedpod"
       done
-      for failedpod in $failedPods; do 
+      for failedpod in $failedPods; do
         log_info "Description for $failedpod :\n"
         kubectl describe pod $failedpod --namespace "$namespace"
       done

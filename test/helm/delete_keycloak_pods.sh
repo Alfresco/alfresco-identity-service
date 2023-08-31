@@ -6,7 +6,7 @@ set -e
 namespace=$(get_namespace)
 
 # space separated list of pod names
-delete_pod "keycloak ids-$BUILD_NUMBER-k" $namespace
+delete_pod "keycloak ids-k" $namespace
 
 wait_for_all_pod_readiness
 
