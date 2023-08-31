@@ -202,7 +202,7 @@ jobs:
           postman_image=postman/newman_alpine33:3.9.2
 
           # run identity checks
-          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "identity-test-collection.json" --global-var "identity_host=$HOST"
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "identity-test-collection.json" --insecure --global-var "identity_host=$HOST"
           TEST_RESULT=$?
           echo "TEST_RESULT=${TEST_RESULT}"
 
