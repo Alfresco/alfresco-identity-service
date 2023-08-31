@@ -242,6 +242,12 @@ jobs:
             echo "Tests failed, exiting"
             exit 1
           fi
+      - name: Show cluster status after install
+        if: always()
+        run: |
+          helm ls --all-namespaces
+          kubectl get all --all-namespaces
+          kubectl describe pod
       - name: "Clean up S3 after failure"
         if: ${{ always() && steps.test.outcome == 'failure' }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
