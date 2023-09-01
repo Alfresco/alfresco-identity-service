@@ -143,10 +143,27 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
           aws-region: ${{ env.AWS_REGION }}
+      - name: Login to Docker Hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Login to Quay.io
+        uses: docker/login-action@v2
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      - name: Setup cluster
+        uses: Alfresco/alfresco-build-tools/.github/actions/setup-kind@v3.1.0
+      - name: Create registries auth secret
+        run: |
+          kubectl create secret generic regcred \
+          --from-file=.dockerconfigjson=$HOME/.docker/config.json \
+          --type=kubernetes.io/dockerconfigjson
       - name: "Prepare test environment"
         run: |
           openssl aes-256-cbc -K ${{ secrets.ENCRYPTED_E69BEC42AE64_KEY }} -iv ${{ secrets.ENCRYPTED_E69BEC42AE64_IV }} -in test/scripts/config-files/realmRsaKeys.json.enc -out test/scripts/config-files/realmRsaKeys.json -d
-          aws eks update-kubeconfig --name acs-cluster
       - name: "Set IDS_BUILD_NAME"
         run: |
           IDS_BUILD_NAME=$(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
@@ -156,144 +173,14 @@ jobs:
         id: test
         run: |
           set +e
-          export namespace=${IDS_BUILD_NAME}
-          export domain=dev.envalfresco.com
-          export HOST=$namespace.$domain
-          export release_name_ingress=ing-${BUILD_NUMBER}
-          export release_name_ids=ids-${BUILD_NUMBER}
-          export openldap_release=openldap-${BUILD_NUMBER}
-
-          # Utility Functions
-
-          # pod status
-          pod_status() {
-            kubectl get pods --namespace $namespace -o=custom-columns=NAME:.metadata.name,STATUS:.status.phase,READY:.status.conditions[?\(@.type==\'Ready\'\)].status
-          }
-
-          # pods ready
-          pods_ready() {
-            PODS_COUNTER=0
-            PODS_COUNTER_MAX=60
-            PODS_SLEEP_SECONDS=10
-
-            while [ "$PODS_COUNTER" -lt "$PODS_COUNTER_MAX" ]; do
-              totalpods=$(pod_status | grep -v NAME | wc -l | sed 's/ *//')
-              readypodcount=$(pod_status | grep ' True' | wc -l | sed 's/ *//')
-              if [ "$readypodcount" -eq "$totalpods" ]; then
-                    echo "     $readypodcount/$totalpods pods ready now"
-                    pod_status
-                echo "All pods are ready!"
-                break
-              fi
-                PODS_COUNTER=$((PODS_COUNTER + 1))
-                echo "just $readypodcount/$totalpods pods ready now - sleeping $PODS_SLEEP_SECONDS seconds - counter $PODS_COUNTER"
-                sleep "$PODS_SLEEP_SECONDS"
-                continue
-              done
-
-            if [ "$PODS_COUNTER" -ge "$PODS_COUNTER_MAX" ]; then
-              pod_status
-              echo "Pods did not start - exit 1"
-              exit 1
-            fi
-          }
-
-          cat <<EOF | kubectl apply -f -
-          apiVersion: v1
-          kind: Namespace
-          metadata:
-            name: $namespace
-          ---
-          apiVersion: rbac.authorization.k8s.io/v1
-          kind: Role
-          metadata:
-            name: $namespace:psp
-            namespace: $namespace
-          rules:
-          - apiGroups:
-            - policy
-            resourceNames:
-            - kube-system
-            resources:
-            - podsecuritypolicies
-            verbs:
-            - use
-          ---
-          apiVersion: rbac.authorization.k8s.io/v1
-          kind: RoleBinding
-          metadata:
-            name: $namespace:psp:default
-            namespace: $namespace
-          roleRef:
-            apiGroup: rbac.authorization.k8s.io
-            kind: Role
-            name: $namespace:psp
-          subjects:
-          - kind: ServiceAccount
-            name: default
-            namespace: $namespace
-          ---
-          apiVersion: rbac.authorization.k8s.io/v1
-          kind: RoleBinding
-          metadata:
-            name: $namespace:psp:$release_name_ingress-nginx-ingress
-            namespace: $namespace
-          roleRef:
-            apiGroup: rbac.authorization.k8s.io
-            kind: Role
-            name: $namespace:psp
-          subjects:
-          - kind: ServiceAccount
-            name: $release_name_ingress-nginx-ingress
-            namespace: $namespace
-          ---
-          $(kubectl create secret docker-registry quay-registry-secret --dry-run=client --docker-server=quay.io --docker-username=${{ secrets.QUAY_USERNAME }} --docker-password=${{ secrets.QUAY_PASSWORD }} -n $namespace -o yaml)
-          EOF
-
-          cat << EOR >> ingressvalues.yaml
-          rbac:
-            create: true
-          controller:
-            scope:
-              enable: true
-              namespace: $namespace
-            admissionWebhooks:
-              enabled: false
-            config:
-              proxy-body-size: "100m"
-              generate-request-id: "true"
-              PROXY-READ-TIMEOUT: "3600"
-              proxy-send-timeout: "3600"
-              ssl-redirect: "false"
-              server-tokens: "false"
-              use-forwarded-headers: "true"
-            publishService:
-              enabled: true
-            service:
-              targetPorts:
-                https: http
-                http: http
-              annotations:
-                external-dns.alpha.kubernetes.io/hostname: "$HOST"
-                service.beta.kubernetes.io/aws-load-balancer-additional-resource-tags: "Creator=Platform-Services,Department=Engineering,NoAutomaticShutdown=True,Owner=Platform-Services,Production=False,Purpose=DBP and SSO Testing,Tool=k8sIngress"
-                service.beta.kubernetes.io/aws-load-balancer-backend-protocol: "http"
-                service.beta.kubernetes.io/aws-load-balancer-connection-idle-timeout: '3600'
-                service.beta.kubernetes.io/aws-load-balancer-ssl-cert: ${{ secrets.ACM_CERTIFICATE }}
-                service.beta.kubernetes.io/aws-load-balancer-ssl-ports: https
-                service.beta.kubernetes.io/aws-load-balancer-ssl-negotiation-policy: ELBSecurityPolicy-TLS-1-2-2017-01
-                service.beta.kubernetes.io/aws-load-balancer-security-groups: ${{ secrets.AWS_SECURITY_GROUP }}
-          EOR
-
-          # install ingress-nginx
-          helm upgrade --install $release_name_ingress --repo https://kubernetes.github.io/ingress-nginx ingress-nginx --version=3.7.1 -f ingressvalues.yaml \
-            --wait \
-            --namespace $namespace
+          export HOST=localhost
+          export release_name_ids=ids
+          export openldap_release=openldap
 
           # install openldap
           helm upgrade --install $openldap_release --repo https://geek-cookbook.github.io/helm-openldap openldap --version 1.2.9 \
             -f test/scripts/ldap-config.yaml \
-            --wait \
-            --namespace $namespace
+            --wait
 
           # install Identity Service
           helm dep up helm/alfresco-identity-service
@@ -307,40 +194,15 @@ jobs:
             --set keycloakx.command[2]="--import-realm" \
             --set keycloakx.command[3]="--http-relative-path=/auth" \
             --set keycloakx.command[4]="--hostname=${HOST}" \
-            --wait \
-            --namespace $namespace
-
-          # check dns and pods
-          DNS_PROPAGATED=0
-          DNS_COUNTER=0
-          DNS_COUNTER_MAX=90
-          DNS_SLEEP_SECONDS=10
-
-          echo "Trying to perform a trace DNS query to prevent caching"
-          dig +trace $HOST @8.8.8.8
-
-          while [ "$DNS_PROPAGATED" -eq 0 ] && [ "$DNS_COUNTER" -le "$DNS_COUNTER_MAX" ]; do
-            host $HOST 8.8.8.8
-            if [ "$?" -eq 1 ]; then
-              DNS_COUNTER=$((DNS_COUNTER + 1))
-              echo "DNS Not Propagated - Sleeping $DNS_SLEEP_SECONDS seconds"
-              sleep "$DNS_SLEEP_SECONDS"
-            else
-              echo "DNS Propagated"
-              DNS_PROPAGATED=1
-            fi
-          done
-
-          [ $DNS_PROPAGATED -ne 1 ] && echo "DNS entry for $HOST did not propagate within expected time" && exit 1
-
-          pods_ready
+            --set keycloakx.imagePullSecrets[0].name="regcred" \
+            --wait
 
           # Set IDP Config
           ./test/scripts/set_idp_config.sh
           postman_image=postman/newman_alpine33:3.9.2
 
           # run identity checks
-          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "identity-test-collection.json" --global-var "identity_host=$HOST"
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "identity-test-collection.json" --insecure --global-var "identity_host=$HOST"
           TEST_RESULT=$?
           echo "TEST_RESULT=${TEST_RESULT}"
 
@@ -353,15 +215,15 @@ jobs:
           fi
 
           if [[ "${TEST_RESULT}" == "0" ]]; then
-            docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --global-var "identity_host=$HOST"
+            docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --insecure --global-var "identity_host=$HOST"
             TEST_RESULT=$?
             echo "TEST_RESULT=${TEST_RESULT}"
           fi
 
           if [[ "${TEST_RESULT}" == "0" ]]; then
             cd test/scripts
-            ./auth0-api.sh create $HOST https://$HOST
-            ./configure-saml-ids.sh app_name=$HOST ids_base_url=https://$HOST
+            ./auth0-api.sh create $IDS_BUILD_NAME https://$HOST
+            ./configure-saml-ids.sh app_name=$IDS_BUILD_NAME ids_base_url=https://$HOST
             cd ../saml
             export KEYCLOAK_HOSTNAME=$HOST
             export KEYCLOAK_ISSUER=https://$HOST/auth/realms/alfresco
@@ -372,16 +234,20 @@ jobs:
           fi
 
           if [[ "${{ github.event.head_commit.message }}" != *"[keep env]"* ]]; then
-            helm delete $release_name_ingress $release_name_ids $openldap_release -n $namespace
-            kubectl delete namespace $namespace
             cd test/scripts
-            ./auth0-api.sh delete $HOST
+            ./auth0-api.sh delete $IDS_BUILD_NAME
           fi
 
           if [[ "${TEST_RESULT}" == "1" ]]; then
             echo "Tests failed, exiting"
             exit 1
           fi
+      - name: Show cluster status after install
+        if: always()
+        run: |
+          helm ls --all-namespaces
+          kubectl get all --all-namespaces
+          kubectl describe pod
       - name: "Clean up S3 after failure"
         if: ${{ always() && steps.test.outcome == 'failure' }}
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive

@@ -75,7 +75,7 @@ done
 configure_realm() {
 get_token
 # Check if the realm key provider already exists
-KEY_NAME="$(curl -s "${IDS_BASE_URL}/auth/admin/realms/${REALM}/components?type=org.keycloak.keys.KeyProvider&name=${REALM_KEY_PROVIDER_NAME}" \
+KEY_NAME="$(curl --insecure -s "${IDS_BASE_URL}/auth/admin/realms/${REALM}/components?type=org.keycloak.keys.KeyProvider&name=${REALM_KEY_PROVIDER_NAME}" \
     -H "Authorization: Bearer ${TOKEN}" | jq '. | .[].name')"
 
 log_info "Setting the realm key provider '${REALM_KEY_PROVIDER_NAME}' ..."
@@ -86,7 +86,7 @@ else
     # Set the realm keys (i.e. private key and certificate. For example, the certificate that other party needs to validate the AIMS signed SAML message)
     KEYS_PAYLOAD="$(cat $PWD/config-files/realmRsaKeys.json)"
     get_token
-    STATUS_CODE="$(curl -s -o /dev/null -w "%{http_code}" \
+    STATUS_CODE="$(curl --insecure -s -o /dev/null -w "%{http_code}" \
         "${IDS_BASE_URL}/auth/admin/realms/${REALM}/components" \
         --compressed \
         -H "Content-Type: application/json;charset=utf-8" \
@@ -109,7 +109,7 @@ EOF
 " 2>/dev/null)"
 
 get_token
-STATUS_CODE="$(curl -s -o /dev/null -w "%{http_code}" \
+STATUS_CODE="$(curl --insecure -s -o /dev/null -w "%{http_code}" \
     "${IDS_BASE_URL}/auth/admin/realms/${REALM}/identity-provider/instances" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
@@ -132,7 +132,7 @@ add_idp_mapper() {
 
     # Check if the requested saml mapper already exists
     get_token
-    MAPPER_RESPONSE="$(curl -s "${IDS_BASE_URL}/auth/admin/realms/$REALM/identity-provider/instances/${IDP_ID}/mappers" \
+    MAPPER_RESPONSE="$(curl --insecure -s "${IDS_BASE_URL}/auth/admin/realms/$REALM/identity-provider/instances/${IDP_ID}/mappers" \
         -H "Authorization: Bearer ${TOKEN}" | jq ".[] | select(.name==\"${MAPPER_NAME}\")")"
 
     if [ -n "${MAPPER_RESPONSE}" ]; then
@@ -140,7 +140,7 @@ add_idp_mapper() {
     else
         # Add the saml mapper
         get_token
-        STATUS_CODE="$(curl -s -o /dev/null -w "%{http_code}" \
+        STATUS_CODE="$(curl --insecure -s -o /dev/null -w "%{http_code}" \
             "${IDS_BASE_URL}/auth/admin/realms/${REALM}/identity-provider/instances/${IDP_ID}/mappers" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${TOKEN}" \
@@ -160,7 +160,7 @@ log_info "Enforcing SAML flow execution ..."
 
 # Get all executions for browser flow
 get_token
-EXECUTIONS="$(curl -s "${IDS_BASE_URL}/auth/admin/realms/${REALM}/authentication/flows/browser/executions" \
+EXECUTIONS="$(curl --insecure -s "${IDS_BASE_URL}/auth/admin/realms/${REALM}/authentication/flows/browser/executions" \
     -H "Authorization: Bearer ${TOKEN}")"
 
 # Extract the id of "Identity Provider Redirector"
@@ -174,7 +174,7 @@ if [ "null" = "${AUTH_CFG_ID}" ]; then
     log_info "There is no authenticator config. Creating authenticator config ..."
 
     get_token
-    STATUS_CODE="$(curl -s -o /dev/null -w "%{http_code}" \
+    STATUS_CODE="$(curl --insecure -s -o /dev/null -w "%{http_code}" \
         "${IDS_BASE_URL}/auth/admin/realms/${REALM}/authentication/executions/${EXECUTION_ID}/config" \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer ${TOKEN}" \
@@ -194,7 +194,7 @@ else
 
     # Update execution of the SAML Identity Provider Redirector
     get_token
-    STATUS_CODE="$(curl -s -o /dev/null -w "%{http_code}" --request PUT \
+    STATUS_CODE="$(curl --insecure -s -o /dev/null -w "%{http_code}" --request PUT \
         "${IDS_BASE_URL}/auth/admin/realms/${REALM}/authentication/config/${AUTH_CFG_ID}" \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer ${TOKEN}" \
