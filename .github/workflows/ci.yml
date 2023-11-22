@@ -31,7 +31,7 @@ jobs:
         run: |
           curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_$(uname)_x86_64.tar.gz | sudo tar xz -C /usr/local/bin/ helm-docs
           helm-docs --version
-      - uses: Alfresco/alfresco-build-tools/.github/actions/pre-commit@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/pre-commit@v3.8.1
 
   build:
     name: "Build"
@@ -39,8 +39,8 @@ jobs:
     needs: pre-commit
     steps:
       - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v3.8.1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v3.8.1
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
@@ -66,15 +66,14 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
       - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v3.8.1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v3.8.1
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
           aws-region: ${{ env.AWS_REGION }}
       - name: "Test"
-        id: test
         run: |
           source distribution/build.properties
           export KEYCLOAK_VERSION=${KEYCLOAK_VERSION}
@@ -89,7 +88,7 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
       - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v3.8.1
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
@@ -100,7 +99,6 @@ jobs:
           echo "BUILD_NUMBER=$env:GITHUB_RUN_NUMBER" | Out-File -FilePath $env:GITHUB_ENV -Append
           echo $env:GITHUB_RUN_NUMBER
       - name: "Test"
-        id: test
         run: |
           $Props = convertfrom-stringdata (get-content ./distribution/build.properties -raw)
           $env:KEYCLOAK_VERSION = $Props.'KEYCLOAK_VERSION'
@@ -121,8 +119,8 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
       - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v3.8.1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v3.8.1
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
@@ -155,7 +153,6 @@ jobs:
           echo "IDS_BUILD_NAME=$IDS_BUILD_NAME" >> "$GITHUB_ENV"
           echo $IDS_BUILD_NAME
       - name: "Test"
-        id: test
         run: |
           set +e
           export HOST=localhost
@@ -227,7 +224,7 @@ jobs:
             echo "Tests failed, exiting"
             exit 1
           fi
-      - name: Show cluster status after install
+      - name: "Show cluster status after install"
         if: always()
         run: |
           helm ls --all-namespaces
@@ -241,8 +238,8 @@ jobs:
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
       - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v3.8.1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v3.8.1
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
@@ -257,19 +254,18 @@ jobs:
           echo "IDS_BUILD_NAME=$IDS_BUILD_NAME" >> "$GITHUB_ENV"
           echo $IDS_BUILD_NAME
       - name: "Test"
-        id: test
         run: |
           cd test/saml
           mvn -B -ntp clean package -DskipTests
           ./upgrade/test-upgrade.sh
 
   cleanup:
-    name: "Post-build Cleanup"
+    name: "Cleanup"
     runs-on: ubuntu-latest
     needs: [test_linux, test_windows, test_helm, test_upgrade]
     if: always()
     steps:
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v3.8.1
       - uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
