@@ -1,10 +1,10 @@
-# alfresco-identity-service
+# Alfresco Keycloak
 
-![Version: 8.0.0](https://img.shields.io/badge/Version-8.0.0-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![AppVersion: 21.1.2](https://img.shields.io/badge/AppVersion-21.1.2-informational?style=flat-square)
 
-The Alfresco Identity Service will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication.
+This is just a sample Helm installation of raw Keycloak with the Alfresco Realm and Theme pre-installed.
 
-**Homepage:** <https://github.com/Alfresco/alfresco-identity-service/tree/master/helm/alfresco-identity-service>
+**Homepage:** <https://github.com/Alfresco/alfresco-identity-service/tree/master/helm/alfresco-keycloak>
 
 ## Maintainers
 

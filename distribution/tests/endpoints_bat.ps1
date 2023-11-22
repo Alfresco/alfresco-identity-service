@@ -2,7 +2,7 @@ $appid = Start-Process ./kc.bat -argumentlist "start-dev --import-realm --http-r
 
 function checkStatus {
     if ($args[0] -notmatch $args[1]) {
-        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'" | foreach { kill $_.ProcessId }
+        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-keycloak-$KEYCLOAK_VERSION%'" | foreach { kill $_.ProcessId }
         $test=$args[0]
         $check=$args[1]
         throw "Accessing $test does not output $check "
@@ -63,4 +63,4 @@ $scriptBlock =  {
 
 Invoke-Command -ArgumentList $parentproc -ScriptBlock $scriptBlock
 
-Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'" | foreach { kill $_.ProcessId }
+Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-keycloak-$KEYCLOAK_VERSION%'" | foreach { kill $_.ProcessId }

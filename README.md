@@ -217,7 +217,7 @@ In addition, for high availability, Keycloak supports clustering.  For more info
 
 ### Customizing the Realm During Deployment
 
-1. You will need a realm file. A [sample realm](./helm/alfresco-identity-service/alfresco-realm.json) file is provided.
+1. You will need a realm file. A [sample realm](./helm/alfresco-keycloak/alfresco-realm.json) file is provided.
 
 2. Create a secret using your realm json file
 

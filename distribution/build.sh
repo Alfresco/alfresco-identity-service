@@ -9,56 +9,16 @@ for arg in $ARGS; do
   eval "$arg"
 done
 
-CHART_DIR="${currentDir}/../helm/alfresco-identity-service"
+CHART_DIR="${currentDir}/../helm/alfresco-keycloak"
 
-HELM_REPO_NAME="alfresco-incubator"
 KEYCLOAK_NAME=keycloak-$KEYCLOAK_VERSION
 KEYCLOAK_DISTRO=$KEYCLOAK_NAME.zip
-DISTRIBUTION_NAME=alfresco-identity-service-$IDENTITY_VERSION
+DISTRIBUTION_NAME=alfresco-keycloak-$KEYCLOAK_VERSION
 
-# Dev variables
-KEYCLOAK_GIT_REPO="${KEYCLOAK_GIT_REPO:-$keycloak_git_repo}"
-KEYCLOAK_GIT_BRANCH="${KEYCLOAK_GIT_BRANCH:-$keycloak_git_branch}"
 THEME_VERSION="${THEME_VERSION:-$theme_version}"
 
-HELM_REPO_LOCATION="${HELM_REPO_LOCATION:-https://kubernetes-charts.alfresco.com/incubator}"
-
-if [ "$KEYCLOAK_GIT_REPO" != "" ]; then
-  if [ "$KEYCLOAK_GIT_BRANCH" == "" ]; then
-    KEYCLOAK_GIT_BRANCH="master"
-  fi
-
-  mkdir -p temp
-  cd temp
-  echo "Building Git branch: $KEYCLOAK_GIT_BRANCH"
-  # Clone repository
-  git clone --depth 1 https://github.com/"$KEYCLOAK_GIT_REPO".git -b "$KEYCLOAK_GIT_BRANCH" keycloak-source
-
-  # Build
-  cd keycloak-source
-
-  echo "Get keycloak version from the project pom.xml"
-  VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
-  echo "Using keycloak version: $VERSION"
-  # Override variables
-  KEYCLOAK_NAME=keycloak-$VERSION
-  KEYCLOAK_DISTRO=$KEYCLOAK_NAME.zip
-
-  MASTER_HEAD=$(git log -n1 --format="%H")
-  echo "Build Keycloak from: $KEYCLOAK_GIT_REPO/$KEYCLOAK_GIT_BRANCH/commit/$MASTER_HEAD"
-
-  mvn -Pdistribution -pl distribution/server-dist -am -Dmaven.test.skip clean install
-  # Add Alfresco theme
-  export THEME_VERSION="$THEME_VERSION"
-  ./add-alfresco-theme.sh
-
-  mv distribution/server-dist/target/keycloak-*.zip ../../$KEYCLOAK_DISTRO
-  cd ../..
-  rm -rf temp
-else
-  echo "Downloading $KEYCLOAK_NAME"
-  curl -sSLO https://github.com/Alfresco/keycloak/releases/download/$KEYCLOAK_VERSION/$KEYCLOAK_DISTRO
-fi
+echo "Downloading $KEYCLOAK_NAME"
+curl -sSLO https://github.com/keycloak/keycloak/releases/download/$KEYCLOAK_VERSION/$KEYCLOAK_DISTRO
 
 echo "Unzipping Keycloak"
 unzip -oq $KEYCLOAK_DISTRO
@@ -84,16 +44,12 @@ echo "Generating realm from template"
 mkdir -p $DISTRIBUTION_NAME/realm
 
 #
-# Alfresco realm template is stored in ../helm/alfresco-identity-service/alfresco-realm.json. It isn't a valid JSON
+# Alfresco realm template is stored in ../helm/alfresco-keycloak/alfresco-realm.json. It isn't a valid JSON
 # file and is also missing the corresponding "values.yaml" values. In order to generate a valid realm file, it must be
 # rendered (without installation) using helm. Note only "realm-secret.yaml" needs to be rendered as this is how the
 # realm gets passed on to keycloak when on k8s.
 #
 helm repo add stable https://charts.helm.sh/stable
-if [ -z "$(helm repo list | grep ${HELM_REPO_NAME})" ]; then
-  echo "adding helm repository"
-  helm repo add ${HELM_REPO_NAME} "${HELM_REPO_LOCATION}"
-fi
 helm repo add codecentric https://codecentric.github.io/helm-charts
 
 helm repo update
@@ -108,7 +64,6 @@ helm template ${CHART_DIR} \
 
 echo "Recreate Distro Readme file"
 cp -rf README.html $DISTRIBUTION_NAME/
-sed -ie "s/IDVERSION/$IDENTITY_VERSION/" $DISTRIBUTION_NAME/README.html
 sed -ie "s/KVERSION/$KEYCLOAK_VERSION/" $DISTRIBUTION_NAME/README.html
 
 # zip the configured distro

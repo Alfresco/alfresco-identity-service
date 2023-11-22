@@ -17,7 +17,7 @@ log_test_passed() {
 
 WORK_DIR=$(pwd)
 
-unzip -oq alfresco-identity-service-"$IDENTITY_VERSION".zip
+unzip -oq alfresco-keycloak-"$KEYCLOAK_VERSION".zip
 
 PID=$(pgrep -f "kc")
 if [ -n "$PID" ]; then
@@ -25,7 +25,7 @@ if [ -n "$PID" ]; then
   pkill -KILL -f "kc"
 fi
 
-cd alfresco-identity-service-"$IDENTITY_VERSION"/bin || exit
+cd alfresco-keycloak-"$KEYCLOAK_VERSION"/bin || exit
 
 log_info "Starting the identity service"
 /bin/bash -c './kc.sh start-dev --import-realm --http-relative-path="/auth" &'
@@ -104,8 +104,8 @@ log_info "Killing identity service processes: $PID"
 pkill -KILL -f "standalone"
 
 cd "$WORK_DIR" || exit
-log_info "Deleting alfresco-identity-service-$IDENTITY_VERSION directory."
-rm -rf alfresco-identity-service-"$IDENTITY_VERSION"
+log_info "Deleting alfresco-keycloak-$KEYCLOAK_VERSION directory."
+rm -rf alfresco-keycloak-"$KEYCLOAK_VERSION"
 
 log_info "Done."
 exit 0

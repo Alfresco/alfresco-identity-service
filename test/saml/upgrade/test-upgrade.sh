@@ -54,30 +54,6 @@ stop_ids() {
   fi
 }
 
-# This is required if upgrading from a version less than 1.5.0 to a version greater than or equal to 1.5.0
-# See https://www.keycloak.org/docs/13.0/upgrading/#migrating-to-13-0-0 for details
-extra_migration_step() {
-  compare_versions "$1" "1.5.0"
-  case $? in
-  0) op="=" ;;
-  1) op=">" ;;
-  2) op="<" ;;
-  esac
-  if [ "$op" = "<" ]; then
-    compare_versions "1.5.0" "$IDENTITY_VERSION"
-    case $? in
-    0) op="=" ;;
-    1) op=">" ;;
-    2) op="<" ;;
-    esac
-    if [ "$op" != ">" ]; then
-      log_info "Removing 'SmallRye' modules references from 'standalone.xml' file as you are upgrading to a version greater than or equal to 1.5.0"
-    fi
-  fi
-  # If the upgrade going to be to >=1.5.0 then remove 'SmallRye' references
-  sed '/smallrye/d' "${target}"/standalone/configuration/standalone.xml >standalone-temp.xml && mv standalone-temp.xml "${target}"/standalone/configuration/standalone.xml
-}
-
 # This is required if upgrading from a version of Keycloak which relies on h2 v1.x
 migrate_h2_database() {
   wget https://repo1.maven.org/maven2/com/h2database/h2/2.1.214/h2-2.1.214.jar
@@ -110,9 +86,9 @@ app_name_prefix="local"
 if [ -n "${IDS_BUILD_NAME}" ]; then
   app_name_prefix="${IDS_BUILD_NAME}"
 fi
-auth0_app_name="${app_name_prefix}-upgrade-to-${IDENTITY_VERSION}"
+auth0_app_name="${app_name_prefix}-upgrade-to-${KEYCLOAK_VERSION}"
 
-log_info "Building the current IDS version: ${IDENTITY_VERSION}"
+log_info "Building the current Keycloak version: ${KEYCLOAK_VERSION}"
 make build -C ../../distribution
 
 # Create a directory to copy the required IDS versions
@@ -126,7 +102,7 @@ unzip -oq -d "${workspace}" "$from_version_zip"
 
 source=$(basename "${workspace}"/alfresco-identity-service-*)
 source_version=$(echo "$source" | cut -d - -f4)
-target="alfresco-identity-service-${IDENTITY_VERSION}"
+target="alfresco-keycloak-${KEYCLOAK_VERSION}"
 
 ##########################################
 # Start the 'from' version and do a test #
@@ -192,9 +168,6 @@ ls -lh "${target}"/data/
 
 log_info "Copy db files within ${source}/standalone into ${target}/data/h2 directory"
 mkdir -p "${target}"/data/h2 && cp -rf "${source}"/standalone/data/*.db "${target}"/data/h2/
-
-# if the source is required to be upgraded to 1.5.0 or greater then perform additional steps
-#extra_migration_step "${source_version}"
 
 # if the previous version of Keycloak relies on h2 v1.x, whereas the newer version requires v2.x
 migrate_h2_database
