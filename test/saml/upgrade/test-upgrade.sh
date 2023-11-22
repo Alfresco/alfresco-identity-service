@@ -135,7 +135,7 @@ log_info "Setup Auth0 ..."
 # cd to /saml dir
 cd "${current_dir}" || exit 1
 # Run the test
-mvn test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}"
+mvn -B -ntp test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}"
 TESTS_RESULT=$?
 
 log_info "The test was successful. Stopping IDS server..."
@@ -191,14 +191,14 @@ cd "${current_dir}/../scripts" || exit 1
 cd "${current_dir}" || exit 1
 
 # Run the test with the existing user. The user created in the first test run above
-mvn test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}"
+mvn -B -ntp test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}"
 RETURN_CODE=$?
 if [[ "$RETURN_CODE" -ne 0 ]] ; then
   TESTS_RESULT=$RETURN_CODE
 fi
 
 # Run the test with a new user. A user that does not exist in Keycloak yet
-mvn test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}" -Dsaml.username=user2 -Dsaml.password=Passw0rd
+mvn -B -ntp test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}" -Dsaml.username=user2 -Dsaml.password=Passw0rd
 RETURN_CODE=$?
 if [[ "$RETURN_CODE" -ne 0 ]] ; then
   TESTS_RESULT=$RETURN_CODE

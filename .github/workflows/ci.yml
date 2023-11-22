@@ -58,9 +58,6 @@ jobs:
           # upload ZIP file to S3 bucket
           aws s3 cp alfresco-keycloak-${KEYCLOAK_VERSION}.md5 s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/
           aws s3 cp alfresco-keycloak-${KEYCLOAK_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/
-      - name: "Clean up S3 after failure"
-        if: ${{ always() && steps.build.outcome == 'failure' }}
-        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
   test_linux:
     name: "Test on Linux"
@@ -84,9 +81,6 @@ jobs:
           echo "KEYCLOAK_VERSION=${KEYCLOAK_VERSION}"
           aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-keycloak-${KEYCLOAK_VERSION}.zip .
           ./distribution/tests/endpoints.sh
-      - name: "Clean up S3 after failure"
-        if: ${{ always() && steps.test.outcome == 'failure' }}
-        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
   test_windows:
     name: "Test on Windows"
@@ -119,9 +113,6 @@ jobs:
           powershell -Command 'Set-ExecutionPolicy unrestricted'
           powershell -Command $env:GITHUB_WORKSPACE/distribution/tests/endpoints_ps.ps1
           powershell -Command $env:GITHUB_WORKSPACE/distribution/tests/endpoints_bat.ps1
-      - name: "Clean up S3 after failure"
-        if: ${{ always() && steps.test.outcome == 'failure' }}
-        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
   test_helm:
     name: "Test Helm Chart"
@@ -221,7 +212,7 @@ jobs:
             cd ../saml
             export KEYCLOAK_HOSTNAME=$HOST
             export KEYCLOAK_ISSUER=https://$HOST/auth/realms/alfresco
-            mvn clean test
+            mvn -B ntp clean test
             TEST_RESULT=$?
             echo "TEST_RESULT=${TEST_RESULT}"
             cd ../..
@@ -242,9 +233,6 @@ jobs:
           helm ls --all-namespaces
           kubectl get all --all-namespaces
           kubectl describe pod
-      - name: "Clean up S3 after failure"
-        if: ${{ always() && steps.test.outcome == 'failure' }}
-        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
   test_upgrade:
     name: "Test Upgrade"
@@ -272,8 +260,20 @@ jobs:
         id: test
         run: |
           cd test/saml
-          mvn clean package -DskipTests
+          mvn -B -ntp clean package -DskipTests
           ./upgrade/test-upgrade.sh
-      - name: "Clean up S3 after failure"
-        if: ${{ always() && steps.test.outcome == 'failure' }}
+
+  cleanup:
+    name: "Post-build Cleanup"
+    runs-on: ubuntu-latest
+    needs: [test_linux, test_windows, test_helm, test_upgrade]
+    if: always()
+    steps:
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
+      - uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
+          aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: "Clean up S3"
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
