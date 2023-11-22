@@ -1,4 +1,4 @@
-# Alfresco Keycloak
+# alfresco-keycloak
 
 ![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![AppVersion: 21.1.2](https://img.shields.io/badge/AppVersion-21.1.2-informational?style=flat-square)
 
@@ -43,9 +43,7 @@ This is just a sample Helm installation of raw Keycloak with the Alfresco Realm 
 | keycloakx.extraEnv | string | `"- name: KEYCLOAK_ADMIN\n  value: admin\n- name: KEYCLOAK_ADMIN_PASSWORD\n  value: admin\n- name: KEYCLOAK_IMPORT\n  value: /data/import/alfresco-realm.json\n- name: JAVA_OPTS_APPEND\n  value: >-\n    -Djgroups.dns.query={{ include \"keycloak.fullname\" . }}-headless\n"` |  |
 | keycloakx.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/opt/keycloak/data/import/\"\n  readOnly: true\n"` |  |
 | keycloakx.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n"` |  |
-| keycloakx.image.pullPolicy | string | `"Always"` |  |
-| keycloakx.image.repository | string | `"quay.io/alfresco/alfresco-identity-service"` |  |
-| keycloakx.image.tag | string | `"2.0.0"` |  |
+| keycloakx.image.tag | string | `"21.1.2"` |  |
 | keycloakx.imagePullSecrets[0].name | string | `"quay-registry-secret"` |  |
 | keycloakx.rbac.create | bool | `false` |  |
 | keycloakx.service.httpPort | int | `80` |  |
