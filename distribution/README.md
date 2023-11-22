@@ -1,5 +1,5 @@
 # About
-> Building an Alfresco-compatible Keycloak distribution based on [keycloak](https://github.com/keycloak/keycloak).
+> Building a sample Keycloak distribution with the Alfresco Realm and Alfresco Theme pre-installed, based on [keycloak](https://github.com/keycloak/keycloak).
 
 
 # Usage

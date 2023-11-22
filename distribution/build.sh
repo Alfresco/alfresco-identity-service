@@ -15,7 +15,8 @@ KEYCLOAK_NAME=keycloak-$KEYCLOAK_VERSION
 KEYCLOAK_DISTRO=$KEYCLOAK_NAME.zip
 DISTRIBUTION_NAME=alfresco-keycloak-$KEYCLOAK_VERSION
 
-THEME_VERSION="${THEME_VERSION:-$theme_version}"
+THEME_GIT_REPO="${THEME_GIT_REPO:-$theme_git_repo}"
+THEME_GIT_BRANCH="${THEME_GIT_BRANCH:-$theme_git_branch}"
 
 echo "Downloading $KEYCLOAK_NAME"
 curl -sSLO https://github.com/keycloak/keycloak/releases/download/$KEYCLOAK_VERSION/$KEYCLOAK_DISTRO
@@ -33,11 +34,40 @@ rm -rf $KEYCLOAK_DISTRO
 rm -f $DISTRIBUTION_NAME.zip
 rm -f $DISTRIBUTION_NAME.md5
 
+THEME_DIR=alfresco-keycloak-theme/alfresco
+rm -rf alfresco-keycloak-theme
+if [ -n "$THEME_GIT_REPO" ]; then
+    if [ -z "$THEME_GIT_BRANCH" ]; then
+        THEME_GIT_BRANCH='master'
+    fi
+
+    # Clone repository
+    echo "Clone branch '$THEME_GIT_BRANCH' from repo: $THEME_GIT_REPO"
+    git clone --depth 1 https://github.com/$THEME_GIT_REPO.git -b $THEME_GIT_BRANCH alfresco-keycloak-theme
+
+    mkdir -p $THEME_DIR
+    echo "Copy Alfresco theme..."
+    cp -rf alfresco-keycloak-theme/theme/* $THEME_DIR/
+else
+    THEME_DIST="https://github.com/Alfresco/alfresco-keycloak-theme/releases/download/$THEME_VERSION/alfresco-keycloak-theme-$THEME_VERSION.zip"
+    echo "Download Alfresco theme from: $THEME_DIST"
+
+    mkdir -p $THEME_DIR
+    curl -sSLO "$THEME_DIST"
+    if ! unzip -oq alfresco-keycloak-theme-$THEME_VERSION.zip -d alfresco-keycloak-theme; then
+        log_error "Couldn't unzip alfresco-keycloak-theme."
+    fi
+fi
+
+echo "Add Alfresco Theme into $DISTRIBUTION_NAME/themes"
+cp -rf $THEME_DIR $DISTRIBUTION_NAME/themes/
+rm -rf alfresco-keycloak-theme
+
 #############################
 # Configure AIMS zip distro #
 #############################
 echo "#########################################################################"
-echo "# Building and configuring 'alfresco-identity-service' distribution zip #"
+echo "# Building and configuring Keycloak distribution zip #"
 echo "#########################################################################"
 
 echo "Generating realm from template"
