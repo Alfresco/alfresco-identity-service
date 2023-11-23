@@ -147,16 +147,16 @@ jobs:
       - name: "Prepare test environment"
         run: |
           openssl aes-256-cbc -K ${{ secrets.ENCRYPTED_E69BEC42AE64_KEY }} -iv ${{ secrets.ENCRYPTED_E69BEC42AE64_IV }} -in test/scripts/config-files/realmRsaKeys.json.enc -out test/scripts/config-files/realmRsaKeys.json -d
-      - name: "Set IDS_BUILD_NAME"
+      - name: "Set KC_BUILD_NAME"
         run: |
-          IDS_BUILD_NAME=$(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
-          echo "IDS_BUILD_NAME=$IDS_BUILD_NAME" >> "$GITHUB_ENV"
-          echo $IDS_BUILD_NAME
+          KC_BUILD_NAME=$(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
+          echo "KC_BUILD_NAME=$KC_BUILD_NAME" >> "$GITHUB_ENV"
+          echo $KC_BUILD_NAME
       - name: "Test"
         run: |
           set +e
           export HOST=localhost
-          export release_name_ids=ids
+          export release_name_kc=kc
           export openldap_release=openldap
 
           # install openldap
@@ -166,7 +166,7 @@ jobs:
 
           # install Keycloak
           helm dep up helm/alfresco-keycloak
-          helm upgrade --install $release_name_ids helm/alfresco-keycloak \
+          helm upgrade --install $release_name_kc helm/alfresco-keycloak \
             --values helm/alfresco-keycloak/ci/ci-values.yaml \
             --set ingress.hostName=$HOST \
             --set realm.alfresco.client.redirectUris[0]="https://${HOST}\*" \
@@ -204,8 +204,8 @@ jobs:
 
           if [[ "${TEST_RESULT}" == "0" ]]; then
             cd test/scripts
-            ./auth0-api.sh create $IDS_BUILD_NAME https://$HOST
-            ./configure-saml-ids.sh app_name=$IDS_BUILD_NAME ids_base_url=https://$HOST
+            ./auth0-api.sh create $KC_BUILD_NAME https://$HOST
+            ./configure-saml-kc.sh app_name=$KC_BUILD_NAME kc_base_url=https://$HOST
             cd ../saml
             export KEYCLOAK_HOSTNAME=$HOST
             export KEYCLOAK_ISSUER=https://$HOST/auth/realms/alfresco
@@ -217,7 +217,7 @@ jobs:
 
           if [[ "${{ github.event.head_commit.message }}" != *"[keep env]"* ]]; then
             cd test/scripts
-            ./auth0-api.sh delete $IDS_BUILD_NAME
+            ./auth0-api.sh delete $KC_BUILD_NAME
           fi
 
           if [[ "${TEST_RESULT}" == "1" ]]; then
@@ -248,11 +248,11 @@ jobs:
       - name: "Prepare test environment"
         run: |
           openssl aes-256-cbc -K ${{ secrets.ENCRYPTED_E69BEC42AE64_KEY }} -iv ${{ secrets.ENCRYPTED_E69BEC42AE64_IV }} -in test/scripts/config-files/realmRsaKeys.json.enc -out test/scripts/config-files/realmRsaKeys.json -d
-      - name: "Set IDS_BUILD_NAME"
+      - name: "Set KC_BUILD_NAME"
         run: |
-          IDS_BUILD_NAME=$(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
-          echo "IDS_BUILD_NAME=$IDS_BUILD_NAME" >> "$GITHUB_ENV"
-          echo $IDS_BUILD_NAME
+          KC_BUILD_NAME=$(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
+          echo "KC_BUILD_NAME=$KC_BUILD_NAME" >> "$GITHUB_ENV"
+          echo $KC_BUILD_NAME
       - name: "Test"
         run: |
           cd test/saml

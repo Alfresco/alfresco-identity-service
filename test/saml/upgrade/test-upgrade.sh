@@ -1,5 +1,5 @@
 #!/bin/bash
-# Description: This script will test IDS upgrade and JIT user provisioning (See JIRA tickets AUTH-529 and MNT-21741 for details)
+# Description: This script will test Keycloak upgrade and JIT user provisioning (See JIRA tickets AUTH-529 and MNT-21741 for details)
 # Author     : Jamal Kaabi-Mofrad
 # Since      : IDS-1.5.0
 #======================================================
@@ -19,9 +19,9 @@ is_running() {
   fi
 }
 
-stop_ids() {
+stop_kc() {
   if ! is_running; then
-    log_info "IDS server is not running."
+    log_info "Keycloak is not running."
     exit 0
   else
     pkill -SIGINT -f "${pgrep_name}"
@@ -29,7 +29,7 @@ stop_ids() {
     STOPPED="0"
     KILL_MAX_SECONDS=10
     i=0
-    log_info "Waiting at most ${KILL_MAX_SECONDS} seconds for regular termination of IDS server."
+    log_info "Waiting at most ${KILL_MAX_SECONDS} seconds for regular termination of Keycloak."
     while [ "$i" -le "${KILL_MAX_SECONDS}" ]; do
       if is_running; then
         sleep 1
@@ -41,15 +41,15 @@ stop_ids() {
     done
 
     if [ "$STOPPED" -ne "1" ]; then
-      log_info "Regular shutdown of IDS server was not successful. Sending SIGKILL to process."
+      log_info "Regular shutdown of Keycloak server was not successful. Sending SIGKILL to process."
       pkill -KILL -f "${pgrep_name}"
       if is_running; then
-        log_error_no_exit "Error stopping IDS."
+        log_error_no_exit "Error stopping Keycloak."
       else
-        log_info "Stopped IDS."
+        log_info "Stopped Keycloak."
       fi
     else
-      log_info "Stopped IDS."
+      log_info "Stopped Keycloak."
     fi
   fi
 }
@@ -83,15 +83,15 @@ port=8080
 protocol="http"
 base_url="${protocol}://${host_ip}:${port}"
 app_name_prefix="local"
-if [ -n "${IDS_BUILD_NAME}" ]; then
-  app_name_prefix="${IDS_BUILD_NAME}"
+if [ -n "${KC_BUILD_NAME}" ]; then
+  app_name_prefix="${KC_BUILD_NAME}"
 fi
 auth0_app_name="${app_name_prefix}-upgrade-to-${KEYCLOAK_VERSION}"
 
 log_info "Building the current Keycloak version: ${KEYCLOAK_VERSION}"
 make build -C ../../distribution
 
-# Create a directory to copy the required IDS versions
+# Create a directory to copy the required Keycloak versions
 mkdir -p "${workspace}"
 
 from_version_zip=$(find target/distribution -name "alfresco-identity-service-*.zip")
@@ -123,14 +123,14 @@ sleep 20
 cd "${current_dir}/../scripts" || exit 1
 
 # Check the 'from' version
-./check-keycloak-version.sh ids_base_url="${base_url}" ids_home="${workspace}/${source}"
+./check-keycloak-version.sh kc_base_url="${base_url}" kc_home="${workspace}/${source}"
 
 # setup Auth0
 log_info "Setup Auth0 ..."
 ./auth0-api.sh create "${auth0_app_name}" "${base_url}"
 
 # Configure SAML
-./configure-saml-ids.sh app_name="${auth0_app_name}" ids_base_url="${base_url}"
+./configure-saml-kc.sh app_name="${auth0_app_name}" kc_base_url="${base_url}"
 
 # cd to /saml dir
 cd "${current_dir}" || exit 1
@@ -138,9 +138,9 @@ cd "${current_dir}" || exit 1
 mvn -B -ntp test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}"
 TESTS_RESULT=$?
 
-log_info "The test was successful. Stopping IDS server..."
+log_info "The test was successful. Stopping Keycloak..."
 # Stop the 'from' version and do an upgrade
-stop_ids
+stop_kc
 
 log_info "Upgrading from ${source} to ${target} ..."
 
@@ -172,7 +172,7 @@ mkdir -p "${target}"/data/h2 && cp -rf "${source}"/standalone/data/*.db "${targe
 # if the previous version of Keycloak relies on h2 v1.x, whereas the newer version requires v2.x
 migrate_h2_database
 
-log_info "List all files of ${target}/data/h2 directory after copy of old IDS"
+log_info "List all files of ${target}/data/h2 directory after copy of old Keycloak"
 ls -lh "${target}"/data/h2
 
 cd "${target}" || exit 1
@@ -185,7 +185,7 @@ sleep 20
 cd "${current_dir}/../scripts" || exit 1
 
 # Check the 'to' version
-./check-keycloak-version.sh ids_base_url="${base_url}" ids_home="${workspace}/${target}"
+./check-keycloak-version.sh kc_base_url="${base_url}" kc_home="${workspace}/${target}"
 
 # cd to /saml dir
 cd "${current_dir}" || exit 1

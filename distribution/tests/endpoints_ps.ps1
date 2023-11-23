@@ -27,7 +27,7 @@ Do {
 } While ($SERVICEUP -eq 0 -and $COUNTER -lt $COUNTER_MAX) 
 
 if ($SERVICEUP -ne 1) {
-    throw "Identity Service timed out "
+    throw "Keycloak timed out "
 }
 
 checkStatus (curl -UseBasicParsing -v http://localhost:8080/auth/).StatusCode "200"

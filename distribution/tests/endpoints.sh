@@ -27,7 +27,7 @@ fi
 
 cd alfresco-keycloak-"$KEYCLOAK_VERSION"/bin || exit
 
-log_info "Starting the identity service"
+log_info "Starting Keycloak..."
 /bin/bash -c './kc.sh start-dev --import-realm --http-relative-path="/auth" &'
 
 SERVICEUP=0
@@ -38,17 +38,17 @@ COUNTER_MAX=60
 # sleep seconds
 SLEEP_SECONDS=1
 while [ $SERVICEUP -eq 0 ] && [ "$COUNTER" -le "$COUNTER_MAX" ]; do
-  log_info "Check identity service $COUNTER"
+  log_info "Check Keycloak: $COUNTER"
   response=$(curl --write-out %{http_code} --silent --output /dev/null http://localhost:8080/auth/)
   if [ "$response" -eq 200 ]; then
     SERVICEUP=1
-    log_info "Identity service is up"
+    log_info "Keycloak is up"
   else
     sleep "$SLEEP_SECONDS"
     COUNTER=$((COUNTER + 1))
   fi
 done
-[ $SERVICEUP -ne 1 ] && log_error "Identity Service timed out"
+[ $SERVICEUP -ne 1 ] && log_error "Keycloak timed out"
 
 # Start the tests
 echo ""
@@ -100,7 +100,7 @@ echo ""
 log_info "Starting cleanup..."
 
 PID=$(pgrep -f "standalone" | tr '\n' ' ')
-log_info "Killing identity service processes: $PID"
+log_info "Killing Keycloak processes: $PID"
 pkill -KILL -f "standalone"
 
 cd "$WORK_DIR" || exit
