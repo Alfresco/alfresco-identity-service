@@ -78,9 +78,14 @@ keycloakx:
     - name: realm-secret
       secret:
         secretName: realm-secret
+    - name: theme
+      emptyDir: {}
   extraVolumeMounts: |
     - name: realm-secret
       mountPath: "/opt/keycloak/data/import/"
+      readOnly: true
+    - name: theme
+      mountPath: "/opt/keycloak/themes/alfresco"
       readOnly: true
   extraEnv: |
     - name: KEYCLOAK_ADMIN
@@ -92,6 +97,23 @@ keycloakx:
     - name: JAVA_OPTS_APPEND
       value: >-
         -Djgroups.dns.query={{ include "keycloak.fullname" . }}-headless
+  extraInitContainers: |
+    - name: theme-provider
+      image: busybox:1.36
+      imagePullPolicy: IfNotPresent
+      command: ["sh"]
+      args = [
+        "-c",
+        <<-EOT
+        THEME_VERSION=0.3.5
+        wget https://github.com/Alfresco/alfresco-keycloak-theme/releases/download/${THEME_VERSION}/alfresco-keycloak-theme-${THEME_VERSION}.zip -O /alfresco.zip
+        unzip alfresco.zip
+        mv alfresco/* /theme/
+        EOT
+      ]
+      volumeMounts:
+        - name: theme
+          mountPath: /theme
 
 postgresql:
   # -- Flag introduced for testing purposes, to actually run this with postgresql follow the approach explained [here](https://github.com/codecentric/helm-charts/blob/keycloakx-2.2.1/charts/keycloakx/examples/postgresql/readme.md).
