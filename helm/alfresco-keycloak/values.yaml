@@ -101,16 +101,15 @@ keycloakx:
     - name: theme-provider
       image: busybox:1.36
       imagePullPolicy: IfNotPresent
-      command: ["sh"]
-      args = [
-        "-c",
-        <<-EOT
-        THEME_VERSION=0.3.5
-        wget https://github.com/Alfresco/alfresco-keycloak-theme/releases/download/${THEME_VERSION}/alfresco-keycloak-theme-${THEME_VERSION}.zip -O /alfresco.zip
-        unzip alfresco.zip
-        mv alfresco/* /theme/
-        EOT
-      ]
+      command:
+        - sh
+      args:
+        - -c
+        - |
+          THEME_VERSION=0.3.5
+          wget https://github.com/Alfresco/alfresco-keycloak-theme/releases/download/${THEME_VERSION}/alfresco-keycloak-theme-${THEME_VERSION}.zip -O /alfresco.zip
+          unzip alfresco.zip
+          mv alfresco/* /theme/
       volumeMounts:
         - name: theme
           mountPath: /theme
