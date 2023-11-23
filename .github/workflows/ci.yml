@@ -209,7 +209,7 @@ jobs:
             cd ../saml
             export KEYCLOAK_HOSTNAME=$HOST
             export KEYCLOAK_ISSUER=https://$HOST/auth/realms/alfresco
-            mvn -B ntp clean test
+            mvn -B -ntp clean test
             TEST_RESULT=$?
             echo "TEST_RESULT=${TEST_RESULT}"
             cd ../..
