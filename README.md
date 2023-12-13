@@ -1,5 +1,10 @@
 # Alfresco Identity Service
 
+> ⚠ **WARNING**:
+> **Alfresco Identity Service is reaching End of Life.**
+> Please refrain from using Alfresco Identity Service at this time and switch to raw Keycloak instead.
+> This branch now contains a set of tests and examples for raw Keycloak, whereas all Alfresco Identity Service development has been moved to [release/2.0.x](https://github.com/Alfresco/alfresco-identity-service/tree/release/2.0.x).
+
 The *Alfresco Identity Service* will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication. This project contains the open-source core of this service.
 
 For installing and [upgrading](https://github.com/Alfresco/alfresco-identity-service/blob/master/upgrade.md) the Identity Service you can choose either a Kubernetes distribution or a standalone distribution. Both methods are described in the following sections.
