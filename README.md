@@ -5,9 +5,10 @@
 > Please refrain from using Alfresco Identity Service at this time and switch to raw Keycloak instead.
 > This branch now contains a set of tests and examples for raw Keycloak, whereas all Alfresco Identity Service development has been moved to [release/2.0.x](https://github.com/Alfresco/alfresco-identity-service/tree/release/2.0.x).
 
-The *Alfresco Identity Service* will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication. This project contains the open-source core of this service.
+*Keycloak* is a central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication. This project contains the open-source core of this service.
 
-For installing and [upgrading](https://github.com/Alfresco/alfresco-identity-service/blob/master/upgrade.md) the Identity Service you can choose either a Kubernetes distribution or a standalone distribution. Both methods are described in the following sections.
+For installing Keycloak you can choose either a sample Kubernetes distribution or a sample standalone distribution. Both methods are described in the following sections.
+For upgrading, it is recommended to follow the official [Keycloak upgrading guide](https://www.keycloak.org/docs/21.1.2/upgrading/).
 
 Check the [Kubernetes deployment prerequisites](https://github.com/Alfresco/alfresco-dbp-deployment/blob/master/README-prerequisite.md) and [standalone prerequisites](#prerequisites) before you start.
 
@@ -16,37 +17,28 @@ Any variation from these technologies and versions may affect the end result. If
 ### Standalone Distribution
 
 #### Overview
-This guide helps you get started with the Identity Service. It covers simple standalone startup and use of the default database. Advanced deployment options are not covered. For a deeper description of Keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs) .
+This guide helps you get started with Keycloak. It covers simple standalone startup with the Alfresco example realm, Alfresco Theme and use of the default database. Advanced deployment options are not covered. For a deeper description of Keycloak features or configuration options, consult the official [Keycloak readme](https://www.keycloak.org/docs) .
 
 #### Prerequisites
   1. Java 11 JDK
 
 #### Installing and booting
 
-  1. Download the Identity Service zip alfresco-identity-service-2.0.0.zip from the Support Portal at http://support.alfresco.com
+  1. Move to [distribution](./distribution/) and execute the following command: `make`.
 
-  2. Place the file in a directory you choose and use unzip utility to extract it.
+  2. Wait for the build process to complete, then locate the `.distribution/alfresco-keycloak-${KEYCLOAK_VERSION}` directory and `cd` into it.
 
-  Linux/Unix
-  ```bash
-  $ unzip alfresco-identity-service-2.0.0.zip
-  ```
-
-  Windows
-  ```bash
-  > unzip alfresco-identity-service-2.0.0.zip
-  ```
-
-  3. Cd to the bin directory of the server distribution and run the standalone boot script.
+  3. Run the standalone boot script.
 
   Linux/Unix
   ```bash
-  $ cd alfresco-identity-service-2.0.0/bin
+  $ cd bin
   $ ./kc.sh start --import-realm --http-relative-path="/auth" --hostname=<HOSTNAME> --https-certificate-file=<PATH_TO_CERT_FILE> --https-certificate-key-file=<PATH_TO_CERT_KEY_FILE>
   ```
   Windows bat
   ```bash
-  > ...\alfresco-identity-service-2.0.0\bin\kc.bat start --import-realm --http-relative-path=/auth --hostname=<HOSTNAME> --https-certificate-file=<PATH_TO_CERT_FILE> --https-certificate-key-file=<PATH_TO_CERT_KEY_FILE>
+  > cd bin
+  > kc.bat start --import-realm --http-relative-path=/auth --hostname=<HOSTNAME> --https-certificate-file=<PATH_TO_CERT_FILE> --https-certificate-key-file=<PATH_TO_CERT_KEY_FILE>
   ```
 
 This is deployed with the **default example realm applied** which results in default values of:
@@ -87,7 +79,7 @@ These instructions illustrate deployment to a Kubernetes cluster on EKS.
 
 Please check the ACS deployment [documentation](https://github.com/Alfresco/acs-deployment/blob/master/docs/helm/eks-deployment.md).
 
-If you are deploying the Identity Service into a cluster with other Alfresco components such as Content Services and Process Services, a VPC and cluster with 5 nodes is recommended. Each node should be a m4.xlarge EC2 instance.
+If you are deploying Keycloak into a cluster with other Alfresco components such as Content Services and Process Services, a VPC and cluster with 5 nodes is recommended. Each node should be a m4.xlarge EC2 instance.
 
 ### K8s Cluster Namespace
 
@@ -100,35 +92,33 @@ kubectl create namespace $DESIREDNAMESPACE
 
 This environment variable will be used in the deployment steps.
 
-## Deploying the standalone Identity Services Chart
+## Deploying the sample Keycloak Chart
 
-1. Prepare the EKS cluster by deploying an ingress. See the instruction [here](https://github.com/Alfresco/acs-deployment/blob/master/docs/helm/eks-deployment.md#ingress)
+1. Prepare the EKS cluster by deploying an ingress. See the instruction [here](https://github.com/Alfresco/acs-deployment/blob/master/docs/helm/eks-deployment.md#ingress).
 
+2. `cd` to the root of this repository.
 
-2. Get the release name from the ingress deployment (step 1) and set it as a variable:
+3. Get the release name from the ingress deployment (step 1) and set it as a variable:
 
 ```bash
 export INGRESS_RELEASENAME=<YOUR_INGRESS_RELEASE_NAME>
 ```
 
-3. Set the Identity Service release name as a variable:
+4. Set the Keycloak release name as a variable:
 
 ```bash
-export RELEASENAME=ids
+export RELEASENAME=kc
 ```
 
-4. Deploy the Identity Service.
+5. Deploy Keycloak.
 
 ```bash
-
-helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
-
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
+helm install $RELEASENAME helm/alfresco-keycloak --devel \
   --namespace $DESIREDNAMESPACE
 ```
 
 <!-- markdownlint-disable MD029 -->
-5. Wait for the release to get deployed (When checking status your pods should be READY 1/1):
+6. Wait for the release to get deployed (When checking status your pods should be READY 1/1):
 <!-- markdownlint-enable MD029 -->
 
 ```bash
@@ -136,14 +126,14 @@ helm status $RELEASENAME
 ```
 
 <!-- markdownlint-disable MD029 -->
-6. Get local or ELB IP and set it as a variable for future use:
+7. Get local or ELB IP and set it as a variable for future use:
 <!-- markdownlint-disable MD029 -->
 
 ```bash
 export ELBADDRESS=$(kubectl get services $INGRESS_RELEASENAME-ingress-nginx-controller --namespace=$DESIREDNAMESPACE -o jsonpath='{.status.loadBalancer.ingress[0].hostname}')
 ```
 
-The above steps will deploy _alfresco-identity-service_ with the **default example realm applied** which results in default values of:
+The above steps will deploy _Keycloak_ with the **default example realm applied** which results in default values of:
 
 | Property                      | Value                    |
 | ----------------------------- | ------------------------ |
@@ -158,19 +148,19 @@ The above steps will deploy _alfresco-identity-service_ with the **default examp
 
 **Note**: for security reasons, the redirect URIs should be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/21.1.2/securing_apps/#redirect-uris).
 
-You can override the default redirectUri of `http://localhost*` for your environment with the `alfresco-identity-service.client.alfresco.redirectUris` property:
+You can override the default redirectUri of `http://localhost*` for your environment with the `realm.alfresco.client.redirectUris` property:
 
 ```bash
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
-  --set alfresco-identity-service.realm.alfresco.client.redirectUris="{$DNSNAME}" \
+helm install $RELEASENAME helm/alfresco-keycloak --devel \
+  --set realm.alfresco.client.redirectUris="{$DNSNAME}" \
   --namespace $DESIREDNAMESPACE
 ```
 
 including multiple redirectUris:
 
 ```bash
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
-  --set alfresco-identity-service.realm.alfresco.client.redirectUris="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
+helm install $RELEASENAME helm/alfresco-keycloak --devel \
+  --set realm.alfresco.client.redirectUris="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
   --namespace $DESIREDNAMESPACE
 ```
 
@@ -182,33 +172,33 @@ If you want to deploy your own realm with further customizations, see *Customizi
 #### Changing Alfresco Client webOrigins
 
 Similarly to [redirectUris](#changing-alfresco-client-redirecturis), webOrigins can be changed by overriding the 
-`alfresco-identity-service.client.alfresco.webOrigins` property:
+`realm.alfresco.client.webOrigins` property:
 
 ```bash
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
-  --set alfresco-identity-service.realm.alfresco.client.webOrigins="{$DNSNAME}" \
+helm install $RELEASENAME helm/alfresco-keycloak --devel \
+  --set realm.alfresco.client.webOrigins="{$DNSNAME}" \
   --namespace $DESIREDNAMESPACE
 ```
 
 For multiple webOrigins:
 
 ```bash
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
-  --set alfresco-identity-service.realm.alfresco.client.webOrigins="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
+helm install $RELEASENAME helm/alfresco-keycloak --devel \
+  --set realm.alfresco.client.webOrigins="{$DNSNAME,$DNSNAME1,$DNSNAME2}" \
   --namespace $DESIREDNAMESPACE
 ```
 
 ## Multiple Replicas, High Availability and Clustering
 
-For added resilience, we rely on support in the Keycloak chart for specifying multiple replicas.  To enable this you will need to deploy the identity chart with this additional setting:
+For added resilience, we rely on support in the Keycloak chart for specifying multiple replicas.  To enable this you will need to deploy the Keycloak chart with this additional setting:
 
 ```bash
 
-  --set alfresco-identity-service.keycloakx.replicas=3
+  --set keycloakx.replicas=3
 
 ```
 
-In addition, for high availability, Keycloak supports clustering.  For more information on how to configure high availability and clustering, you can consult this additional documentation.  
+In addition, for high availability, Keycloak supports clustering. For more information on how to configure high availability and clustering, you can consult this additional documentation.  
 
 
 [Keycloak-X chart Readme](https://github.com/codecentric/helm-charts/blob/keycloakx-2.2.1/charts/keycloakx/README.md#high-availability-and-clustering)
@@ -254,14 +244,12 @@ keycloakx:
 **_NOTE:_** The above settings use the default _admin/admin_ for keycloak username and password, you can replace those with your own values.
 
 <!-- markdownlint-disable MD029 -->
-4. Deploy the identity chart with the new settings:
+4. Deploy the Keycloak chart with the new settings:
 <!-- markdownlint-enable MD029 -->
 
 ```bash
 
-helm repo add alfresco-stable https://kubernetes-charts.alfresco.com/stable
-
-helm install $RELEASENAME alfresco-stable/alfresco-identity-service --devel \
+helm install $RELEASENAME helm/alfresco-keycloak --devel \
   -f custom-values.yaml \
   --namespace $DESIREDNAMESPACE
 ```
@@ -286,6 +274,6 @@ Once Keycloak is up and running, login to the [Management Console](https://www.k
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
 
-## Contributing to Identity Service
+## Contributing
 
 We encourage and welcome contributions to this project. For further details please check the [contributing](./CONTRIBUTING.md) file.

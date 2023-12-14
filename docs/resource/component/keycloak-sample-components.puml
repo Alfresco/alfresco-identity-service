@@ -1,6 +1,6 @@
 @startuml
 
-Title: Alfresco Identity Service Component Overview
+Title: Keycloak Sample Component Overview
 
 skinparam componentStyle uml2
 skinparam linetype ortho
@@ -22,7 +22,7 @@ node "External IdP" as EXT {
 }
 
 node "Alfresco DBP" {
-    frame "Identity Service" as AIS {
+    frame "Keycloak" as KC {
         component "Theme" as THEME #white
         component "Keycloak" as KEY
         database "Realm Secret" as SEC #lightgrey

@@ -1,4 +1,4 @@
-# Identity Service Tests With LDAP provider
+# Keycloak Tests With LDAP provider
 
 These tests verify that a valid JWT token can be generated for users
 stored in an external LDAP provider (examples below have been written
@@ -30,8 +30,8 @@ for OpenLDAP).
         /usr/bin/ldapadd -vv -D "cn=admin,dc=example,dc=org" \
         -w $LDAP_ADMIN_PASSWORD -H ldap://${DESIREDNAMESPACE}-openldap:389 < ldap-test-data.ldif
     ```
-4. Install [Alfresco Identity Service](../../README.md) in `$DESIREDNAMESPACE`
-5. Open Alfresco Identity Service [Management Console](https://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console).
+4. Install [Keycloak](../../README.md) in `$DESIREDNAMESPACE`
+5. Open Keycloak's [Management Console](https://www.keycloak.org/docs/3.4/server_admin/index.html#admin-console).
    Its URL will be one of `${ELBADDRESS}/auth/admin` or `${ELB_CNAME}/auth/admin`, as configured in step 4.
 6. Add your LDAP provider as described in the 
    [Keycloak Administration Guide](https://www.keycloak.org/docs/3.4/server_admin/index.html#_user-storage-federation).
