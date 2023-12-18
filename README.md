@@ -274,6 +274,10 @@ Once Keycloak is up and running, login to the [Management Console](https://www.k
 
 2. Choose the [sample realm](./alfresco-realm.json) file and click the "Create" button.
 
+## Releasing
+
+The release process is explained [here](docs/RELEASE.md).
+
 ## Contributing
 
 We encourage and welcome contributions to this project. For further details please check the [contributing](./CONTRIBUTING.md) file.
