@@ -1,10 +1,10 @@
-Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'"
+Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-keycloak-$KEYCLOAK_VERSION%'"
 
 ./standalone.ps1 --background
 
 function checkStatus {
     if ($args[0] -notmatch $args[1]) {
-        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'" | foreach { kill $_.ProcessId }
+        Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-keycloak-$KEYCLOAK_VERSION%'" | foreach { kill $_.ProcessId }
         $test=$args[0]
         $check=$args[1]
         throw "Accessing $test does not output $check "
@@ -27,7 +27,7 @@ Do {
 } While ($SERVICEUP -eq 0 -and $COUNTER -lt $COUNTER_MAX) 
 
 if ($SERVICEUP -ne 1) {
-    throw "Identity Service timed out "
+    throw "Keycloak timed out "
 }
 
 checkStatus (curl -UseBasicParsing -v http://localhost:8080/auth/).StatusCode "200"
@@ -41,5 +41,5 @@ $Body = @{
 }
 checkStatus (Invoke-RestMethod "http://localhost:8080/auth/realms/alfresco/protocol/openid-connect/token" -Method Post -Body $Body).access_token "."
 
-Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'"
-Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-identity-service-$IDENTITY_VERSION%'" | foreach { kill $_.ProcessId }
+Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-keycloak-$KEYCLOAK_VERSION%'"
+Get-WmiObject Win32_Process -filter "CommandLine LIKE '%alfresco-keycloak-$KEYCLOAK_VERSION%'" | foreach { kill $_.ProcessId }

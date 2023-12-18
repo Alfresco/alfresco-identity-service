@@ -15,7 +15,7 @@ repos:
         args: [--allow-multiple-documents]
         exclude: helm/.*/templates
       - id: check-json
-        exclude: helm/alfresco-identity-service/alfresco-realm.json
+        exclude: helm/alfresco-keycloak/alfresco-realm.json
       - id: check-merge-conflict
       - id: fix-byte-order-marker
       - id: mixed-line-ending

@@ -1,10 +1,10 @@
 @startuml
 autonumber
-Title: Alfresco JWT (Implicit) Authentication Against Identity Service Configured for LDAP
+Title: Alfresco JWT (Implicit) Authentication Against Keycloak Configured for LDAP
 
 actor "User's\nBrowser" as UB
 participant "App" as APP
-participant "Identity\nService" as IS
+participant "Keycloak" as KC
 participant "Alfresco\nComponent\n(ACS, APS)" as ALFC
 database "Alfresco\nComponent\nDatabase" as ALFCDB
 participant "LDAP" as LDAP
@@ -21,35 +21,35 @@ ALFC<->ALFCDB
 ... LDAP sync completed ...
 UB<->APP: Request page
 UB<->APP: Login initiated
-UB->IS: Request token
-activate IS
-note left of IS
-Identity Service has not
+UB->KC: Request token
+activate KC
+note left of KC
+Keycloak has not
 authenticated this user
 end note
-IS->UB: Return login page
-deactivate IS
-UB->IS: Submit login form
-activate IS
-note left of IS
+KC->UB: Return login page
+deactivate KC
+UB->KC: Submit login form
+activate KC
+note left of KC
 username=bsmith
 password=mypass
 end note
-IS<->LDAP: Validate user/pass
-... User is now authenticated with Identity Service ...
-IS->UB: Return token
-note left of IS
+KC<->LDAP: Validate user/pass
+... User is now authenticated with Keycloak ...
+KC->UB: Return token
+note left of KC
 JWT: eyJhbGci...
 end note
-deactivate IS
-... App / Browser has obtained JWT from Identity Service ...
+deactivate KC
+... App / Browser has obtained JWT from Keycloak ...
 UB->ALFC: GET /some-api
 note right of UB
 HTTP Headers
 Authorization: Bearer eyJhbGci...
 end note
 activate ALFC
-ALFC<-->IS: Get signing keys
+ALFC<-->KC: Get signing keys
 ALFC->ALFC: Verify JWT
 ALFC<->ALFCDB: User in Context
 ALFC<->ALFC: Authorization/ACLs

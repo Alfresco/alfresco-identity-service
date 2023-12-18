@@ -1,10 +1,10 @@
-# alfresco-identity-service
+# alfresco-keycloak
 
-![Version: 8.0.0](https://img.shields.io/badge/Version-8.0.0-informational?style=flat-square) ![AppVersion: 2.0.0](https://img.shields.io/badge/AppVersion-2.0.0-informational?style=flat-square)
+![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![AppVersion: 21.1.2](https://img.shields.io/badge/AppVersion-21.1.2-informational?style=flat-square)
 
-The Alfresco Identity Service will become the central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication.
+This is just a sample Helm installation of raw Keycloak with the Alfresco Realm and Theme pre-installed.
 
-**Homepage:** <https://github.com/Alfresco/alfresco-identity-service/tree/master/helm/alfresco-identity-service>
+**Homepage:** <https://github.com/Alfresco/alfresco-identity-service/tree/master/helm/alfresco-keycloak>
 
 ## Maintainers
 
@@ -41,11 +41,10 @@ The Alfresco Identity Service will become the central component responsible for 
 | keycloakx.command[2] | string | `"--import-realm"` |  |
 | keycloakx.command[3] | string | `"--http-relative-path=/auth"` |  |
 | keycloakx.extraEnv | string | `"- name: KEYCLOAK_ADMIN\n  value: admin\n- name: KEYCLOAK_ADMIN_PASSWORD\n  value: admin\n- name: KEYCLOAK_IMPORT\n  value: /data/import/alfresco-realm.json\n- name: JAVA_OPTS_APPEND\n  value: >-\n    -Djgroups.dns.query={{ include \"keycloak.fullname\" . }}-headless\n"` |  |
-| keycloakx.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/opt/keycloak/data/import/\"\n  readOnly: true\n"` |  |
-| keycloakx.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n"` |  |
-| keycloakx.image.pullPolicy | string | `"Always"` |  |
-| keycloakx.image.repository | string | `"quay.io/alfresco/alfresco-identity-service"` |  |
-| keycloakx.image.tag | string | `"2.0.0"` |  |
+| keycloakx.extraInitContainers | string | `"- name: theme-provider\n  image: busybox:1.36\n  imagePullPolicy: IfNotPresent\n  command:\n    - sh\n  args:\n    - -c\n    - |\n      THEME_VERSION=0.3.5\n      wget https://github.com/Alfresco/alfresco-keycloak-theme/releases/download/${THEME_VERSION}/alfresco-keycloak-theme-${THEME_VERSION}.zip -O /alfresco.zip\n      unzip alfresco.zip\n      mv alfresco/* /theme/\n  volumeMounts:\n    - name: theme\n      mountPath: /theme\n"` |  |
+| keycloakx.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/opt/keycloak/data/import/\"\n  readOnly: true\n- name: theme\n  mountPath: \"/opt/keycloak/themes/alfresco\"\n  readOnly: true\n"` |  |
+| keycloakx.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n- name: theme\n  emptyDir: {}\n"` |  |
+| keycloakx.image.tag | string | `"21.1.2"` |  |
 | keycloakx.imagePullSecrets[0].name | string | `"quay-registry-secret"` |  |
 | keycloakx.rbac.create | bool | `false` |  |
 | keycloakx.service.httpPort | int | `80` |  |

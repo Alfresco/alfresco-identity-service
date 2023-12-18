@@ -1,11 +1,11 @@
 # About
-> Building `alfresco-identity-service` using Alfresco fork of [keycloak](https://github.com/Alfresco/keycloak).
+> Building a sample Keycloak distribution with the Alfresco Realm and Alfresco Theme pre-installed, based on [keycloak](https://github.com/keycloak/keycloak).
 
 
 # Usage
 > checkout the [Makefile](./Makefile). All commands will be executed within this folder.
 
-* build alfresco-identity-service distribution zip
+* build an Alfresco compatible Keycloak distribution zip
   
   ```shell
   $ make

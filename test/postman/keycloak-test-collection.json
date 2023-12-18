@@ -1,8 +1,8 @@
 {
 	"info": {
 		"_postman_id": "8dc3aee5-1a9b-4743-b0b3-32261fad7e3d",
-		"name": "Identity Service Test",
-		"description": "A Suite of cases to test the Identity Service\n",
+		"name": "Keycloak Test",
+		"description": "A Suite of cases to test Keycloak\n",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
@@ -554,7 +554,7 @@
 		{
 			"id": "8529fd2c-39ae-4a3b-bb9b-c8219d786e4b",
 			"key": "identityServiceUrl",
-			"value": "{{identity_host}}/auth",
+			"value": "{{keycloak_host}}/auth",
 			"type": "string"
 		},
 		{

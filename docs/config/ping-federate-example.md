@@ -1,18 +1,18 @@
-# Configuring a PingFederate instance with the Alfresco Identity Service
+# Configuring a PingFederate instance with Keycloak
 
-The Identity Service can be configured to use PingFederate as an identity provider. The following steps detail this configuration.
+Keycloak can be configured to use PingFederate as an identity provider. The following steps detail this configuration.
 
 ## Prerequisites
 
-Ensure you have installed the Identity Service before starting. You will also need to have administrative access to your instance of PingFederate.
+Ensure you have installed Keycloak before starting. You will also need to have administrative access to your instance of PingFederate.
 
 ## Configuration
-There are three main steps involved in configuring a PingFederate instance with the Identity Service:
-1. Obtain Identity Service's cryptographic certificate. 
+There are three main steps involved in configuring a PingFederate instance with Keycloak:
+1. Obtain Keycloak's cryptographic certificate. 
 2. Configure the PingFederate connection.
-3. Configure Identity Service with the PingFederate parameters.
+3. Configure Keycloak with the PingFederate parameters.
 
-### Obtain Identity Service's cryptographic certificate.
+### Obtain Keycloak's cryptographic certificate.
 
 1. In the browser, open the **certificate descriptor API** at **https://$ELBADDRESS/auth/realms/alfresco/protocol/saml/descriptor**.
 **Note:** The `$ELBADDRESS` will be the one used [during deployment](../../README.md).
@@ -31,8 +31,8 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 ```
 4. Save the file giving it a name that ends with **.cert**, in this example we will use **certificate.cert**.
 
-### Identity Service Configuration
-1. Sign in to the administrator panel of the Identity Service using the following URL: `https://$ELBADDRESS/auth/admin`.
+### Keycloak Configuration
+1. Sign in to the administrator panel of Keycloak using the following URL: `https://$ELBADDRESS/auth/admin`.
 2. Select the correct realm to configure PingFederate against.
    **Note:** If using the default deployment options, the realm will be called `Alfresco`.
 3. In the **Settings** of `alfresco` client (if using the default deployment options) save the following configuration:<br />
@@ -42,7 +42,7 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 4. Navigate to **Identity providers**.
 5. Click on **Add provider...**.
 6. Click on **SAML v2.0**.
-7. Edit the alias name for this identity provider. This alias will be presented to users on the Identity Service log-in screen.
+7. Edit the alias name for this identity provider. This alias will be presented to users on the Keycloak log-in screen.
 8. Scroll down to **Import from file** and click **Select file**.
 9. Scroll to the top and copy the value of **Redirect URI**.
 10. Leave this tab open for later.
@@ -127,19 +127,19 @@ MIICnzCCAYcCBgFkqEAQCDANBgkqhkiG9w0BAQsFADATMREwDwYDVQQDDAhhbGZyZXNjbzA
 **Export configuration settings**
 1. On the **Summary** tab click **Done** to return to the main SP connection configuration tabs.
 2. On the **Activation & Summary** tab tick the **Active** checkbox in the **Connection Status** row and **Save**. 
-3. Back on the identity service homepage, click **Manage all SP**.
+3. Back on the Keycloak homepage, click **Manage all SP**.
 4. Your new connection should now appear in the **SP Connections** list. To the right of it click **Export metadata**.
 5. In the summary tab, click **Export**.
 
 
-### Configure Identity Service with the PingFederate parameters
-Back in the Identity Service tab that you left open:
+### Configure Keycloak with the PingFederate parameters
+Back in the Keycloak tab that you left open:
 1. Chose the file that you downloaded as part of the **Export metadata** step.<br />
     Now you should see that all your PingFederate configurations have been populated.
 2. Scroll up to **NameID Policy Format** and select **Unspecified** from the drop down menu. 
 
 ### Configure Mappers
-This section allows an existing SAML user to be automatically created in Identity Service without a SAML user needing to fill in a form on their first log in.
+This section allows an existing SAML user to be automatically created in Keycloak without a SAML user needing to fill in a form on their first log in.
 
 1. In the left column, navigate to **Mappers**.
 2. Click **Create**.
@@ -170,11 +170,11 @@ This section allows an existing SAML user to be automatically created in Identit
     User attribute Name: LastName
     ```
  
-### Enforce SAML Login in Identity Service
-This section allows you to **enforce SAML login**: If you do not enforce the SAML login, the user can decide to use either the Identity Service login or login using the IdP link.
+### Enforce SAML Login in Keycloak
+This section allows you to **enforce SAML login**: If you do not enforce the SAML login, the user can decide to use either the Keycloak login or login using the IdP link.
 In order to enable it follow these steps:
 
-1. Sign in to the administrator panel of the Identity Service.
+1. Sign in to the administrator panel of the Keycloak.
 2. Select **Authentication** from side options
 3. Locate and click on **Flows** tab
 4. From the drop down list select **Browser**

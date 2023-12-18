@@ -15,18 +15,12 @@ on:
 
 env:
   S3_ARTIFACTS_BUCKET: ${{ secrets.S3_ARTIFACTS_BUCKET }}
-  S3_STAGING_BUCKET: alfresco-artefacts-staging
-  S3_RELEASE_BUCKET: ${{ secrets.S3_RELEASE_BUCKET }}
   AUTH0_CLIENT_ID: ${{ secrets.AUTH0_CLIENT_ID }}
   AUTH0_CLIENT_SECRET: ${{ secrets.AUTH0_CLIENT_SECRET }}
   MAVEN_USERNAME: ${{ secrets.NEXUS_USERNAME }}
   MAVEN_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-  GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
-  HELM_REPO_BASE_URL: https://kubernetes-charts.alfresco.com
-  HELM_REPO: incubator
   HELM_DOCS_VERSION: 1.11.0
   AWS_REGION: eu-west-1
-  PROJECT_NAME: alfresco-identity-service
 
 jobs:
   pre-commit:
@@ -37,17 +31,17 @@ jobs:
         run: |
           curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_$(uname)_x86_64.tar.gz | sudo tar xz -C /usr/local/bin/ helm-docs
           helm-docs --version
-      - uses: Alfresco/alfresco-build-tools/.github/actions/pre-commit@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/pre-commit@v3.8.1
 
   build:
     name: "Build"
     runs-on: ubuntu-latest
     needs: pre-commit
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v3.8.1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v3.8.1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
@@ -56,17 +50,14 @@ jobs:
         id: build
         run: |
           source distribution/build.properties
-          export IDENTITY_VERSION=${IDENTITY_VERSION}
-          echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
+          export KEYCLOAK_VERSION=${KEYCLOAK_VERSION}
+          echo "KEYCLOAK_VERSION=${KEYCLOAK_VERSION}"
           # build and package
           cd distribution
           make || { echo "Command failed with error code $?"; sleep 1; exit 1; }
           # upload ZIP file to S3 bucket
-          aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.md5 s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/
-          aws s3 cp alfresco-identity-service-${IDENTITY_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/
-      - name: "Clean up S3 after failure"
-        if: ${{ always() && steps.build.outcome == 'failure' }}
-        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
+          aws s3 cp alfresco-keycloak-${KEYCLOAK_VERSION}.md5 s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/
+          aws s3 cp alfresco-keycloak-${KEYCLOAK_VERSION}.zip s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/
 
   test_linux:
     name: "Test on Linux"
@@ -74,25 +65,21 @@ jobs:
     needs: build
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v3.8.1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v3.8.1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
           aws-region: ${{ env.AWS_REGION }}
       - name: "Test"
-        id: test
         run: |
           source distribution/build.properties
-          export IDENTITY_VERSION=${IDENTITY_VERSION}
-          echo "IDENTITY_VERSION=${IDENTITY_VERSION}"
-          aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip .
+          export KEYCLOAK_VERSION=${KEYCLOAK_VERSION}
+          echo "KEYCLOAK_VERSION=${KEYCLOAK_VERSION}"
+          aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-keycloak-${KEYCLOAK_VERSION}.zip .
           ./distribution/tests/endpoints.sh
-      - name: "Clean up S3 after failure"
-        if: ${{ always() && steps.test.outcome == 'failure' }}
-        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
   test_windows:
     name: "Test on Windows"
@@ -100,9 +87,9 @@ jobs:
     needs: build
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v3.8.1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
@@ -112,22 +99,18 @@ jobs:
           echo "BUILD_NUMBER=$env:GITHUB_RUN_NUMBER" | Out-File -FilePath $env:GITHUB_ENV -Append
           echo $env:GITHUB_RUN_NUMBER
       - name: "Test"
-        id: test
         run: |
           $Props = convertfrom-stringdata (get-content ./distribution/build.properties -raw)
-          $env:IDENTITY_VERSION = $Props.'IDENTITY_VERSION'
-          echo "IDENTITY_VERSION=$env:IDENTITY_VERSION"
+          $env:KEYCLOAK_VERSION = $Props.'KEYCLOAK_VERSION'
+          echo "KEYCLOAK_VERSION=$env:KEYCLOAK_VERSION"
           aws s3 ls s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/
-          aws s3 cp s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/alfresco-identity-service-$env:IDENTITY_VERSION.zip .
-          unzip alfresco-identity-service-$env:IDENTITY_VERSION.zip
-          cd alfresco-identity-service-$env:IDENTITY_VERSION/bin
+          aws s3 cp s3://$env:S3_ARTIFACTS_BUCKET/ci-$env:BUILD_NUMBER/alfresco-keycloak-$env:KEYCLOAK_VERSION.zip .
+          unzip alfresco-keycloak-$env:KEYCLOAK_VERSION.zip
+          cd alfresco-keycloak-$env:KEYCLOAK_VERSION/bin
           powershell -Command Get-ExecutionPolicy
           powershell -Command 'Set-ExecutionPolicy unrestricted'
           powershell -Command $env:GITHUB_WORKSPACE/distribution/tests/endpoints_ps.ps1
           powershell -Command $env:GITHUB_WORKSPACE/distribution/tests/endpoints_bat.ps1
-      - name: "Clean up S3 after failure"
-        if: ${{ always() && steps.test.outcome == 'failure' }}
-        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
   test_helm:
     name: "Test Helm Chart"
@@ -135,10 +118,10 @@ jobs:
     needs: build
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v3.8.1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v3.8.1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
@@ -155,7 +138,7 @@ jobs:
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
       - name: Setup cluster
-        uses: Alfresco/alfresco-build-tools/.github/actions/setup-kind@v3.1.0
+        uses: Alfresco/alfresco-build-tools/.github/actions/setup-kind@v3.8.1
       - name: Create registries auth secret
         run: |
           kubectl create secret generic regcred \
@@ -164,17 +147,16 @@ jobs:
       - name: "Prepare test environment"
         run: |
           openssl aes-256-cbc -K ${{ secrets.ENCRYPTED_E69BEC42AE64_KEY }} -iv ${{ secrets.ENCRYPTED_E69BEC42AE64_IV }} -in test/scripts/config-files/realmRsaKeys.json.enc -out test/scripts/config-files/realmRsaKeys.json -d
-      - name: "Set IDS_BUILD_NAME"
+      - name: "Set KC_BUILD_NAME"
         run: |
-          IDS_BUILD_NAME=$(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
-          echo "IDS_BUILD_NAME=$IDS_BUILD_NAME" >> "$GITHUB_ENV"
-          echo $IDS_BUILD_NAME
+          KC_BUILD_NAME=$(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
+          echo "KC_BUILD_NAME=$KC_BUILD_NAME" >> "$GITHUB_ENV"
+          echo $KC_BUILD_NAME
       - name: "Test"
-        id: test
         run: |
           set +e
           export HOST=localhost
-          export release_name_ids=ids
+          export release_name_kc=kc
           export openldap_release=openldap
 
           # install openldap
@@ -182,10 +164,10 @@ jobs:
             -f test/scripts/ldap-config.yaml \
             --wait
 
-          # install Identity Service
-          helm dep up helm/alfresco-identity-service
-          helm upgrade --install $release_name_ids helm/alfresco-identity-service \
-            --values helm/alfresco-identity-service/ci/ci-values.yaml \
+          # install Keycloak
+          helm dep up helm/alfresco-keycloak
+          helm upgrade --install $release_name_kc helm/alfresco-keycloak \
+            --values helm/alfresco-keycloak/ci/ci-values.yaml \
             --set ingress.hostName=$HOST \
             --set realm.alfresco.client.redirectUris[0]="https://${HOST}\*" \
             --set realm.alfresco.client.webOrigins[0]="https://${HOST}\*" \
@@ -201,33 +183,33 @@ jobs:
           ./test/scripts/set_idp_config.sh
           postman_image=postman/newman_alpine33:3.9.2
 
-          # run identity checks
-          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "identity-test-collection.json" --insecure --global-var "identity_host=$HOST"
+          # run Keycloak checks
+          docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "keycloak-test-collection.json" --insecure --global-var "keycloak_host=$HOST"
           TEST_RESULT=$?
           echo "TEST_RESULT=${TEST_RESULT}"
 
           if [[ "${TEST_RESULT}" == "0" ]]; then
-            docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "change-keycloak-access-token-lifespan-collection.json" --insecure --global-var "identity_host=$HOST"
+            docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "change-keycloak-access-token-lifespan-collection.json" --insecure --global-var "keycloak_host=$HOST"
             ./test/helm/delete_keycloak_pods.sh
-            docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "check-keycloak-access-token-lifespan-change-persisted.json" --insecure --global-var "identity_host=$HOST"
+            docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "check-keycloak-access-token-lifespan-change-persisted.json" --insecure --global-var "keycloak_host=$HOST"
             TEST_RESULT=$?
             echo "TEST_RESULT=${TEST_RESULT}"
           fi
 
           if [[ "${TEST_RESULT}" == "0" ]]; then
-            docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --insecure --global-var "identity_host=$HOST"
+            docker run -a STDOUT --volume $PWD/test/postman:/etc/newman --network host $postman_image run "ldap-user-provider-tests.postman_collection.json" -d "ldap-test-data.json" --insecure --global-var "keycloak_host=$HOST"
             TEST_RESULT=$?
             echo "TEST_RESULT=${TEST_RESULT}"
           fi
 
           if [[ "${TEST_RESULT}" == "0" ]]; then
             cd test/scripts
-            ./auth0-api.sh create $IDS_BUILD_NAME https://$HOST
-            ./configure-saml-ids.sh app_name=$IDS_BUILD_NAME ids_base_url=https://$HOST
+            ./auth0-api.sh create $KC_BUILD_NAME https://$HOST
+            ./configure-saml-kc.sh app_name=$KC_BUILD_NAME kc_base_url=https://$HOST
             cd ../saml
             export KEYCLOAK_HOSTNAME=$HOST
             export KEYCLOAK_ISSUER=https://$HOST/auth/realms/alfresco
-            mvn clean test
+            mvn -B -ntp clean test
             TEST_RESULT=$?
             echo "TEST_RESULT=${TEST_RESULT}"
             cd ../..
@@ -235,22 +217,19 @@ jobs:
 
           if [[ "${{ github.event.head_commit.message }}" != *"[keep env]"* ]]; then
             cd test/scripts
-            ./auth0-api.sh delete $IDS_BUILD_NAME
+            ./auth0-api.sh delete $KC_BUILD_NAME
           fi
 
           if [[ "${TEST_RESULT}" == "1" ]]; then
             echo "Tests failed, exiting"
             exit 1
           fi
-      - name: Show cluster status after install
+      - name: "Show cluster status after install"
         if: always()
         run: |
           helm ls --all-namespaces
           kubectl get all --all-namespaces
           kubectl describe pod
-      - name: "Clean up S3 after failure"
-        if: ${{ always() && steps.test.outcome == 'failure' }}
-        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
   test_upgrade:
     name: "Test Upgrade"
@@ -258,10 +237,10 @@ jobs:
     needs: build
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v3.8.1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v3.8.1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
@@ -269,208 +248,28 @@ jobs:
       - name: "Prepare test environment"
         run: |
           openssl aes-256-cbc -K ${{ secrets.ENCRYPTED_E69BEC42AE64_KEY }} -iv ${{ secrets.ENCRYPTED_E69BEC42AE64_IV }} -in test/scripts/config-files/realmRsaKeys.json.enc -out test/scripts/config-files/realmRsaKeys.json -d
-      - name: "Set IDS_BUILD_NAME"
+      - name: "Set KC_BUILD_NAME"
         run: |
-          IDS_BUILD_NAME=$(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
-          echo "IDS_BUILD_NAME=$IDS_BUILD_NAME" >> "$GITHUB_ENV"
-          echo $IDS_BUILD_NAME
+          KC_BUILD_NAME=$(echo ${BRANCH_NAME} | cut -c1-28 | tr /_ - | tr -d [:punct:] | awk '{print tolower($0)}')-${BUILD_NUMBER}
+          echo "KC_BUILD_NAME=$KC_BUILD_NAME" >> "$GITHUB_ENV"
+          echo $KC_BUILD_NAME
       - name: "Test"
-        id: test
         run: |
           cd test/saml
-          mvn clean package -DskipTests
+          mvn -B -ntp clean package -DskipTests
           ./upgrade/test-upgrade.sh
-      - name: "Clean up S3 after failure"
-        if: ${{ always() && steps.test.outcome == 'failure' }}
-        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
 
-  publish_chart:
-    name: "Package and Publish Helm Chart"
+  cleanup:
+    name: "Cleanup"
     runs-on: ubuntu-latest
     needs: [test_linux, test_windows, test_helm, test_upgrade]
-    if: >
-      !(failure() || cancelled()) &&
-      (github.ref_name == 'master' || startsWith(github.ref_name, 'release/') || contains(github.event.head_commit.message, '[publish]')) &&
-      github.event_name != 'pull_request'
+    if: always()
     steps:
-      - uses: actions/checkout@v3
-        with:
-          persist-credentials: false
-          fetch-depth: 0
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v3.8.1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
           aws-region: ${{ env.AWS_REGION }}
-      - uses: Alfresco/alfresco-build-tools/.github/actions/configure-git-author@v1.34.2
-        with:
-          username: ${{ secrets.BOT_GITHUB_USERNAME }}
-          email: ${{ secrets.BOT_GITHUB_EMAIL }}
-          global: true
-      - name: "Set HELM_REPO"
-        run: |
-          if [[ "${BRANCH_NAME}" =~ ^master$|^release/.+$ ]] && [[ "${{ github.event.head_commit.message }}" == *"[release]"* ]]
-          then
-            export HELM_REPO=stable
-          fi
-          echo "HELM_REPO=$HELM_REPO" >> "$GITHUB_ENV"
-          echo $HELM_REPO
-      - name: "Publish Helm Chart"
-        id: publish
-        run: |
-          if [[ ! "${BRANCH_NAME}" =~ ^master$|^release/.+$ ]]; then
-            CHART_VERSION=$(cat helm/${PROJECT_NAME}/Chart.yaml | grep version: | awk '{print $2}')
-            # Only modify the chart version if it doesn't have '-M*' at the end
-            if [[ "${CHART_VERSION}" != *"-M"* ]]; then
-              NON_SUFFIX_VERSION=$(echo "${CHART_VERSION}" | awk -F - '{print $1}')
-              ALPHA_BUILD_VERSION="${NON_SUFFIX_VERSION}-A${BUILD_NUMBER}"
-              echo "Changing Chart version to ${ALPHA_BUILD_VERSION} as this is a feature branch..."
-              sed -i s,$CHART_VERSION,$ALPHA_BUILD_VERSION,g helm/${PROJECT_NAME}/Chart.yaml
-            fi
-          fi
-          COMMIT_MESSAGE_FIRST_LINE=$(git log --pretty=format:%s --max-count=1)
-          echo using COMMIT_MESSAGE_FIRST_LINE=${COMMIT_MESSAGE_FIRST_LINE}
-          git clone https://${GITHUB_TOKEN}@github.com/Alfresco/charts.git
-          echo using HELM_REPO=${HELM_REPO}
-          mkdir repo
-          helm package --dependency-update --destination repo helm/${PROJECT_NAME}
-          helm repo index repo --url ${HELM_REPO_BASE_URL}/${HELM_REPO} --merge charts/${HELM_REPO}/index.yaml
-          mv repo/* charts/${HELM_REPO}
-          cd charts
-          git add ${HELM_REPO}
-          git commit -m "${COMMIT_MESSAGE_FIRST_LINE}"
-          git push --quiet origin master
-      - name: "Clean up S3 after failure"
-        if: ${{ always() && steps.publish.outcome == 'failure' }}
+      - name: "Clean up S3"
         run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
-
-  staging_release:
-    name: "Publish to S3 Staging"
-    runs-on: ubuntu-latest
-    needs: publish_chart
-    if: >
-      !(failure() || cancelled()) &&
-      contains(github.event.head_commit.message, '[staging]') &&
-      github.event_name != 'pull_request'
-    steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - name: "Set IDENTITY_VERSION"
-        run: |
-          source distribution/build.properties
-          echo "IDENTITY_VERSION=$IDENTITY_VERSION" >> "$GITHUB_ENV"
-          echo $IDENTITY_VERSION
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
-          aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: "Prepare deploy_dir"
-        run: |
-          aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
-          aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_S3_STAGING_ACCESS_KEY }}
-          aws-secret-access-key: ${{ secrets.AWS_S3_STAGING_SECRET_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: "Publish to S3 Staging"
-        id: publish
-        run: aws s3 cp --acl private --recursive ./deploy_dir s3://${S3_STAGING_BUCKET}/enterprise/alfresco-identity-service/${IDENTITY_VERSION}
-      - uses: aws-actions/configure-aws-credentials@v1
-        if: ${{ (always() && steps.publish.outcome == 'failure') || !contains(github.event.head_commit.message, '[release]') }}
-        with:
-          aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
-          aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: "Clean up S3_ARTIFACTS_BUCKET"
-        if: ${{ (always() && steps.publish.outcome == 'failure') || !contains(github.event.head_commit.message, '[release]') }}
-        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
-
-  release:
-    name: "Publish to S3 and Nexus"
-    runs-on: ubuntu-latest
-    needs: staging_release
-    if: >
-      !(failure() || cancelled()) &&
-      (github.ref_name == 'master' || startsWith(github.ref_name, 'release/')) &&
-      contains(github.event.head_commit.message, '[release]') &&
-      github.event_name != 'pull_request'
-    steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - name: "Set IDENTITY_VERSION"
-        run: |
-          source distribution/build.properties
-          echo "IDENTITY_VERSION=$IDENTITY_VERSION" >> "$GITHUB_ENV"
-          echo $IDENTITY_VERSION
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
-          aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: "Prepare deploy_dir"
-        id: prepare
-        run: |
-          aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
-          aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
-          aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
-      - name: "Publish to Nexus"
-        run: curl -q -u ${MAVEN_USERNAME}:${MAVEN_PASSWORD} --upload-file ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases/org/alfresco/alfresco-identity-service/${IDENTITY_VERSION}/alfresco-identity-service-${IDENTITY_VERSION}.zip
-      - uses: aws-actions/configure-aws-credentials@v1
-        with:
-          aws-access-key-id: ${{ secrets.AWS_S3_RELEASE_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_S3_RELEASE_SECRET_ACCESS_KEY }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: "Publish to S3"
-        run: aws s3 cp --acl private --recursive ./deploy_dir s3://${S3_RELEASE_BUCKET}/release/enterprise/alfresco-identity-service/${IDENTITY_VERSION}
-      - uses: aws-actions/configure-aws-credentials@v1
-        if: ${{ (always() && steps.prepare.outcome == 'failure') }}
-        with:
-          aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
-          aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: "Clean up S3 after failure"
-        if: ${{ (always() && steps.prepare.outcome == 'failure') }}
-        run: aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
-
-  release_docker:
-    name: "Publish Docker image"
-    runs-on: ubuntu-latest
-    needs: staging_release
-    if: >
-      !(failure() || cancelled()) &&
-      (github.ref_name == 'master' || startsWith(github.ref_name, 'release/')) &&
-      contains(github.event.head_commit.message, '[release]') &&
-      github.event_name != 'pull_request'
-    steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - name: "Login to DockerHub Registry"
-        uses: docker/login-action@v2.1.0
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
-      - name: "Login to Quay.io Docker Registry"
-        uses: docker/login-action@v2.1.0
-        with:
-          registry: quay.io
-          username: ${{ secrets.QUAY_USERNAME }}
-          password: ${{ secrets.QUAY_PASSWORD }}
-      - name: "Set IDENTITY_VERSION"
-        run: |
-          source distribution/build.properties
-          echo "IDENTITY_VERSION=$IDENTITY_VERSION" >> "$GITHUB_ENV"
-          echo $IDENTITY_VERSION
-      - name: "Publish Docker image"
-        run: |
-          export PRIVATE_IMAGE=quay.io/alfresco/alfresco-identity-service:${IDENTITY_VERSION}
-          export PUBLIC_IMAGE=alfresco/alfresco-identity-service:${IDENTITY_VERSION}
-          docker pull ${PRIVATE_IMAGE}
-          docker tag ${PRIVATE_IMAGE} ${PUBLIC_IMAGE}
-          docker push ${PUBLIC_IMAGE}

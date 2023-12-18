@@ -2,10 +2,10 @@
 
 ### Available parameters:
 # - app_name
-# - ids_base_url
+# - kc_base_url
 #
 # Example:
-# sh configure-saml-ids.sh app_name=test-app ids_base_url=http://123.0.0.1:8080
+# sh configure-saml-kc.sh app_name=test-app kc_base_url=http://123.0.0.1:8080
 #
 
 . "common.func"
@@ -23,22 +23,22 @@ done
 
 
 # shellcheck disable=SC2154
-IDS_BASE_URL="${ids_base_url}"
+KC_BASE_URL="${kc_base_url}"
 # shellcheck disable=SC2154
 NAME="${app_name}"
 
 # AIMS properties
 IDP_ID='saml'
 REALM='alfresco'
-REALM_KEY_PROVIDER_NAME="${IDS_KEY_PROVIDER_NAME:-dbp-sso-rsa}"
+REALM_KEY_PROVIDER_NAME="${KC_KEY_PROVIDER_NAME:-dbp-sso-rsa}"
 
 log_info "Getting Auth0 client-id from the app-name..."
 SAML_CLIENT_ID="$(./auth0-api.sh getId "${NAME}")"
 
-check_var "$IDS_BASE_URL" "IDS_BASE_URL"
+check_var "$KC_BASE_URL" "KC_BASE_URL"
 check_var "$SAML_CLIENT_ID" "AUTH0_CLIENT_ID"
 
-log_info "Using IDS_BASE_URL '${IDS_BASE_URL}'"
+log_info "Using KC_BASE_URL '${KC_BASE_URL}'"
 log_info "Client-id: $SAML_CLIENT_ID"
 
 MAX_TRIES=10
@@ -46,7 +46,7 @@ MAX_TRIES=10
 get_token() {
 attempt=1
 while  [ -z "${TOKEN}" ]  &&  [ $attempt -lt "${MAX_TRIES}" ]  ; do
-  TOKEN="$(curl --insecure --silent --show-error "$IDS_BASE_URL/auth/realms/master/protocol/openid-connect/token" \
+  TOKEN="$(curl --insecure --silent --show-error "$KC_BASE_URL/auth/realms/master/protocol/openid-connect/token" \
     -H "Content-Type: application/x-www-form-urlencoded" \
     -d "username=admin" \
     -d "password=admin" \
@@ -75,7 +75,7 @@ done
 configure_realm() {
 get_token
 # Check if the realm key provider already exists
-KEY_NAME="$(curl --insecure -s "${IDS_BASE_URL}/auth/admin/realms/${REALM}/components?type=org.keycloak.keys.KeyProvider&name=${REALM_KEY_PROVIDER_NAME}" \
+KEY_NAME="$(curl --insecure -s "${KC_BASE_URL}/auth/admin/realms/${REALM}/components?type=org.keycloak.keys.KeyProvider&name=${REALM_KEY_PROVIDER_NAME}" \
     -H "Authorization: Bearer ${TOKEN}" | jq '. | .[].name')"
 
 log_info "Setting the realm key provider '${REALM_KEY_PROVIDER_NAME}' ..."
@@ -87,7 +87,7 @@ else
     KEYS_PAYLOAD="$(cat $PWD/config-files/realmRsaKeys.json)"
     get_token
     STATUS_CODE="$(curl --insecure -s -o /dev/null -w "%{http_code}" \
-        "${IDS_BASE_URL}/auth/admin/realms/${REALM}/components" \
+        "${KC_BASE_URL}/auth/admin/realms/${REALM}/components" \
         --compressed \
         -H "Content-Type: application/json;charset=utf-8" \
         -H "Authorization: Bearer ${TOKEN}" \
@@ -110,7 +110,7 @@ EOF
 
 get_token
 STATUS_CODE="$(curl --insecure -s -o /dev/null -w "%{http_code}" \
-    "${IDS_BASE_URL}/auth/admin/realms/${REALM}/identity-provider/instances" \
+    "${KC_BASE_URL}/auth/admin/realms/${REALM}/identity-provider/instances" \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer ${TOKEN}" \
     --data "${SAML_PROVIDER_PAYLOAD}")"
@@ -132,7 +132,7 @@ add_idp_mapper() {
 
     # Check if the requested saml mapper already exists
     get_token
-    MAPPER_RESPONSE="$(curl --insecure -s "${IDS_BASE_URL}/auth/admin/realms/$REALM/identity-provider/instances/${IDP_ID}/mappers" \
+    MAPPER_RESPONSE="$(curl --insecure -s "${KC_BASE_URL}/auth/admin/realms/$REALM/identity-provider/instances/${IDP_ID}/mappers" \
         -H "Authorization: Bearer ${TOKEN}" | jq ".[] | select(.name==\"${MAPPER_NAME}\")")"
 
     if [ -n "${MAPPER_RESPONSE}" ]; then
@@ -141,7 +141,7 @@ add_idp_mapper() {
         # Add the saml mapper
         get_token
         STATUS_CODE="$(curl --insecure -s -o /dev/null -w "%{http_code}" \
-            "${IDS_BASE_URL}/auth/admin/realms/${REALM}/identity-provider/instances/${IDP_ID}/mappers" \
+            "${KC_BASE_URL}/auth/admin/realms/${REALM}/identity-provider/instances/${IDP_ID}/mappers" \
             -H "Content-Type: application/json" \
             -H "Authorization: Bearer ${TOKEN}" \
             --data "${MAPPER_PAYLOAD}")"
@@ -160,7 +160,7 @@ log_info "Enforcing SAML flow execution ..."
 
 # Get all executions for browser flow
 get_token
-EXECUTIONS="$(curl --insecure -s "${IDS_BASE_URL}/auth/admin/realms/${REALM}/authentication/flows/browser/executions" \
+EXECUTIONS="$(curl --insecure -s "${KC_BASE_URL}/auth/admin/realms/${REALM}/authentication/flows/browser/executions" \
     -H "Authorization: Bearer ${TOKEN}")"
 
 # Extract the id of "Identity Provider Redirector"
@@ -175,7 +175,7 @@ if [ "null" = "${AUTH_CFG_ID}" ]; then
 
     get_token
     STATUS_CODE="$(curl --insecure -s -o /dev/null -w "%{http_code}" \
-        "${IDS_BASE_URL}/auth/admin/realms/${REALM}/authentication/executions/${EXECUTION_ID}/config" \
+        "${KC_BASE_URL}/auth/admin/realms/${REALM}/authentication/executions/${EXECUTION_ID}/config" \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer ${TOKEN}" \
         -d @config-files/samlBrowserFlowExecution.json)"
@@ -195,7 +195,7 @@ else
     # Update execution of the SAML Identity Provider Redirector
     get_token
     STATUS_CODE="$(curl --insecure -s -o /dev/null -w "%{http_code}" --request PUT \
-        "${IDS_BASE_URL}/auth/admin/realms/${REALM}/authentication/config/${AUTH_CFG_ID}" \
+        "${KC_BASE_URL}/auth/admin/realms/${REALM}/authentication/config/${AUTH_CFG_ID}" \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer ${TOKEN}" \
         -d "${EXECUTION_PAYLOAD}")"
@@ -211,7 +211,7 @@ fi
 ## Set realm key
 run_and_check_000_status_code configure_realm
 
-## Import new SAML identity provider in Identity Service
+## Import new SAML identity provider in Keycloak
 run_and_check_000_status_code config_saml
 
 ## Adding SAML mappers
