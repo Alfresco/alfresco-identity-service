@@ -1,0 +1,104 @@
+# This is a 1:1 copy of the java.security file provided within the IDS Docker image
+# with some minor adjustments explained in comments on the relevant properties, and the original
+# comments being stripped.
+#
+# To regenerate a similar file / scan for diffs against newer versions, simply run something like
+# cat java.security | grep -v "^#" | grep -v "^$" > stripped.security
+# to produce a comments-stripped version of the newer java.security file.
+#
+# This is necessary since the RSA_SHA1 and DSA_SHA1 algorithms have been deprecated and aren’t
+# valid algorithms to sign SAML responses anymore.
+# Adapt the configuration of your SAML identity provider so that it uses a valid algorithm such
+# as SHA256 instead.
+# 
+# If the mitigation is not applicable, you can override the $JAVA_HOME/conf/security/java.security file
+# and remove the necessary disallowed algorithms within jdk.xml.dsig.secureValidationPolicy instead.
+
+security.provider.1=SUN
+security.provider.2=SunRsaSign
+security.provider.3=SunEC
+security.provider.4=SunJSSE
+security.provider.5=SunJCE
+security.provider.6=SunJGSS
+security.provider.7=SunSASL
+security.provider.8=XMLDSig
+security.provider.9=SunPCSC
+security.provider.10=JdkLDAP
+security.provider.11=JdkSASL
+security.provider.12=SunPKCS11
+fips.provider.1=SunPKCS11 ${java.home}/conf/security/nss.fips.cfg
+fips.provider.2=SUN
+fips.provider.3=SunEC
+fips.provider.4=SunJSSE
+fips.provider.5=SunJCE
+fips.provider.6=SunRsaSign
+# switched from 'random' to 'urandom' for performance reasons
+securerandom.source=file:/dev/urandom
+securerandom.strongAlgorithms=NativePRNGBlocking:SUN,DRBG:SUN
+securerandom.drbg.config=
+login.configuration.provider=sun.security.provider.ConfigFile
+policy.provider=sun.security.provider.PolicyFile
+policy.url.1=file:${java.home}/conf/security/java.policy
+policy.url.2=file:${user.home}/.java.policy
+policy.expandProperties=true
+policy.allowSystemProperty=true
+policy.ignoreIdentityScope=false
+keystore.type=pkcs12
+fips.keystore.type=pkcs12
+fips.nssdb.path=sql:/etc/pki/nssdb
+fips.nssdb.pin=pin:
+keystore.type.compat=true
+package.access=sun.misc.,\
+               sun.reflect.,\
+               org.GNOME.Accessibility.,\
+               org.GNOME.Bonobo.
+package.definition=sun.misc.,\
+                   sun.reflect.,\
+                   org.GNOME.Accessibility.,\
+                   org.GNOME.Bonobo.
+security.overridePropertiesFile=true
+security.useSystemPropertiesFile=true
+ssl.KeyManagerFactory.algorithm=SunX509
+ssl.TrustManagerFactory.algorithm=PKIX
+networkaddress.cache.negative.ttl=10
+krb5.kdc.bad.policy = tryLast
+sun.security.krb5.disableReferrals=false
+sun.security.krb5.maxReferrals=5
+jdk.certpath.disabledAlgorithms=MD2, MD5, SHA1 jdkCA & usage TLSServer, \
+    RSA keySize < 1024, DSA keySize < 1024, EC keySize < 224, \
+    SHA1 usage SignedJAR & denyAfter 2019-01-01
+jdk.security.legacyAlgorithms=SHA1, \
+    RSA keySize < 2048, DSA keySize < 2048
+jdk.jar.disabledAlgorithms=MD2, MD5, RSA keySize < 1024, \
+      DSA keySize < 1024, SHA1 denyAfter 2019-01-01
+jdk.tls.disabledAlgorithms=SSLv3, TLSv1, TLSv1.1, RC4, DES, MD5withRSA, \
+    DH keySize < 1024, EC keySize < 224, 3DES_EDE_CBC, anon, NULL
+jdk.tls.legacyAlgorithms=NULL, anon, RC4, DES, 3DES_EDE_CBC
+jdk.tls.keyLimits=AES/GCM/NoPadding KeyUpdate 2^37
+crypto.policy=unlimited
+# the following algorithms have been removed from the disallow list to deal with an issue
+# with Auth0 which wouldn't sign SAML SLO responses with SHA256, but with SHA1 instead:
+#   disallowAlg http://www.w3.org/2000/09/xmldsig#sha1,\
+#   disallowAlg http://www.w3.org/2000/09/xmldsig#dsa-sha1,\
+#   disallowAlg http://www.w3.org/2000/09/xmldsig#rsa-sha1,\
+jdk.xml.dsig.secureValidationPolicy=\
+    disallowAlg http://www.w3.org/TR/1999/REC-xslt-19991116,\
+    disallowAlg http://www.w3.org/2001/04/xmldsig-more#rsa-md5,\
+    disallowAlg http://www.w3.org/2001/04/xmldsig-more#hmac-md5,\
+    disallowAlg http://www.w3.org/2001/04/xmldsig-more#md5,\
+    disallowAlg http://www.w3.org/2007/05/xmldsig-more#sha1-rsa-MGF1,\
+    disallowAlg http://www.w3.org/2001/04/xmldsig-more#ecdsa-sha1,\
+    maxTransforms 5,\
+    maxReferences 30,\
+    disallowReferenceUriSchemes file http https,\
+    minKeySize RSA 1024,\
+    minKeySize DSA 1024,\
+    minKeySize EC 224,\
+    noDuplicateIds,\
+    noRetrievalMethodLoops
+jceks.key.serialFilter = java.base/java.lang.Enum;java.base/java.security.KeyRep;\
+  java.base/java.security.KeyRep$Type;java.base/javax.crypto.spec.SecretKeySpec;!*
+jdk.sasl.disabledMechanisms=
+jdk.security.caDistrustPolicies=SYMANTEC_TLS
+jdk.io.permissionsUseCanonicalPath=false
+jdk.tls.alpnCharset=ISO_8859_1
