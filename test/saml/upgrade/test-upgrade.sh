@@ -178,7 +178,7 @@ ls -lh "${target}"/data/h2
 cd "${target}" || exit 1
 
 # Start the server in the background
-nohup bash bin/kc.sh start-dev --import-realm --http-relative-path="/auth"
+nohup bash bin/kc.sh start-dev --import-realm --http-relative-path="/auth" >/dev/null 2>&1 &
 # wait for the server to startup
 sleep 20
 
