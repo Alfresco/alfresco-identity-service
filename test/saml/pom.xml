@@ -23,7 +23,7 @@
     <maven-compiler-plugin>3.8.0</maven-compiler-plugin>
     <maven-surefire-plugin.version>2.21.0</maven-surefire-plugin.version>
     <maven-dependency-plugin.version>3.1.2</maven-dependency-plugin.version>
-    <!-- IDS version where to test the upgrade scenario to the version defined in the build.properties file. E.g. upgrade IDS 1.8.0 to Keycloak 21.1.2 -->
+    <!-- IDS version where to test the upgrade scenario to the version defined in the build.properties file. E.g. upgrade IDS 1.8.0 to Keycloak 24.0.2 -->
     <identity-service-from.version>1.8.0.1</identity-service-from.version>
   </properties>
 
@@ -72,7 +72,7 @@
     <dependency>
       <groupId>io.github.bonigarcia</groupId>
       <artifactId>webdrivermanager</artifactId>
-      <version>5.5.2</version>
+      <version>5.8.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
