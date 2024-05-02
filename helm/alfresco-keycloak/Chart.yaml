@@ -1,7 +1,7 @@
 apiVersion: v2
 name: alfresco-keycloak
 version: 1.0.0
-appVersion: 24.0.2
+appVersion: 24.0.3
 description: This is just a sample Helm installation of raw Keycloak with the Alfresco Realm and Theme pre-installed.
 keywords:
   - alfresco
