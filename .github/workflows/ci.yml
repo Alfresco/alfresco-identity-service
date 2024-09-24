@@ -37,17 +37,17 @@ jobs:
         run: |
           curl -fsSL https://github.com/norwoodj/helm-docs/releases/download/v$HELM_DOCS_VERSION/helm-docs_${HELM_DOCS_VERSION}_$(uname)_x86_64.tar.gz | sudo tar xz -C /usr/local/bin/ helm-docs
           helm-docs --version
-      - uses: Alfresco/alfresco-build-tools/.github/actions/pre-commit@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/pre-commit@v7.0.0
 
   build:
     name: "Build"
     runs-on: ubuntu-latest
     needs: pre-commit
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v7.0.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v7.0.0
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
@@ -74,10 +74,10 @@ jobs:
     needs: build
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v7.0.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v7.0.0
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
@@ -100,9 +100,9 @@ jobs:
     needs: build
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v7.0.0
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
@@ -135,27 +135,27 @@ jobs:
     needs: build
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v7.0.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v7.0.0
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
           aws-region: ${{ env.AWS_REGION }}
       - name: Login to Docker Hub
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Login to Quay.io
-        uses: docker/login-action@v2
+        uses: docker/login-action@v3
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
           password: ${{ secrets.QUAY_PASSWORD }}
       - name: Setup cluster
-        uses: Alfresco/alfresco-build-tools/.github/actions/setup-kind@v3.1.0
+        uses: Alfresco/alfresco-build-tools/.github/actions/setup-kind@v7.0.0
       - name: Create registries auth secret
         run: |
           kubectl create secret generic regcred \
@@ -258,10 +258,10 @@ jobs:
     needs: build
     if: ${{ !contains(github.event.head_commit.message, '[skip tests]') }}
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v7.0.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v7.0.0
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
@@ -293,18 +293,18 @@ jobs:
       (github.ref_name == 'master' || startsWith(github.ref_name, 'release/') || contains(github.event.head_commit.message, '[publish]')) &&
       github.event_name != 'pull_request'
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         with:
           persist-credentials: false
           fetch-depth: 0
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v7.0.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v7.0.0
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
           aws-region: ${{ env.AWS_REGION }}
-      - uses: Alfresco/alfresco-build-tools/.github/actions/configure-git-author@v1.34.2
+      - uses: Alfresco/alfresco-build-tools/.github/actions/configure-git-author@v7.0.0
         with:
           username: ${{ secrets.BOT_GITHUB_USERNAME }}
           email: ${{ secrets.BOT_GITHUB_EMAIL }}
@@ -355,15 +355,15 @@ jobs:
       contains(github.event.head_commit.message, '[staging]') &&
       github.event_name != 'pull_request'
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v7.0.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v7.0.0
       - name: "Set IDENTITY_VERSION"
         run: |
           source distribution/build.properties
           echo "IDENTITY_VERSION=$IDENTITY_VERSION" >> "$GITHUB_ENV"
           echo $IDENTITY_VERSION
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
@@ -372,7 +372,7 @@ jobs:
         run: |
           aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.zip ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip
           aws s3 cp s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/alfresco-identity-service-${IDENTITY_VERSION}.md5 ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.md5
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_STAGING_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_S3_STAGING_SECRET_KEY }}
@@ -380,7 +380,7 @@ jobs:
       - name: "Publish to S3 Staging"
         id: publish
         run: aws s3 cp --acl private --recursive ./deploy_dir s3://${S3_STAGING_BUCKET}/enterprise/alfresco-identity-service/${IDENTITY_VERSION}
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v4
         if: ${{ (always() && steps.publish.outcome == 'failure') || !contains(github.event.head_commit.message, '[release]') }}
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
@@ -400,15 +400,15 @@ jobs:
       contains(github.event.head_commit.message, '[release]') &&
       github.event_name != 'pull_request'
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v7.0.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v7.0.0
       - name: "Set IDENTITY_VERSION"
         run: |
           source distribution/build.properties
           echo "IDENTITY_VERSION=$IDENTITY_VERSION" >> "$GITHUB_ENV"
           echo $IDENTITY_VERSION
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
           aws-secret-access-key: ${{ secrets.AWS_S3_PIPELINE_AMPS_SECRET_ACCESS_KEY  }}
@@ -421,14 +421,14 @@ jobs:
           aws s3 rm s3://${S3_ARTIFACTS_BUCKET}/ci-${BUILD_NUMBER}/ --recursive
       - name: "Publish to Nexus"
         run: curl -q -u ${MAVEN_USERNAME}:${MAVEN_PASSWORD} --upload-file ./deploy_dir/alfresco-identity-service-${IDENTITY_VERSION}.zip https://artifacts.alfresco.com/nexus/content/repositories/enterprise-releases/org/alfresco/alfresco-identity-service/${IDENTITY_VERSION}/alfresco-identity-service-${IDENTITY_VERSION}.zip
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_RELEASE_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_S3_RELEASE_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
       - name: "Publish to S3"
         run: aws s3 cp --acl private --recursive ./deploy_dir s3://${S3_RELEASE_BUCKET}/release/enterprise/alfresco-identity-service/${IDENTITY_VERSION}
-      - uses: aws-actions/configure-aws-credentials@v1
+      - uses: aws-actions/configure-aws-credentials@v4
         if: ${{ (always() && steps.prepare.outcome == 'failure') }}
         with:
           aws-access-key-id: ${{ secrets.AWS_S3_PIPELINE_AMPS_ACCESS_KEY_ID  }}
@@ -448,16 +448,16 @@ jobs:
       contains(github.event.head_commit.message, '[release]') &&
       github.event_name != 'pull_request'
     steps:
-      - uses: actions/checkout@v3
-      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v1.34.2
-      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v1.34.2
+      - uses: actions/checkout@v4
+      - uses: Alfresco/alfresco-build-tools/.github/actions/get-build-info@v7.0.0
+      - uses: Alfresco/alfresco-build-tools/.github/actions/setup-java-build@v7.0.0
       - name: "Login to DockerHub Registry"
-        uses: docker/login-action@v2.1.0
+        uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: "Login to Quay.io Docker Registry"
-        uses: docker/login-action@v2.1.0
+        uses: docker/login-action@v3
         with:
           registry: quay.io
           username: ${{ secrets.QUAY_USERNAME }}
