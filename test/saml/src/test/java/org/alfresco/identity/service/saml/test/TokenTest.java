@@ -108,7 +108,7 @@ public class TokenTest
         chromeOptions.addArguments("--disable-dev-shm-usage");
         chromeOptions.addArguments("--disable-extensions");
         chromeOptions.addArguments("--single-process");
-        chromeOptions.addArguments("--headless");
+        chromeOptions.addArguments("--headless=old");
         chromeOptions.addArguments("--test-type");
         chromeOptions.addArguments("--start-maximized");
         chromeOptions.addArguments("--disable-web-security");
