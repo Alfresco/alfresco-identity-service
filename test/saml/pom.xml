@@ -13,7 +13,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
     <selenium-server.version>3.0.1</selenium-server.version>
-    <java-jwt.version>3.16.0</java-jwt.version>
+    <java-jwt.version>3.19.4</java-jwt.version>
     <commons-codec.version>1.15</commons-codec.version>
     <logback-classic.version>1.2.3</logback-classic.version>
     <log4j-to-slf4j.version>2.9.1</log4j-to-slf4j.version>
@@ -72,7 +72,7 @@
     <dependency>
       <groupId>io.github.bonigarcia</groupId>
       <artifactId>webdrivermanager</artifactId>
-      <version>5.8.0</version>
+      <version>5.9.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>

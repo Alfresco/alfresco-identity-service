@@ -116,7 +116,7 @@ bin/add-user-keycloak.sh -r master -u admin -p admin
 
 log_info "Starting ${source} ..."
 # Start the server in the background
-nohup ./bin/standalone.sh -b "${host_ip}" >/dev/null 2>&1 &
+nohup ./bin/standalone.sh -b "${host_ip}" >/dev/kc-logfile 2>&1 &
 # wait for the server to startup
 sleep 20
 
@@ -138,9 +138,13 @@ cd "${current_dir}" || exit 1
 mvn -B -ntp test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}"
 TESTS_RESULT=$?
 
-log_info "The test was successful. Stopping Keycloak..."
+log_info "The test was completed. Stopping Keycloak..."
 # Stop the 'from' version and do an upgrade
 stop_kc
+
+log_info "Keycloak logs:"
+
+cat /dev/kc-logfile
 
 log_info "Upgrading from ${source} to ${target} ..."
 
