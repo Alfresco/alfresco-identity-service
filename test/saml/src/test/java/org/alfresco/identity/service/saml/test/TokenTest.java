@@ -119,7 +119,7 @@ public class TokenTest
         chromeOptions.addArguments("--allow-insecure-localhost");
         chromeOptions.addArguments("--ignore-ssl-errors=yes");
         chromeOptions.addArguments("--ignore-certificate-errors");
-        chromeOptions.setExperimentalOption("excludeSwitches", new String[] { "enable-automation" });
+        chromeOptions.setExperimentalOption("excludeSwitches", new String[] { "enable-automation", "disable-popup-blocking" });
         // chromeOptions.addArguments(String.format("--lang=%s", getBrowserLanguage(properties)));
         //disable profile password manager
         HashMap<String, Object> chromePrefs = new HashMap<>();
@@ -175,7 +175,7 @@ public class TokenTest
 
         //Get the redirect URL for validation -- If you check the status of the
         //redirct URL call it will be 404.  The page does not exist. All we are
-        //intersted in is the token parameter in the URL
+        //interested in is the token parameter in the URL
         logger.info("Redirect URL: " + driver.getCurrentUrl());
         logger.info("Page title: " + driver.getTitle());
 
