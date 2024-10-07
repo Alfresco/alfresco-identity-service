@@ -116,7 +116,7 @@ bin/add-user-keycloak.sh -r master -u admin -p admin
 
 log_info "Starting ${source} ..."
 # Start the server in the background
-nohup ./bin/standalone.sh -b "${host_ip}" >/dev/kc-logfile 2>&1 &
+nohup ./bin/standalone.sh -b "${host_ip}" >${current_dir}/kc-logfile 2>&1 &
 # wait for the server to startup
 sleep 20
 
@@ -144,7 +144,7 @@ stop_kc
 
 log_info "Keycloak logs:"
 
-cat /dev/kc-logfile
+cat ${current_dir}/kc-logfile
 
 log_info "Upgrading from ${source} to ${target} ..."
 
