@@ -37,6 +37,10 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.openqa.selenium.By.ByName;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
+import java.io.File;
+import org.apache.commons.io.FileUtils;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -119,7 +123,7 @@ public class TokenTest
         chromeOptions.addArguments("--allow-insecure-localhost");
         chromeOptions.addArguments("--ignore-ssl-errors=yes");
         chromeOptions.addArguments("--ignore-certificate-errors");
-        chromeOptions.setExperimentalOption("excludeSwitches", new String[] { "enable-automation", "disable-popup-blocking" });
+        chromeOptions.setExperimentalOption("excludeSwitches", new String[] { "enable-automation" });
         // chromeOptions.addArguments(String.format("--lang=%s", getBrowserLanguage(properties)));
         //disable profile password manager
         HashMap<String, Object> chromePrefs = new HashMap<>();
@@ -171,13 +175,24 @@ public class TokenTest
         passwordField.submit();
 
         // Workaround to get the tests passing when using 'http' rather than 'https' protocol
-        Thread.sleep(3000L);
+        Thread.sleep(5000L);
 
         //Get the redirect URL for validation -- If you check the status of the
         //redirct URL call it will be 404.  The page does not exist. All we are
         //interested in is the token parameter in the URL
         logger.info("Redirect URL: " + driver.getCurrentUrl());
         logger.info("Page title: " + driver.getTitle());
+
+        // Take a screenshot and save it to a file
+        File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
+
+        // Specify the destination file
+        File destinationFile = new File("screenshot.png");
+
+        // Copy the screenshot to the destination file
+        FileUtils.copyFile(screenshot, destinationFile);
+
+        System.out.println("Screenshot saved at: " + destinationFile.getAbsolutePath());
 
         //Get token param
         Map<String, String> params = getQueryStringMap(driver.getCurrentUrl());
