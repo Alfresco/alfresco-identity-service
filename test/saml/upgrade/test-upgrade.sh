@@ -136,7 +136,7 @@ log_info "Setup Auth0 ..."
 # cd to /saml dir
 cd "${current_dir}" || exit 1
 # Run the test
-mvn -B -ntp test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="localhost" -Dkeycloak.port="${port}"
+mvn -B -ntp test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}"
 TESTS_RESULT=$?
 
 if [[ "$TESTS_RESULT" -ne 0 ]] ; then
@@ -144,7 +144,7 @@ if [[ "$TESTS_RESULT" -ne 0 ]] ; then
   cat "${kc_logfile}"
 fi
 
-log_info "The test has been completed. Stopping Keycloak..."
+log_info "The tests have been completed. Stopping Keycloak..."
 # Stop the 'from' version and do an upgrade
 stop_kc
 
