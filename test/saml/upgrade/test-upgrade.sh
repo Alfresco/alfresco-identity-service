@@ -117,7 +117,7 @@ bin/add-user-keycloak.sh -r master -u admin -p admin
 log_info "Starting ${source} ..."
 # Start the server in the background
 kc_logfile=${current_dir}/from-kc-logfile
-nohup ./bin/standalone.sh -b "${host_ip}" >${kc_logfile} 2>&1 &
+nohup ./bin/standalone.sh -b "${host_ip}" >"${kc_logfile}" 2>&1 &
 # wait for the server to startup
 sleep 20
 
@@ -141,7 +141,7 @@ TESTS_RESULT=$?
 
 if [[ "$TESTS_RESULT" -ne 0 ]] ; then
   log_error_no_exit "Tests against the 'from' version failed. Dumping Keycloak logs:"
-  cat ${kc_logfile}
+  cat "${kc_logfile}"
 fi
 
 log_info "The test has been completed. Stopping Keycloak..."
@@ -150,7 +150,7 @@ stop_kc
 
 log_info "Keycloak logs:"
 
-cat ${current_dir}/kc-logfile
+cat "${current_dir}"/kc-logfile
 
 log_info "Upgrading from ${source} to ${target} ..."
 
@@ -189,7 +189,7 @@ cd "${target}" || exit 1
 
 # Start the server in the background
 kc_logfile=${current_dir}/to-kc-logfile
-nohup bash bin/kc.sh start-dev --import-realm --http-relative-path="/auth" >${kc_logfile} 2>&1 &
+nohup bash bin/kc.sh start-dev --import-realm --http-relative-path="/auth" >"${kc_logfile}" 2>&1 &
 # wait for the server to startup
 sleep 20
 
@@ -219,7 +219,7 @@ log_info "The tests completed with the following aggregated exit code: ${TESTS_R
 
 if [[ "$TESTS_RESULT" -ne 0 ]] ; then
   log_error_no_exit "Tests against the 'to' version failed. Dumping Keycloak logs:"
-  cat ${kc_logfile}
+  cat "${kc_logfile}"
 fi
 
 # Delete Auth0 application
