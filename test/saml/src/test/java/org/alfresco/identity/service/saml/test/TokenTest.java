@@ -9,7 +9,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -24,8 +23,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInstance;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
 import org.openqa.selenium.By.ByName;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
@@ -35,7 +32,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.net.ssl.SSLContext;
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -174,17 +170,6 @@ public class TokenTest
         //interested in is the token parameter in the URL
         logger.info("Redirect URL: " + driver.getCurrentUrl());
         logger.info("Page title: " + driver.getTitle());
-
-        // Take a screenshot and save it to a file
-        File screenshot = ((TakesScreenshot) driver).getScreenshotAs(OutputType.FILE);
-
-        // Specify the destination file
-        File destinationFile = new File("screenshot.png");
-
-        // Copy the screenshot to the destination file
-        FileUtils.copyFile(screenshot, destinationFile);
-
-        logger.info("Screenshot saved at: " + destinationFile.getAbsolutePath());
 
         //Get token param
         Map<String, String> params = getQueryStringMap(driver.getCurrentUrl());
