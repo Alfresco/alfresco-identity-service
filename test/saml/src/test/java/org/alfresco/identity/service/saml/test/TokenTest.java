@@ -46,10 +46,7 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 import java.security.spec.X509EncodedKeySpec;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import static org.alfresco.identity.service.saml.test.TokenTestConstants.*;
@@ -103,14 +100,14 @@ public class TokenTest
     {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setAcceptInsecureCerts(true);
+        chromeOptions.addArguments("--headless");
         chromeOptions.addArguments("--no-sandbox");
         chromeOptions.addArguments("--disable-gpu");
         chromeOptions.addArguments("--disable-dev-shm-usage");
         chromeOptions.addArguments("--disable-extensions");
         chromeOptions.addArguments("--single-process");
-        chromeOptions.addArguments("--headless=old");
         chromeOptions.addArguments("--test-type");
-        chromeOptions.addArguments("--start-maximized");
+//        chromeOptions.addArguments("--start-maximized");
         chromeOptions.addArguments("--disable-web-security");
         chromeOptions.addArguments("--allow-running-insecure-content");
         chromeOptions.addArguments("--disable-popup-blocking");
@@ -125,6 +122,10 @@ public class TokenTest
         chromePrefs.put("profile.password_manager_enabled", false);
         // chromePrefs.put("download.default_directory", getDownloadLocation());
         chromeOptions.setExperimentalOption("prefs", chromePrefs);
+
+        HashMap<String, Object> enabledLabsExperiments = new HashMap<>();
+        enabledLabsExperiments.put("browser.enabled_labs_experiments", Arrays.asList("mixed-forms-interstitial@2"));
+        chromeOptions.setExperimentalOption("localState", enabledLabsExperiments);
         return chromeOptions;
     }
 
