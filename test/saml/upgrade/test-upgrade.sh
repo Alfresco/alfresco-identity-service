@@ -136,7 +136,7 @@ log_info "Setup Auth0 ..."
 # cd to /saml dir
 cd "${current_dir}" || exit 1
 # Run the test
-mvn -B -ntp test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="${host_ip}" -Dkeycloak.port="${port}"
+mvn -B -ntp test -Dkeycloak.protocol="${protocol}" -Dkeycloak.hostname="localhost" -Dkeycloak.port="${port}"
 TESTS_RESULT=$?
 
 if [[ "$TESTS_RESULT" -ne 0 ]] ; then

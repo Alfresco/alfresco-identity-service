@@ -99,7 +99,7 @@ public class TokenTest
     {
         ChromeOptions chromeOptions = new ChromeOptions();
         chromeOptions.setAcceptInsecureCerts(true);
-        chromeOptions.addArguments("--headless=old"); // use old headless mode to avoid secure forms warning
+        chromeOptions.addArguments("--headless");
         chromeOptions.addArguments("--no-sandbox");
         chromeOptions.addArguments("--disable-gpu");
         chromeOptions.addArguments("--disable-dev-shm-usage");
