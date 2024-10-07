@@ -12,7 +12,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <java.version>11</java.version>
-    <selenium-server.version>3.141.59</selenium-server.version>
+    <selenium-java.version>4.25.0</selenium-java.version>
     <java-jwt.version>3.19.4</java-jwt.version>
     <commons-codec.version>1.15</commons-codec.version>
     <logback-classic.version>1.3.14</logback-classic.version>
@@ -59,8 +59,8 @@
   <dependencies>
     <dependency>
       <groupId>org.seleniumhq.selenium</groupId>
-      <artifactId>selenium-server</artifactId>
-      <version>${selenium-server.version}</version>
+      <artifactId>selenium-java</artifactId>
+      <version>${selenium-java.version}</version>
       <scope>test</scope>
     </dependency>
     <dependency>
