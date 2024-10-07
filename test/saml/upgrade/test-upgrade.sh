@@ -148,10 +148,6 @@ log_info "The tests have been completed. Stopping Keycloak..."
 # Stop the 'from' version and do an upgrade
 stop_kc
 
-log_info "Keycloak logs:"
-
-cat "${current_dir}"/kc-logfile
-
 log_info "Upgrading from ${source} to ${target} ..."
 
 log_info "Copy ${target} distro to workspace"
