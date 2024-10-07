@@ -175,7 +175,7 @@ public class TokenTest
         passwordField.submit();
 
         // Workaround to get the tests passing when using 'http' rather than 'https' protocol
-        Thread.sleep(5000L);
+        Thread.sleep(3000L);
 
         //Get the redirect URL for validation -- If you check the status of the
         //redirct URL call it will be 404.  The page does not exist. All we are
@@ -192,7 +192,7 @@ public class TokenTest
         // Copy the screenshot to the destination file
         FileUtils.copyFile(screenshot, destinationFile);
 
-        System.out.println("Screenshot saved at: " + destinationFile.getAbsolutePath());
+        logger.info("Screenshot saved at: " + destinationFile.getAbsolutePath());
 
         //Get token param
         Map<String, String> params = getQueryStringMap(driver.getCurrentUrl());

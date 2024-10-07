@@ -258,6 +258,12 @@ jobs:
           cd test/saml
           mvn -B -ntp clean package -DskipTests
           ./upgrade/test-upgrade.sh
+      - name: Upload screenshot
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Test Results
+          path: test/saml/screenshot.png
 
   cleanup:
     name: "Cleanup"
