@@ -113,6 +113,7 @@ public class TokenTest
         chromeOptions.addArguments("--allow-insecure-localhost");
         chromeOptions.addArguments("--ignore-ssl-errors=yes");
         chromeOptions.addArguments("--ignore-certificate-errors");
+        chromeOptions.addArguments("--unsafely-treat-insecure-origin-as-secure=" + getProtocol() + "://" + getHostname());
         chromeOptions.setExperimentalOption("excludeSwitches", new String[] { "enable-automation" });
         // chromeOptions.addArguments(String.format("--lang=%s", getBrowserLanguage(properties)));
         //disable profile password manager
