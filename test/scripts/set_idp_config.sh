@@ -36,7 +36,7 @@ while [ "$PODS_COUNTER" -lt "$PODS_COUNTER_MAX" ]; do
     continue
 done
 if [ "$PODS_COUNTER" -ge "$PODS_COUNTER_MAX" ]; then
-    log_info "AIS did not started properly - exit"
+    log_info "AIS did not start properly - exit"
     exit 1
 fi
 
