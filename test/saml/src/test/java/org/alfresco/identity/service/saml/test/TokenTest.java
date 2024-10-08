@@ -1,27 +1,13 @@
 package org.alfresco.identity.service.saml.test;
 
-import static org.alfresco.identity.service.saml.test.TokenTestConstants.*;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.lang.reflect.Type;
-import java.security.KeyFactory;
-import java.security.KeyManagementException;
-import java.security.KeyStoreException;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Properties;
-import java.util.concurrent.TimeUnit;
-
-import javax.net.ssl.SSLContext;
-
+import com.auth0.jwt.JWT;
+import com.auth0.jwt.JWTVerifier;
+import com.auth0.jwt.algorithms.Algorithm;
+import com.auth0.jwt.exceptions.JWTVerificationException;
+import com.auth0.jwt.interfaces.DecodedJWT;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
@@ -41,19 +27,29 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.CapabilityType;
-import org.openqa.selenium.remote.DesiredCapabilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
-import com.auth0.jwt.algorithms.Algorithm;
-import com.auth0.jwt.exceptions.JWTVerificationException;
-import com.auth0.jwt.interfaces.DecodedJWT;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import io.github.bonigarcia.wdm.WebDriverManager;
+import javax.net.ssl.SSLContext;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
+import java.security.KeyFactory;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.interfaces.RSAPublicKey;
+import java.security.spec.X509EncodedKeySpec;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Properties;
+import java.util.concurrent.TimeUnit;
+
+import static org.alfresco.identity.service.saml.test.TokenTestConstants.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 /**
  * @author Jared Ottley
@@ -96,21 +92,19 @@ public class TokenTest
     {
             WebDriverManager.chromedriver()
                         .setup();
-        return new ChromeDriver(getDesiredCapabilities());
+        return new ChromeDriver(getChromeOptions());
     }
 
-    private DesiredCapabilities getDesiredCapabilities()
+    private ChromeOptions getChromeOptions()
     {
-        DesiredCapabilities capabilities = DesiredCapabilities.chrome();
-        capabilities.setCapability(CapabilityType.ACCEPT_SSL_CERTS, true);
-
         ChromeOptions chromeOptions = new ChromeOptions();
+        chromeOptions.setAcceptInsecureCerts(true);
+        chromeOptions.addArguments("--headless");
         chromeOptions.addArguments("--no-sandbox");
         chromeOptions.addArguments("--disable-gpu");
         chromeOptions.addArguments("--disable-dev-shm-usage");
         chromeOptions.addArguments("--disable-extensions");
         chromeOptions.addArguments("--single-process");
-        chromeOptions.addArguments("--headless");
         chromeOptions.addArguments("--test-type");
         chromeOptions.addArguments("--start-maximized");
         chromeOptions.addArguments("--disable-web-security");
@@ -119,6 +113,7 @@ public class TokenTest
         chromeOptions.addArguments("--allow-insecure-localhost");
         chromeOptions.addArguments("--ignore-ssl-errors=yes");
         chromeOptions.addArguments("--ignore-certificate-errors");
+        chromeOptions.addArguments("--unsafely-treat-insecure-origin-as-secure=" + getBaseUrl());
         chromeOptions.setExperimentalOption("excludeSwitches", new String[] { "enable-automation" });
         // chromeOptions.addArguments(String.format("--lang=%s", getBrowserLanguage(properties)));
         //disable profile password manager
@@ -127,9 +122,7 @@ public class TokenTest
         chromePrefs.put("profile.password_manager_enabled", false);
         // chromePrefs.put("download.default_directory", getDownloadLocation());
         chromeOptions.setExperimentalOption("prefs", chromePrefs);
-
-        capabilities.setCapability(ChromeOptions.CAPABILITY, chromeOptions);
-        return capabilities;
+        return chromeOptions;
     }
 
     @AfterAll
@@ -175,7 +168,7 @@ public class TokenTest
 
         //Get the redirect URL for validation -- If you check the status of the
         //redirct URL call it will be 404.  The page does not exist. All we are
-        //intersted in is the token parameter in the URL
+        //interested in is the token parameter in the URL
         logger.info("Redirect URL: " + driver.getCurrentUrl());
         logger.info("Page title: " + driver.getTitle());
 
