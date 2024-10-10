@@ -2613,7 +2613,7 @@
     "clientOfflineSessionIdleTimeout": "0",
     "cibaInterval": "5"
   },
-  "users": [ 
+  "users": [
     {
       "id": "60a9b6c5-64ef-405f-8c6f-66bd8cd3878a",
       "createdTimestamp": 1533234734911,
@@ -2633,8 +2633,8 @@
           "value" : "{{ .Values.realm.alfresco.adminPassword}}"
         }
       ],
-      "disableableCredentialTypes": [ 
-        "password" 
+      "disableableCredentialTypes": [
+        "password"
       ],
       "requiredActions": [],
       "realmRoles": [
@@ -2646,24 +2646,24 @@
       ,
       {{ . | toJson }}
       {{- end }}
-      {{- end }} 
+      {{- end }}
       ],
       "clientRoles": {
-        "realm-management": [ 
-          "view-clients", 
-          "manage-users", 
-          "manage-clients", 
-          "view-users", 
-          "manage-realm", 
-          "view-realm" 
+        "realm-management": [
+          "view-clients",
+          "manage-users",
+          "manage-clients",
+          "view-users",
+          "manage-realm",
+          "view-realm"
         ],
-        "account": [ 
-          "manage-account", 
-          "view-profile" 
+        "account": [
+          "manage-account",
+          "view-profile"
         ]
       },
-      "groups": [ 
-        "/admin" 
+      "groups": [
+        "/admin"
       ]
     } {{- if .Values.realm.alfresco.extraUsers -}}
     {{- range .Values.realm.alfresco.extraUsers -}}
@@ -2671,6 +2671,6 @@
     {{- end }}
     {{- end }}
   ],
-  "keycloakVersion": "24.0.3",
+  "keycloakVersion": "25.0.6",
   "userManagedAccessAllowed": false
 }

@@ -1,6 +1,6 @@
 # alfresco-keycloak
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![AppVersion: 24.0.3](https://img.shields.io/badge/AppVersion-24.0.3-informational?style=flat-square)
+![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![AppVersion: 25.0.6](https://img.shields.io/badge/AppVersion-25.0.6-informational?style=flat-square)
 
 This is just a sample Helm installation of raw Keycloak with the Alfresco Realm and Theme pre-installed.
 
@@ -22,7 +22,7 @@ This is just a sample Helm installation of raw Keycloak with the Alfresco Realm 
 |------------|------|---------|
 | https://charts.bitnami.com/bitnami | common | 1.11.3 |
 | https://charts.bitnami.com/bitnami | postgresql | 11.9.13 |
-| https://codecentric.github.io/helm-charts | keycloakx | 2.2.1 |
+| https://codecentric.github.io/helm-charts | keycloakx | 2.5.1 |
 
 ## Values
 
@@ -44,12 +44,12 @@ This is just a sample Helm installation of raw Keycloak with the Alfresco Realm 
 | keycloakx.extraInitContainers | string | `"- name: theme-provider\n  image: busybox:1.36\n  imagePullPolicy: IfNotPresent\n  command:\n    - sh\n  args:\n    - -c\n    - |\n      THEME_VERSION=0.3.5\n      wget https://github.com/Alfresco/alfresco-keycloak-theme/releases/download/${THEME_VERSION}/alfresco-keycloak-theme-${THEME_VERSION}.zip -O /alfresco.zip\n      unzip alfresco.zip\n      mv alfresco/* /theme/\n  volumeMounts:\n    - name: theme\n      mountPath: /theme\n"` |  |
 | keycloakx.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/opt/keycloak/data/import/\"\n  readOnly: true\n- name: theme\n  mountPath: \"/opt/keycloak/themes/alfresco\"\n  readOnly: true\n"` |  |
 | keycloakx.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n- name: theme\n  emptyDir: {}\n"` |  |
-| keycloakx.image.tag | string | `"24.0.3"` |  |
+| keycloakx.image.tag | string | `"25.0.6"` |  |
 | keycloakx.imagePullSecrets[0].name | string | `"quay-registry-secret"` |  |
 | keycloakx.rbac.create | bool | `false` |  |
 | keycloakx.service.httpPort | int | `80` |  |
 | keycloakx.serviceAccount.create | bool | `true` |  |
-| postgresql.enabled | bool | `false` | Flag introduced for testing purposes, to actually run this with postgresql follow the approach explained [here](https://github.com/codecentric/helm-charts/blob/keycloakx-2.2.1/charts/keycloakx/examples/postgresql/readme.md). |
+| postgresql.enabled | bool | `false` | Flag introduced for testing purposes, to actually run this with postgresql follow the approach explained [here](https://github.com/codecentric/helm-charts/blob/keycloakx-2.5.1/charts/keycloakx/examples/postgresql/readme.md). |
 | realm.alfresco.adminPassword | string | `"admin"` |  |
 | realm.alfresco.client.redirectUris | list | `["*"]` | For security reasons, override the default value and use URIs to be as specific as possible. [See Keycloak official documentation](https://www.keycloak.org/docs/latest/securing_apps/#redirect-uris). |
 | realm.alfresco.client.webOrigins[0] | string | `"http://localhost*"` |  |

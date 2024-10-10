@@ -175,7 +175,7 @@ jobs:
             --set keycloakx.command[1]="start" \
             --set keycloakx.command[2]="--import-realm" \
             --set keycloakx.command[3]="--http-relative-path=/auth" \
-            --set keycloakx.command[4]="--hostname=${HOST}" \
+            --set keycloakx.command[4]="--hostname=https://${HOST}/auth" \
             --set keycloakx.imagePullSecrets[0].name="regcred" \
             --wait
 
