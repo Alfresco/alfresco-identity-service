@@ -1,9 +1,9 @@
 # Alfresco Identity Service
 
 > ⚠ **WARNING**:
-> **Alfresco Identity Service is reaching End of Life.**
+> **Alfresco Identity Service has reached End of Life.**
 > Please refrain from using Alfresco Identity Service at this time and switch to raw Keycloak instead.
-> This branch now contains a set of tests and examples for raw Keycloak, whereas all Alfresco Identity Service development has been moved to [release/2.0.x](https://github.com/Alfresco/alfresco-identity-service/tree/release/2.0.x).
+> This branch now contains a set of tests and examples for vanilla Keycloak, whereas the, now unmaintained, Alfresco Identity Service development branch has been moved to [release/2.0.x](https://github.com/Alfresco/alfresco-identity-service/tree/release/2.0.x).
 
 *Keycloak* is a central component responsible for identity-related capabilities needed by other Alfresco software, such as managing users, groups, roles, profiles, and authentication. Currently it deals just with authentication. This project contains the open-source core of this service.
 
