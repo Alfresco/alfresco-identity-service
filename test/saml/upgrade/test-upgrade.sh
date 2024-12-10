@@ -56,14 +56,14 @@ stop_kc() {
 
 # This is required if upgrading from a version of Keycloak which relies on h2 v1.x
 migrate_h2_database() {
-  wget https://repo1.maven.org/maven2/com/h2database/h2/2.2.224/h2-2.2.224.jar
+  wget https://repo1.maven.org/maven2/com/h2database/h2/2.3.230/h2-2.3.230.jar
   wget https://repo1.maven.org/maven2/com/h2database/h2/1.4.196/h2-1.4.196.jar
   dbdir="$(pwd)/${target}/data/h2"
   log_info "Exporting old h2 database to zip file..."
   java -cp h2-1.4.196.jar org.h2.tools.Script -url jdbc:h2:${dbdir}/keycloak -user sa -password sa -script h2db.zip -options compression zip
   rm -f ${target}/data/h2/keycloak.mv.db
   log_info "Creating new h2 database from zip file..."
-  java -cp h2-2.2.224.jar org.h2.tools.RunScript -url jdbc:h2:${dbdir}/keycloakdb -user sa -password password -script ./h2db.zip -options compression zip FROM_1X
+  java -cp h2-2.3.230.jar org.h2.tools.RunScript -url jdbc:h2:${dbdir}/keycloakdb -user sa -password password -script ./h2db.zip -options compression zip FROM_1X
   rm -f h2db.zip
   rm -f $dbdir/keycloak.*
   log_info "h2 1.x -> 3.x migration successful!"
