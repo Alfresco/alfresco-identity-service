@@ -67,7 +67,7 @@ keycloakx:
   rbac:
     create: false
   image:
-    tag: 25.0.6
+    tag: 26.0.7
   imagePullSecrets:
     - name: quay-registry-secret
   serviceAccount:
@@ -115,5 +115,5 @@ keycloakx:
           mountPath: /theme
 
 postgresql:
-  # -- Flag introduced for testing purposes, to actually run this with postgresql follow the approach explained [here](https://github.com/codecentric/helm-charts/blob/keycloakx-2.5.1/charts/keycloakx/examples/postgresql/readme.md).
+  # -- Flag introduced for testing purposes, to actually run this with postgresql follow the approach explained [here](https://github.com/codecentric/helm-charts/blob/keycloakx-2.6.0/charts/keycloakx/examples/postgresql/readme.md).
   enabled: false
