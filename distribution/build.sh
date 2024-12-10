@@ -92,6 +92,9 @@ helm template ${CHART_DIR} \
   grep '\"alfresco-realm.json\"' | awk '{ print $2}' |
   sed -e 's/\"$//' -e 's/^\"//' | base64 --decode | jq '.' >$DISTRIBUTION_NAME/data/import/alfresco-realm.json
 
+echo ttttttttttttttttttttttttt
+cat $DISTRIBUTION_NAME/data/import/alfresco-realm.json
+
 echo "Recreate Distro Readme file"
 cp -rf README.html $DISTRIBUTION_NAME/
 sed -ie "s/KVERSION/$KEYCLOAK_VERSION/" $DISTRIBUTION_NAME/README.html
