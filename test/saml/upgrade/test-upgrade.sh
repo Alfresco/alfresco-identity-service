@@ -76,8 +76,8 @@ migrate_h2_database() {
 # /saml directory
 current_dir=$(pwd)
 workspace="${current_dir}/target/distribution/workspace"
-# Get the host IP
-#host_ip=$(ifconfig | grep -E '([0-9]{1,3}\.){3}[0-9]{1,3}' | grep -v 127.0.0.1 | awk '{ print $2 }' | cut -f2 -d: | head -n1)
+# Keycloak doesn't send cookies for the cross origin request from the non secure context. Since we are using http in our
+# tests we need to use loopback address which is considered as secure.
 host_ip="127.0.0.1"
 # Keycloak default port
 port=8080
