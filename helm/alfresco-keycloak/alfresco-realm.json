@@ -2671,6 +2671,6 @@
     {{- end }}
     {{- end }}
   ],
-  "keycloakVersion": "25.0.6",
+  "keycloakVersion": "26.0.7",
   "userManagedAccessAllowed": false
 }
