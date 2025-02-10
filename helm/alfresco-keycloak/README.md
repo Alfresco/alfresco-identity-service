@@ -1,6 +1,6 @@
 # alfresco-keycloak
 
-![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![AppVersion: 26.0.7](https://img.shields.io/badge/AppVersion-26.0.7-informational?style=flat-square)
+![Version: 1.0.0](https://img.shields.io/badge/Version-1.0.0-informational?style=flat-square) ![AppVersion: 26.1.0](https://img.shields.io/badge/AppVersion-26.1.0-informational?style=flat-square)
 
 This is just a sample Helm installation of raw Keycloak with the Alfresco Realm and Theme pre-installed.
 
@@ -44,7 +44,7 @@ This is just a sample Helm installation of raw Keycloak with the Alfresco Realm 
 | keycloakx.extraInitContainers | string | `"- name: theme-provider\n  image: busybox:1.36\n  imagePullPolicy: IfNotPresent\n  command:\n    - sh\n  args:\n    - -c\n    - |\n      THEME_VERSION=0.3.5\n      wget https://github.com/Alfresco/alfresco-keycloak-theme/releases/download/${THEME_VERSION}/alfresco-keycloak-theme-${THEME_VERSION}.zip -O /alfresco.zip\n      unzip alfresco.zip\n      mv alfresco/* /theme/\n  volumeMounts:\n    - name: theme\n      mountPath: /theme\n"` |  |
 | keycloakx.extraVolumeMounts | string | `"- name: realm-secret\n  mountPath: \"/opt/keycloak/data/import/\"\n  readOnly: true\n- name: theme\n  mountPath: \"/opt/keycloak/themes/alfresco\"\n  readOnly: true\n"` |  |
 | keycloakx.extraVolumes | string | `"- name: realm-secret\n  secret:\n    secretName: realm-secret\n- name: theme\n  emptyDir: {}\n"` |  |
-| keycloakx.image.tag | string | `"26.0.7"` |  |
+| keycloakx.image.tag | string | `"26.1.0"` |  |
 | keycloakx.imagePullSecrets[0].name | string | `"quay-registry-secret"` |  |
 | keycloakx.rbac.create | bool | `false` |  |
 | keycloakx.service.httpPort | int | `80` |  |
