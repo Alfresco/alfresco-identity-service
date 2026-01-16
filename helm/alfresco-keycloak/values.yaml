@@ -67,7 +67,7 @@ keycloakx:
   rbac:
     create: false
   image:
-    tag: 26.1.0
+    tag: 26.5.0
   imagePullSecrets:
     - name: quay-registry-secret
   serviceAccount:
